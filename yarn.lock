@@ -841,7 +841,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.16":
+"@planttheidea/build-tools@npm:^1.0.0-beta.13":
   version: 1.0.0-beta.16
   resolution: "@planttheidea/build-tools@npm:1.0.0-beta.16"
   dependencies:
@@ -1837,7 +1837,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.16"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.13"
+    hash-it: "npm:^7.0.0-beta.0"
     rollup: "npm:^4.53.2"
     typescript: "npm:^5.9.3"
   languageName: unknown
@@ -3056,6 +3057,13 @@ __metadata:
   dependencies:
     has-symbols: "npm:^1.0.3"
   checksum: 10c0/a8b166462192bafe3d9b6e420a1d581d93dd867adb61be223a17a8d6dad147aa77a8be32c961bb2f27b3ef893cae8d36f564ab651f5e9b7938ae86f74027c48c
+  languageName: node
+  linkType: hard
+
+"hash-it@npm:^7.0.0-beta.0":
+  version: 7.0.0-beta.0
+  resolution: "hash-it@npm:7.0.0-beta.0"
+  checksum: 10c0/d8446f89d61db0b066eda64017e6825ab50492e825b1576088d28e1b706a15b3c6e5292b376925c744d3dbcc61daeec1fbc0e338faaeedc1669ede2e34ea4bc1
   languageName: node
   linkType: hard
 
