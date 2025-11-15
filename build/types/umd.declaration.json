@@ -27,9 +27,12 @@
     "types": [
       "node"
     ],
-    "outDir": "../../dist"
+    "declarationDir": "../../dist/umd/types"
   },
   "exclude": [
     "**/node_modules/**"
+  ],
+  "include": [
+    "../../src/**/*.ts"
   ]
 }
