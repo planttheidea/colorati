@@ -37,8 +37,8 @@
   },
   "scripts": {
     "build": "npm run build:es && npm run build:cjs && npm run build:umd",
-    "build:cjs": "NODE_ENV=production rollup -c build/rollup/cjs.config.js && tsc -p build/types/cjs.declaration.json",
-    "build:es": "NODE_ENV=production rollup -c build/rollup/es.config.js && tsc -p build/types/es.declaration.json",
+    "build:cjs": "NODE_ENV=production rollup -c build/rollup/cjs.config.js && tsc -p build/types/cjs.declaration.json && pti-module-types -t cjs",
+    "build:es": "NODE_ENV=production rollup -c build/rollup/es.config.js && tsc -p build/types/es.declaration.json && pti-module-types -t es",
     "build:umd": "NODE_ENV=production rollup -c build/rollup/umd.config.js && tsc -p build/types/umd.declaration.json",
     "clean": "rm -rf dist",
     "clean:cjs": "rm -rf dist/cjs",
