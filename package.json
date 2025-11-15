@@ -13,16 +13,16 @@
   "exports": {
     ".": {
       "import": {
-        "default": "./dist/es/index.mjs",
-        "types": "./dist/es/index.d.mts"
+        "types": "./dist/es/types/index.d.mts",
+        "default": "./dist/es/index.mjs"
       },
       "require": {
-        "default": "./dist/cjs/index.cjs",
-        "types": "./dist/cjs/index.d.cts"
+        "types": "./dist/cjs/types/index.d.cts",
+        "default": "./dist/cjs/index.cjs"
       },
       "default": {
-        "default": "./dist/umd/index.js",
-        "types": "./dist/umd/index.d.ts"
+        "types": "./dist/umd/types/index.d.ts",
+        "default": "./dist/umd/index.js"
       }
     }
   },
@@ -48,5 +48,6 @@
     "test": "vitest run"
   },
   "type": "module",
+  "types": "index.d.ts",
   "version": "0.0.0"
 }
