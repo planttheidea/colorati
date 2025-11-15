@@ -841,9 +841,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.6":
-  version: 1.0.0-beta.6
-  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.6"
+"@planttheidea/build-tools@npm:^1.0.0-beta.9":
+  version: 1.0.0-beta.9
+  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.9"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -861,7 +861,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     create-tsconfig: bin/createProjectTsConfig.js
-  checksum: 10c0/2df7e364db3039df3022e54a7cf69f4aea2bf844ddb2699e8440b0c54066998a178d1ad6552076328b8b5424d5305f162632ce75f15aca45fdd70233cd128c65
+  checksum: 10c0/d42e3a2e20d4c41015b57f5afea6a04f08b893e894975e387325f080443dc77d396f2833e13089507f232fef7973b4a8785fdbfb4902e84c717858585f473c0a
   languageName: node
   linkType: hard
 
@@ -1836,7 +1836,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.6"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.9"
   languageName: unknown
   linkType: soft
 

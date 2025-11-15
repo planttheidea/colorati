@@ -26,16 +26,9 @@
     "verbatimModuleSyntax": true,
     "types": [
       "node"
-    ],
-    "outDir": "dist"
+    ]
   },
   "exclude": [
-    "**/node_modules/**",
-    "dist/**/*"
-  ],
-  "include": [
-    "build/**/*.ts",
-    "dev/**/*.ts",
-    "src/**/*.ts"
+    "**/node_modules/**"
   ]
 }

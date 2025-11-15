@@ -18,6 +18,6 @@
     "test": "vitest run"
   },
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.6"
+    "@planttheidea/build-tools": "^1.0.0-beta.9"
   }
 }
