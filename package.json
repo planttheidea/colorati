@@ -1,0 +1,23 @@
+{
+  "name": "colorati",
+  "version": "0.0.0",
+  "description": "Transform any value into a consistent color",
+  "homepage": "https://github.com/planttheidea/colorati#readme",
+  "bugs": {
+    "url": "https://github.com/planttheidea/colorati/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/planttheidea/colorati.git"
+  },
+  "license": "MIT",
+  "author": "tony.quetano@planttheidea.com",
+  "type": "module",
+  "main": "dist/umd/index.js",
+  "scripts": {
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@planttheidea/build-tools": "^1.0.0-beta.6"
+  }
+}
