@@ -5,6 +5,7 @@
     "url": "https://github.com/planttheidea/colorati/issues"
   },
   "dependencies": {
+    "@vitest/coverage-v8": "^4.0.9",
     "hash-it": "^7.0.0-beta.0"
   },
   "description": "Transform any value into a consistent color",
