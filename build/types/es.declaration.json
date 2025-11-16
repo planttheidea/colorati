@@ -27,7 +27,7 @@
     "types": [
       "node"
     ],
-    "declarationDir": "../../dist/es/types"
+    "declarationDir": "../../dist/es"
   },
   "exclude": [
     "**/node_modules/**"

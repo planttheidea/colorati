@@ -841,15 +841,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.13":
-  version: 1.0.0-beta.16
-  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.16"
+"@planttheidea/build-tools@npm:^1.0.0-beta.18":
+  version: 1.0.0-beta.18
+  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.18"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
     "@types/node": "npm:^24.10.1"
+    camelcase: "npm:^9.0.0"
     eslint: "npm:^9.39.1"
     eslint-plugin-import: "npm:^2.32.0"
+    fast-glob: "npm:^3.3.3"
     git-root: "npm:^1.0.0"
     prettier: "npm:^3.6.2"
     release-it: "npm:^19.0.6"
@@ -862,7 +864,7 @@ __metadata:
   bin:
     pti-module-types: bin/renameTypeDefinitions.js
     pti-tsconfig: bin/createProjectTsConfig.js
-  checksum: 10c0/31a30ca9139cc292338eddcc3535ed0216d37b93d4b74954bbf9ac36681f85a76f74c52d852defdfa381175bf3561c7bf649009aa19525b14448a32856234e08
+  checksum: 10c0/efb1d6f79c0e04442c70ea1c38cde78cb5ab7323cb7d4d046b360b1a4e5e7d02930dd315639383ff12933fa9aba4193193e700e2ac5f0b55a5f1dab9e6122e35
   languageName: node
   linkType: hard
 
@@ -1720,6 +1722,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"camelcase@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "camelcase@npm:9.0.0"
+  checksum: 10c0/7171e1540b9b227cab9d59b7afa05174d14c10268171c18bdf2240eb1485ad6851592f1253ddc291f7ae34caad42c18206d339538965c67fb17fc995c0bb509b
+  languageName: node
+  linkType: hard
+
 "chai@npm:^6.2.0":
   version: 6.2.1
   resolution: "chai@npm:6.2.1"
@@ -1837,7 +1846,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.13"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.18"
     hash-it: "npm:^7.0.0-beta.0"
     rollup: "npm:^4.53.2"
     typescript: "npm:^5.9.3"
@@ -2639,7 +2648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-glob@npm:^3.3.2":
+"fast-glob@npm:^3.3.2, fast-glob@npm:^3.3.3":
   version: 3.3.3
   resolution: "fast-glob@npm:3.3.3"
   dependencies:

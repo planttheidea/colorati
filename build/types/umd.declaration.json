@@ -27,7 +27,7 @@
     "types": [
       "node"
     ],
-    "declarationDir": "../../dist/umd/types"
+    "declarationDir": "../../dist/umd"
   },
   "exclude": [
     "**/node_modules/**"

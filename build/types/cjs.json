@@ -27,7 +27,7 @@
     "types": [
       "node"
     ],
-    "outDir": "../../dist"
+    "outDir": "../../dist/cjs"
   },
   "exclude": [
     "**/node_modules/**"

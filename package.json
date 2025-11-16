@@ -6,22 +6,22 @@
   },
   "description": "Transform any value into a consistent color",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.13",
+    "@planttheidea/build-tools": "^1.0.0-beta.18",
     "rollup": "^4.53.2",
     "typescript": "^5.9.3"
   },
   "exports": {
     ".": {
       "import": {
-        "types": "./dist/es/types/index.d.mts",
+        "types": "./dist/es/index.d.mts",
         "default": "./dist/es/index.mjs"
       },
       "require": {
-        "types": "./dist/cjs/types/index.d.cts",
+        "types": "./dist/cjs/index.d.cts",
         "default": "./dist/cjs/index.cjs"
       },
       "default": {
-        "types": "./dist/umd/types/index.d.ts",
+        "types": "./dist/umd/index.d.ts",
         "default": "./dist/umd/index.js"
       }
     }
@@ -36,15 +36,17 @@
     "url": "git+https://github.com/planttheidea/colorati.git"
   },
   "scripts": {
-    "build": "npm run build:es && npm run build:cjs && npm run build:umd",
-    "build:cjs": "NODE_ENV=production rollup -c build/rollup/cjs.config.js && tsc -p build/types/cjs.declaration.json && pti-module-types -t cjs",
-    "build:es": "NODE_ENV=production rollup -c build/rollup/es.config.js && tsc -p build/types/es.declaration.json && pti-module-types -t es",
-    "build:umd": "NODE_ENV=production rollup -c build/rollup/umd.config.js && tsc -p build/types/umd.declaration.json",
+    "build": "npm run clean && npm run build:es && npm run build:es:types && npm run build:cjs && npm run build:cjs:types && npm run build:umd && npm run build:umd:types",
+    "build:cjs": "NODE_ENV=production rollup -c build/rollup/cjs.config.js",
+    "build:cjs:types": "tsc -p build/types/cjs.declaration.json && pti-module-types -t cjs",
+    "build:es": "NODE_ENV=production rollup -c build/rollup/es.config.js",
+    "build:es:types": "tsc -p build/types/es.declaration.json && pti-module-types -t es",
+    "build:umd": "NODE_ENV=production rollup -c build/rollup/umd.config.js",
+    "build:umd:types": "tsc -p build/types/umd.declaration.json",
     "clean": "rm -rf dist",
     "clean:cjs": "rm -rf dist/cjs",
     "clean:es": "rm -rf dist/es",
     "clean:umd": "rm -rf dist/umd",
-    "dist": "npm run clean && npm run build",
     "test": "vitest run"
   },
   "type": "module",

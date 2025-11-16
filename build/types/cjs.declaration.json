@@ -27,7 +27,7 @@
     "types": [
       "node"
     ],
-    "declarationDir": "../../dist/cjs/types"
+    "declarationDir": "../../dist/cjs"
   },
   "exclude": [
     "**/node_modules/**"
