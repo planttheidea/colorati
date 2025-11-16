@@ -841,9 +841,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.18":
-  version: 1.0.0-beta.18
-  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.18"
+"@planttheidea/build-tools@npm:^1.0.0-beta.19":
+  version: 1.0.0-beta.19
+  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.19"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -863,8 +863,9 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     pti-module-types: bin/renameTypeDefinitions.js
-    pti-tsconfig: bin/createProjectTsConfig.js
-  checksum: 10c0/efb1d6f79c0e04442c70ea1c38cde78cb5ab7323cb7d4d046b360b1a4e5e7d02930dd315639383ff12933fa9aba4193193e700e2ac5f0b55a5f1dab9e6122e35
+    pti-rollup: bin/createRollupConfigs.js
+    pti-tsconfig: bin/createTsConfigs.js
+  checksum: 10c0/4ae0f1bf89e4b6e91a1fb82db663071f89792a593f9dbc905bfc2061b187a98375cc31c56736a86363b46ff7e475b937d8b417c508d844828235d23d6397f6f8
   languageName: node
   linkType: hard
 
@@ -1846,7 +1847,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.18"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.19"
     hash-it: "npm:^7.0.0-beta.0"
     rollup: "npm:^4.53.2"
     typescript: "npm:^5.9.3"
