@@ -34,7 +34,7 @@
     "dist/**/*"
   ],
   "include": [
-    "build/**/*.ts",
+    "config/**/*.ts",
     "dev/**/*.ts",
     "src/**/*.ts"
   ]
