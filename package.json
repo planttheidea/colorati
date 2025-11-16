@@ -9,7 +9,7 @@
   },
   "description": "Transform any value into a consistent color",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.19",
+    "@planttheidea/build-tools": "^1.0.0-beta.23",
     "rollup": "^4.53.2",
     "typescript": "^5.9.3"
   },
