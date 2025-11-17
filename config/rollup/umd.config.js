@@ -1,4 +1,3 @@
-// eslint-disable-next-line import/no-unresolved
-import { createRollupConfig } from '@planttheidea/build-tools/rollup';
+import { createRollupConfig } from '@planttheidea/build-tools';
 
 export default createRollupConfig({ outputFormat: 'umd' });
