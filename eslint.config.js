@@ -1,3 +1,3 @@
-import { createEslintConfig } from '@planttheidea/build-tools/eslint';
+import config from './config/eslint.config.js';
 
-export default createEslintConfig();
+export default config;

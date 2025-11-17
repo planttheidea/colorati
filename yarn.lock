@@ -1033,9 +1033,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.31":
-  version: 1.0.0-beta.31
-  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.31"
+"@planttheidea/build-tools@npm:^1.0.0-beta.32":
+  version: 1.0.0-beta.32
+  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.32"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -1057,12 +1057,13 @@ __metadata:
     vitest: "npm:^4.0.9"
     yargs: "npm:^18.0.0"
   bin:
+    pti-eslint: bin/createEslintConfig.js
     pti-module-types: bin/renameTypeDefinitions.js
     pti-package-json: bin/cleanPackageJson.js
     pti-release-it: bin/createReleaseItConfigs.js
     pti-rollup: bin/createRollupConfigs.js
     pti-tsconfig: bin/createTsConfigs.js
-  checksum: 10c0/9a2d8b1fae6c0bb20600c6c479b5ed40c8771a04dc596f079cb774bb7cba17065c463118465d8a25c266f2dd69e04e02e23b43de751e92e189118baafa97b721
+  checksum: 10c0/74f5a27747bc6d9396d846749b2fdae6f2e53a74954c7ebeaaf44fbc5cc81f784f5584d1196eb0f7df4702c7b72ab8d6f26d7940d3b2b4114314456a830aee06
   languageName: node
   linkType: hard
 
@@ -2138,7 +2139,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.31"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.32"
     "@vitest/coverage-v8": "npm:^4.0.9"
     eslint: "npm:^9.39.1"
     hash-it: "npm:^7.0.0-beta.0"
