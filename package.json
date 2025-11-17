@@ -10,7 +10,7 @@
   },
   "description": "Transform any value into a consistent color",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.28",
+    "@planttheidea/build-tools": "^1.0.0-beta.31",
     "@vitest/coverage-v8": "^4.0.9",
     "eslint": "^9.39.1",
     "rollup": "^4.53.2",
@@ -55,7 +55,7 @@
     "clean:cjs": "rm -rf dist/cjs",
     "clean:es": "rm -rf dist/es",
     "clean:umd": "rm -rf dist/umd",
-    "lint": "echo \"TODO LINT\"",
+    "lint": "eslint",
     "release": "release-it --config=config/release-it/stable.json",
     "release:alpha": "release-it --config=config/release-it/alpha.json",
     "release:beta": "release-it --config=config/release-it/beta.json",
