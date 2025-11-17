@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "baseUrl": "src",
     "declaration": false,
     "emitDeclarationOnly": false,
     "esModuleInterop": true,
@@ -27,6 +26,7 @@
     "types": [
       "node"
     ],
+    "baseUrl": "src",
     "outDir": "dist"
   },
   "exclude": [
