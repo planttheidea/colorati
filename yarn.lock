@@ -1033,9 +1033,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0-beta.36":
-  version: 1.0.0-beta.36
-  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.36"
+"@planttheidea/build-tools@npm:^1.0.0-beta.37":
+  version: 1.0.0-beta.37
+  resolution: "@planttheidea/build-tools@npm:1.0.0-beta.37"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -1058,7 +1058,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     pti: bin/index.js
-  checksum: 10c0/26e52af0f3a064a9cb337d7d12ad44b198293e531a778544721ed8e2a142e6b27b63b29740951fa1c14e8e2babd438d56ccb5831bae568a5b1b0569ff3f438ce
+  checksum: 10c0/1167a9fd79a6ada085ecc63fea77ff3b1ec8823bc79821ae0d3289558a6a69051e1d01eea7d8dc422d97339af9fb8e313be190597ed8befbf16a5ff591218018
   languageName: node
   linkType: hard
 
@@ -2134,7 +2134,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0-beta.36"
+    "@planttheidea/build-tools": "npm:^1.0.0-beta.37"
     "@vitest/coverage-v8": "npm:^4.0.9"
     eslint: "npm:^9.39.1"
     hash-it: "npm:^7.0.0-beta.0"

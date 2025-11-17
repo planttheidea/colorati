@@ -10,7 +10,7 @@
   },
   "description": "Transform any value into a consistent color",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.36",
+    "@planttheidea/build-tools": "^1.0.0-beta.37",
     "@vitest/coverage-v8": "^4.0.9",
     "eslint": "^9.39.1",
     "rollup": "^4.53.2",
@@ -46,9 +46,9 @@
   "scripts": {
     "build": "npm run clean && npm run build:es && npm run build:es:types && npm run build:cjs && npm run build:cjs:types && npm run build:umd && npm run build:umd:types",
     "build:cjs": "NODE_ENV=production rollup -c config/rollup/cjs.config.js",
-    "build:cjs:types": "tsc -p config/types/cjs.declaration.json && pti-module-types -t cjs",
+    "build:cjs:types": "tsc -p config/types/cjs.declaration.json && pti fix-types -t cjs",
     "build:es": "NODE_ENV=production rollup -c config/rollup/es.config.js",
-    "build:es:types": "tsc -p config/types/es.declaration.json && pti-module-types -t es",
+    "build:es:types": "tsc -p config/types/es.declaration.json && pti fix-types -t es",
     "build:umd": "NODE_ENV=production rollup -c config/rollup/umd.config.js",
     "build:umd:types": "tsc -p config/types/umd.declaration.json",
     "clean": "rm -rf dist",
