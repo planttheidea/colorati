@@ -23,13 +23,18 @@ export function getBaseColor(value: any, alpha?: boolean): string {
     .slice(0, length);
 }
 
-export function getCmykFromRgba(rgba: Rgba): Cmyka {
+export function getCmykFromRgba(rgba: Rgba, precision: number): Cmyka {
   const [red, green, blue, alpha] = getFractionalRgba(rgba);
 
-  const key = +(1 - Math.max(red, green, blue)).toFixed(1);
-  const cyan = +((1 - red - key) / (1 - key) || 0).toFixed(1);
-  const magenta = +((1 - green - key) / (1 - key) || 0).toFixed(1);
-  const yellow = +((1 - blue - key) / (1 - key) || 0).toFixed(1);
+  const rawKey = 1 - Math.max(red, green, blue);
+  const rawCyan = (1 - red - rawKey) / (1 - rawKey) || 0;
+  const rawMagenta = (1 - green - rawKey) / (1 - rawKey) || 0;
+  const rawYellow = (1 - blue - rawKey) / (1 - rawKey) || 0;
+
+  const key = precision <= 100 ? +rawKey.toFixed(precision) : rawKey;
+  const cyan = precision <= 100 ? +rawCyan.toFixed(precision) : rawCyan;
+  const magenta = precision <= 100 ? +rawMagenta.toFixed(precision) : rawMagenta;
+  const yellow = precision <= 100 ? +rawYellow.toFixed(precision) : rawYellow;
 
   return [cyan, magenta, yellow, key, alpha];
 }
@@ -91,7 +96,9 @@ export function getRgbaFromBase(baseColorAlpha: string, alphaPrecision: number):
   const green = Number.parseInt(baseColorAlpha.slice(2, 4), 16);
   const blue = Number.parseInt(baseColorAlpha.slice(4, 6), 16);
   const alpha255 = Number.parseInt(baseColorAlpha.slice(6, 8), 16);
-  const alpha = alpha255 ? parseFloat(((alpha255 + 1) / 256).toFixed(alphaPrecision)) : 0;
+
+  const rawAlpha = alpha255 ? (alpha255 + 1) / 256 : 0;
+  const alpha = alphaPrecision <= 100 ? parseFloat(rawAlpha.toFixed(alphaPrecision)) : rawAlpha;
 
   return [red, green, blue, alpha];
 }

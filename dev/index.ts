@@ -20,13 +20,14 @@ document.body.appendChild(div);
   ],
   1234567890,
 ].forEach((value) => {
-  const color = colorati(value);
+  //   const color = colorati(value);
+  const color = colorati(value, { alphaPrecision: Infinity, cmykPrecision: Infinity });
 
   const element = document.createElement('div');
   element.textContent = JSON.stringify(value);
   element.style = `color:${color.rgb}`;
 
-  console.log(value, color.rawObject('rgba'));
+  console.log(value, color.hsla, color.rawObject('cmyka'));
 
   div.appendChild(element);
 });

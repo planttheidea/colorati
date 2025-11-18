@@ -5,6 +5,7 @@ type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'rgb' | 'rgba';
 
 interface Options {
   alphaPrecision?: number;
+  cmykPrecision?: number;
 }
 
 export function colorati(value: any, options: Options = {} as Options): Colorati {
@@ -12,20 +13,30 @@ export function colorati(value: any, options: Options = {} as Options): Colorati
 }
 
 class Colorati {
-  private _alphaPrecision: number;
+  private _options: Required<Options>;
+
   private _baseColor: string;
   private _baseCmyka: Cmyka | undefined;
   private _baseHsla: Hsla | undefined;
   private _baseRgba: Rgba | undefined;
-  private _colorname: string | undefined;
 
-  constructor(value: any, { alphaPrecision = 2 }: Options) {
-    this._alphaPrecision = alphaPrecision;
+  private _cmyk: string | undefined;
+  private _cmyka: string | undefined;
+  private _colorname: string | undefined;
+  private _hex: string | undefined;
+  private _hexa: string | undefined;
+  private _hsl: string | undefined;
+  private _hsla: string | undefined;
+  private _rgb: string | undefined;
+  private _rgba: string | undefined;
+
+  constructor(value: any, { alphaPrecision = 2, cmykPrecision = 1 }: Options) {
     this._baseColor = getBaseColor(value, true);
+    this._options = { alphaPrecision, cmykPrecision };
   }
 
   private get _cmykArray() {
-    return (this._baseCmyka ??= getCmykFromRgba(this._rgbaArray));
+    return (this._baseCmyka ??= getCmykFromRgba(this._rgbaArray, this._options.cmykPrecision));
   }
 
   private get _hslaArray() {
@@ -33,15 +44,15 @@ class Colorati {
   }
 
   private get _rgbaArray() {
-    return (this._baseRgba ??= getRgbaFromBase(this._baseColor, this._alphaPrecision));
+    return (this._baseRgba ??= getRgbaFromBase(this._baseColor, this._options.alphaPrecision));
   }
 
   get cmyk() {
-    return `cmyk(${this._cmykArray.slice(0, 4).join(',')})`;
+    return (this._cmyk ??= `cmyk(${this._cmykArray.slice(0, 4).join(',')})`);
   }
 
   get cmyka() {
-    return `cmyka(${this._cmykArray.join(',')})`;
+    return (this._cmyka ??= `cmyka(${this._cmykArray.join(',')})`);
   }
 
   get colorname() {
@@ -49,27 +60,31 @@ class Colorati {
   }
 
   get hex() {
-    return `#${this._baseColor.slice(0, 6)}`;
+    return (this._hex ??= `#${this._baseColor.slice(0, 6)}`);
   }
 
   get hexa() {
-    return `#${this._baseColor}`;
+    return (this._hexa ??= `#${this._baseColor}`);
   }
 
   get hsl() {
-    return `hsl(${this._hslaArray.slice(0, 3).join(',')})`;
+    const [hue, saturation, light] = this._hslaArray;
+
+    return (this._hsl ??= `hsl(${[hue, `${saturation.toString()}%`, `${light.toString()}%`].slice(0, 3).join(',')})`);
   }
 
   get hsla() {
-    return `hsla(${this._hslaArray.join(',')})`;
+    const [hue, saturation, light, alpha] = this._hslaArray;
+
+    return (this._hsl ??= `hsla(${[hue, `${saturation.toString()}%`, `${light.toString()}%`, alpha].join(',')})`);
   }
 
   get rgb() {
-    return `rgb(${this._rgbaArray.slice(0, 3).join(',')})`;
+    return (this._rgb ??= `rgb(${this._rgbaArray.slice(0, 3).join(',')})`);
   }
 
   get rgba() {
-    return `rgba(${this._rgbaArray.join(',')})`;
+    return (this._rgba ??= `rgba(${this._rgbaArray.join(',')})`);
   }
 
   rawArray(type: RawColorType) {
