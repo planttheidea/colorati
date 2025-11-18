@@ -2152,6 +2152,7 @@ __metadata:
     "@planttheidea/build-tools": "npm:^1.0.5"
     "@vitest/coverage-v8": "npm:^4.0.10"
     eslint: "npm:^9.39.1"
+    hash-it: "npm:^7.0.0-rc.0"
     prettier: "npm:^3.6.2"
     rollup: "npm:^4.53.2"
     typescript: "npm:^5.9.3"
@@ -3500,6 +3501,13 @@ __metadata:
   dependencies:
     has-symbols: "npm:^1.0.3"
   checksum: 10c0/a8b166462192bafe3d9b6e420a1d581d93dd867adb61be223a17a8d6dad147aa77a8be32c961bb2f27b3ef893cae8d36f564ab651f5e9b7938ae86f74027c48c
+  languageName: node
+  linkType: hard
+
+"hash-it@npm:^7.0.0-rc.0":
+  version: 7.0.0-rc.0
+  resolution: "hash-it@npm:7.0.0-rc.0"
+  checksum: 10c0/12a568e9fc8b542b322da286dcca374cf3162d6db4eea319fab54ed5700a82e60a403331bd5d5e679589699316fde28ef89924e6735aaf76f28d1e686815cae6
   languageName: node
   linkType: hard
 
