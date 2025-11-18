@@ -5,9 +5,7 @@
     "emitDeclarationOnly": false,
     "esModuleInterop": true,
     "isolatedModules": true,
-    "lib": [
-      "ESNext"
-    ],
+    "lib": ["ESNext"],
     "module": "NodeNext",
     "moduleDetection": "force",
     "moduleResolution": "NodeNext",
@@ -23,15 +21,9 @@
     "inlineSources": true,
     "target": "ES2015",
     "verbatimModuleSyntax": true,
-    "types": [
-      "node"
-    ],
+    "types": ["node"],
     "outDir": "../../dist/es"
   },
-  "exclude": [
-    "**/node_modules/**"
-  ],
-  "include": [
-    "../../src/**/*.ts"
-  ]
+  "exclude": ["**/node_modules/**"],
+  "include": ["../../src/**/*.ts"]
 }
