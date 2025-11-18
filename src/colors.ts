@@ -1,9 +1,12 @@
+import ColorName from 'color-name';
 import { hash } from 'hash-it';
 import { roundTo } from './utils.js';
 
-type Cmyka = [number, number, number, number, number];
-type Hsla = [number, number, number, number];
-type Rgba = [number, number, number, number];
+const colorNameMap = new Map(Object.entries(ColorName));
+
+export type Cmyka = [number, number, number, number, number];
+export type Hsla = [number, number, number, number];
+export type Rgba = [number, number, number, number];
 
 export function getBaseColor(value: any, alpha?: boolean): string {
   const hashCode = hash(value);
@@ -29,6 +32,14 @@ export function getCmykFromRgba(rgba: Rgba): Cmyka {
   const yellow = +((1 - blue - key) / (1 - key) || 0).toFixed(1);
 
   return [cyan, magenta, yellow, key, alpha];
+}
+
+export function getColorNameFromRgba([red, green, blue]: Rgba): string | undefined {
+  for (const [name, rgb] of colorNameMap) {
+    if (rgb[0] === red && rgb[1] === green && rgb[2] === blue) {
+      return name;
+    }
+  }
 }
 
 function getFractionalRgba([red, green, blue, alpha]: Rgba): Rgba {

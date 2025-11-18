@@ -1,4 +1,4 @@
-import { color } from '../src/index.js';
+import { colorati } from '../src/index.js';
 
 document.body.style.backgroundColor = '#1d1d1d';
 document.body.style.color = '#d5d5d5';
@@ -11,5 +11,22 @@ div.textContent = 'Check the console for details.';
 
 document.body.appendChild(div);
 
-console.log(color('foobar'));
-console.log(color({ bar: 'baz' }));
+[
+  'foobar',
+  { hello: 'world' },
+  [
+    ['foo', 'bar'],
+    ['bar', 'baz'],
+  ],
+  1234567890,
+].forEach((value) => {
+  const color = colorati(value);
+
+  const element = document.createElement('div');
+  element.textContent = JSON.stringify(value);
+  element.style = `color:${color.rgb}`;
+
+  console.log(value, color.rawObject('rgba'));
+
+  div.appendChild(element);
+});

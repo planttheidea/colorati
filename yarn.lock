@@ -1313,6 +1313,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/color-name@npm:^2":
+  version: 2.0.0
+  resolution: "@types/color-name@npm:2.0.0"
+  checksum: 10c0/f8c80199a1e1c38fb8e3bf26743e9fe1220e3991d6df42b7abdc36b3aa94abb90b038ce615d684d7e46b4423a79e6b272dd4fd690859d6f000663a646ea74bbf
+  languageName: node
+  linkType: hard
+
 "@types/deep-eql@npm:*":
   version: 4.0.2
   resolution: "@types/deep-eql@npm:4.0.2"
@@ -2138,6 +2145,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"color-name@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "color-name@npm:2.1.0"
+  checksum: 10c0/9c953caba99557fce472232ded438c56b902c569cb15d66fcfbdf6374206126eef52ab66459f3984d4074b4aa8ab95e6f4b31a8e4f228dea57d0afecf94281fa
+  languageName: node
+  linkType: hard
+
 "color-name@npm:~1.1.4":
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
@@ -2150,7 +2164,9 @@ __metadata:
   resolution: "colorati@workspace:."
   dependencies:
     "@planttheidea/build-tools": "npm:^1.0.5"
+    "@types/color-name": "npm:^2"
     "@vitest/coverage-v8": "npm:^4.0.10"
+    color-name: "npm:^2.1.0"
     eslint: "npm:^9.39.1"
     hash-it: "npm:^7.0.0-rc.0"
     prettier: "npm:^3.6.2"
