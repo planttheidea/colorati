@@ -1033,9 +1033,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@planttheidea/build-tools@npm:1.0.0"
+"@planttheidea/build-tools@npm:^1.0.3":
+  version: 1.0.3
+  resolution: "@planttheidea/build-tools@npm:1.0.3"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -1059,7 +1059,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     pti: bin/index.js
-  checksum: 10c0/b4be76a223f5ce53665445bd9357b0922b605788d594d1fb26c895329aed262e7e7344adc5ed8821bf7d1b06d1daa825568fa8a6621116e4505edf7d0a338bc8
+  checksum: 10c0/078ee02a5f76a5760e3df4907d886764921619d4ac1b8695fcf808ff7a44c4d657c9e3b79de501d818967c91ea73b6820e5dcf76597526109ccf7cc57a781d2b
   languageName: node
   linkType: hard
 
@@ -2149,7 +2149,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.0.0"
+    "@planttheidea/build-tools": "npm:^1.0.3"
     "@vitest/coverage-v8": "npm:^4.0.10"
     eslint: "npm:^9.39.1"
     prettier: "npm:^3.6.2"
