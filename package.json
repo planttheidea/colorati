@@ -10,7 +10,7 @@
   },
   "description": "Transform any value into a consistent color",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.0.0-beta.38",
+    "@planttheidea/build-tools": "^1.0.0-beta.39",
     "@vitest/coverage-v8": "^4.0.10",
     "eslint": "^9.39.1",
     "rollup": "^4.53.2",
