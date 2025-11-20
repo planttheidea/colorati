@@ -4,6 +4,9 @@
   "bugs": {
     "url": "https://github.com/planttheidea/colorati/issues"
   },
+  "dependencies": {
+    "hash-it": "^7.0.0-rc.0"
+  },
   "description": "Transform values into consistent colors",
   "devDependencies": {
     "@planttheidea/build-tools": "^1.0.5",
@@ -67,9 +70,5 @@
   },
   "type": "module",
   "types": "./index.d.ts",
-  "version": "1.0.0",
-  "dependencies": {
-    "color-name": "^2.1.0",
-    "hash-it": "^7.0.0-rc.0"
-  }
+  "version": "1.0.0"
 }
