@@ -70,7 +70,6 @@ input.addEventListener('keyup', (event) => {
   prevValue = value;
 
   if (value) {
-    console.log(opacityToggle.checked);
     const color = colorati(value);
     const backgroundColor = opacityToggle.checked ? color.rgba : color.rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';

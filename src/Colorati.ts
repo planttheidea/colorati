@@ -3,10 +3,11 @@ import {
   getCmykFromRgba,
   getColorNameFromRgba,
   getHslaFromRgba,
+  getHslvFromRgba,
   getRgbaFromBase,
   hasDarkLuminanceContrast,
 } from './colors.js';
-import type { Cmyka, ColoratiOptions, Hsla, RawColorType, Rgba } from './types.js';
+import type { Cmyka, ColoratiOptions, Hsla, Hsva, RawColorType, Rgba } from './types.js';
 
 export class Colorati {
   private _options: Required<ColoratiOptions>;
@@ -14,6 +15,7 @@ export class Colorati {
   private _baseColor: string;
   private _baseCmyka: Cmyka | undefined;
   private _baseHsla: Hsla | undefined;
+  private _baseHsva: Hsva | undefined;
   private _baseRgba: Rgba | undefined;
 
   private _cmyk: string | undefined;
@@ -23,6 +25,8 @@ export class Colorati {
   private _hexa: string | undefined;
   private _hsl: string | undefined;
   private _hsla: string | undefined;
+  private _hsv: string | undefined;
+  private _hsva: string | undefined;
   private _rgb: string | undefined;
   private _rgba: string | undefined;
 
@@ -37,6 +41,10 @@ export class Colorati {
 
   private get _hslaArray() {
     return (this._baseHsla ??= getHslaFromRgba(this._rgbaArray));
+  }
+
+  private get _hsvaArray() {
+    return (this._baseHsva ??= getHslvFromRgba(this._rgbaArray));
   }
 
   private get _rgbaArray() {
@@ -79,6 +87,18 @@ export class Colorati {
     return (this._hsla ??= `hsla(${[hue, `${saturation.toString()}%`, `${light.toString()}%`, alpha].join(',')})`);
   }
 
+  get hsv() {
+    const [hue, saturation, value] = this._hsvaArray;
+
+    return (this._hsv ??= `hsv(${[hue, `${saturation.toString()}%`, `${value.toString()}%`].slice(0, 3).join(',')})`);
+  }
+
+  get hsva() {
+    const [hue, saturation, value] = this._hsvaArray;
+
+    return (this._hsva ??= `hsva(${[hue, `${saturation.toString()}%`, `${value.toString()}%`].join(',')})`);
+  }
+
   get rgb() {
     return (this._rgb ??= `rgb(${this._rgbaArray.slice(0, 3).join(',')})`);
   }
@@ -96,6 +116,10 @@ export class Colorati {
 
     if (type === 'hsl' || type === 'hsla') {
       return includeAlpha ? this._hslaArray : this._hslaArray.slice(0, 3);
+    }
+
+    if (type === 'hsv' || type === 'hsva') {
+      return includeAlpha ? this._hsvaArray : this._hsvaArray.slice(0, 3);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -117,6 +141,12 @@ export class Colorati {
       const [hue, saturation, light, alpha] = this._hslaArray;
 
       return includeAlpha ? { hue, saturation, light, alpha } : { hue, saturation, light };
+    }
+
+    if (type === 'hsv' || type === 'hsva') {
+      const [hue, saturation, value, alpha] = this._hsvaArray;
+
+      return includeAlpha ? { hue, saturation, value, alpha } : { hue, saturation, value };
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
