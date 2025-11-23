@@ -6,8 +6,6 @@ import type {
   ColorOptions,
   HslaArray,
   HslArray,
-  HsvaArray,
-  HsvArray,
   HwbaArray,
   HwbArray,
   RgbaArray,
@@ -23,8 +21,6 @@ class BaseColor {
   protected _hexa: string | undefined;
   protected _hsl: Hsl | undefined;
   protected _hsla: Hsla | undefined;
-  protected _hsv: Hsv | undefined;
-  protected _hsva: Hsva | undefined;
   protected _rgb: Rgb | undefined;
   protected _rgba: Rgba | undefined;
 
@@ -73,14 +69,6 @@ class BaseColor {
 
   get hsla(): Hsla {
     return (this._hsla ??= new Hsla(this._raw, this._options));
-  }
-
-  get hsv(): Hsv {
-    return (this._hsv ??= new Hsv(this._raw, this._options));
-  }
-
-  get hsva(): Hsva {
-    return (this._hsva ??= new Hsva(this._raw, this._options));
   }
 
   get rgb(): Rgb {
@@ -199,7 +187,7 @@ export class Cmyk extends BaseCmyka {
       const [cyan, magenta, yellow, key] = this.value;
       const { cmykPrecision } = this._options;
 
-      this._string = `cmyka(${cyan.toFixed(cmykPrecision)},${magenta.toFixed(cmykPrecision)},${yellow.toFixed(cmykPrecision)},${key.toFixed(cmykPrecision)})`;
+      this._string = `cmyka(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%)`;
     }
 
     return this._string;
@@ -223,7 +211,7 @@ export class Cmyka extends BaseCmyka {
       const [cyan, magenta, yellow, key, alpha] = this.value;
       const { alphaPrecision, cmykPrecision } = this._options;
 
-      this._string = `cmyka(${cyan.toFixed(cmykPrecision)},${magenta.toFixed(cmykPrecision)},${yellow.toFixed(cmykPrecision)},${key.toFixed(cmykPrecision)},${alpha.toFixed(alphaPrecision)})`;
+      this._string = `cmyka(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -339,94 +327,6 @@ export class Hsla extends BaseHsla {
       const { alphaPrecision, hslPrecision } = this._options;
 
       this._string = `hsla(${hue},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
-    }
-
-    return this._string;
-  }
-}
-
-class BaseHsva extends BaseColor {
-  private _getHsvHue(value: number, delta: number): number {
-    const [red, green, blue] = this._raw;
-
-    let hue = 0;
-
-    if (value === red) {
-      hue = getColorDiff(value, blue, delta) - getColorDiff(value, green, delta);
-    } else if (value === green) {
-      hue = 1 / 3 + getColorDiff(value, red, delta) - getColorDiff(value, blue, delta);
-    } else if (value === blue) {
-      hue = 2 / 3 + getColorDiff(value, green, delta) - getColorDiff(value, red, delta);
-    }
-
-    if (hue < 0) {
-      hue += 1;
-    } else if (hue > 1) {
-      hue -= 1;
-    }
-
-    return hue * 360;
-  }
-
-  protected _getHsvaArray(): HsvaArray {
-    const [red, green, blue, alpha] = this.fractionalRgba;
-
-    const value = Math.max(red, green, blue);
-    const min = Math.min(red, green, blue);
-
-    if (value === min) {
-      return [0, 0, value, alpha];
-    }
-
-    const delta = value - min;
-
-    const hue = this._getHsvHue(value, delta) * 360;
-    const saturation = (delta / value) * 100;
-
-    return [hue, saturation, value, alpha];
-  }
-}
-
-export class Hsv extends BaseHsva {
-  protected _string: string | undefined;
-  private _value: HsvArray | undefined;
-
-  get value(): HsvArray {
-    if (!this._value) {
-      const [hue, saturation, light] = this._getHsvaArray();
-
-      this._value = [hue, saturation, light];
-    }
-
-    return this._value;
-  }
-
-  override toString(): string {
-    if (!this._string) {
-      const [hue, saturation, value] = this.value;
-      const { hsvPrecision } = this._options;
-
-      this._string = `hsv(${hue},${saturation.toFixed(hsvPrecision)}%,${value.toFixed(hsvPrecision)}%)`;
-    }
-
-    return this._string;
-  }
-}
-
-export class Hsva extends BaseHsva {
-  protected _string: string | undefined;
-  private _value: HsvaArray | undefined;
-
-  get value(): HsvaArray {
-    return (this._value ??= this._getHsvaArray());
-  }
-
-  override toString(): string {
-    if (!this._string) {
-      const [hue, saturation, value, alpha] = this.value;
-      const { alphaPrecision, hsvPrecision } = this._options;
-
-      this._string = `hsva(${hue},${saturation.toFixed(hsvPrecision)}%,${value.toFixed(hsvPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;

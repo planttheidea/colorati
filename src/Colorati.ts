@@ -1,4 +1,4 @@
-import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hsv, Hsva, Hwb, Hwba, Rgb, Rgba } from './colors.js';
+import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hwb, Hwba, Rgb, Rgba } from './colors.js';
 import { hash } from 'hash-it';
 import type {
   AnalogousColors,
@@ -28,8 +28,6 @@ export class Colorati {
   private _hexa: Hexa | undefined;
   private _hsl: Hsl | undefined;
   private _hsla: Hsla | undefined;
-  private _hsv: Hsv | undefined;
-  private _hsva: Hsva | undefined;
   private _hwb: Hwb | undefined;
   private _hwba: Hwba | undefined;
   private _rgb: Rgb | undefined;
@@ -88,14 +86,6 @@ export class Colorati {
 
   get hsla(): Hsla {
     return (this._hsla ??= new Hsla(this._raw, this.options));
-  }
-
-  get hsv(): Hsv {
-    return (this._hsv ??= new Hsv(this._raw, this.options));
-  }
-
-  get hsva(): Hsva {
-    return (this._hsva ??= new Hsva(this._raw, this.options));
   }
 
   get hwb(): Hwb {
