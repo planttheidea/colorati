@@ -1,5 +1,7 @@
 import { getColorDiff, roundTo } from './utils.js';
 import type {
+  CmykaArray,
+  CmykArray,
   ColoratiOptions,
   ColorOptions,
   HslaArray,
@@ -69,6 +71,69 @@ class BaseColor {
 
   toJSON(): string {
     return this.toString();
+  }
+}
+
+class BaseCmyka extends BaseColor {
+  protected _getCmykaArray(): CmykaArray {
+    const [red, green, blue, alpha] = this.fractionalRgba;
+
+    const key = 1 - Math.max(red, green, blue);
+    const cyan = (1 - red - key) / (1 - key) || 0;
+    const magenta = (1 - green - key) / (1 - key) || 0;
+    const yellow = (1 - blue - key) / (1 - key) || 0;
+
+    return [cyan, magenta, yellow, key, alpha];
+  }
+}
+
+export class Cmyk extends BaseCmyka {
+  protected _string: string | undefined;
+  protected _value: CmykArray | undefined;
+
+  get value(): CmykArray {
+    if (!this._value) {
+      const [cyan, magenta, yellow, key] = this._getCmykaArray();
+
+      return [cyan, magenta, yellow, key];
+    }
+
+    return this._value;
+  }
+
+  override toString(): string {
+    if (!this._string) {
+      const [cyan, magenta, yellow, key] = this.value;
+      const { cmykPrecision } = this._options;
+
+      this._string = `cmyka(${cyan.toFixed(cmykPrecision)},${magenta.toFixed(cmykPrecision)},${yellow.toFixed(cmykPrecision)},${key.toFixed(cmykPrecision)})`;
+    }
+
+    return this._string;
+  }
+}
+
+export class Cmyka extends BaseCmyka {
+  protected _string: string | undefined;
+  protected _value: CmykaArray | undefined;
+
+  get value(): CmykaArray {
+    if (!this._value) {
+      this._value = this._getCmykaArray();
+    }
+
+    return this._value;
+  }
+
+  override toString(): string {
+    if (!this._string) {
+      const [cyan, magenta, yellow, key, alpha] = this.value;
+      const { alphaPrecision, cmykPrecision } = this._options;
+
+      this._string = `cmyka(${cyan.toFixed(cmykPrecision)},${magenta.toFixed(cmykPrecision)},${yellow.toFixed(cmykPrecision)},${key.toFixed(cmykPrecision)},${alpha.toFixed(alphaPrecision)})`;
+    }
+
+    return this._string;
   }
 }
 

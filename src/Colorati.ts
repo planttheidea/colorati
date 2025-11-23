@@ -1,4 +1,4 @@
-import { Hex, Hexa, Hsl, Hsla, Hsv, Hsva, Rgb, Rgba } from './colors.js';
+import { Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hsv, Hsva, Rgb, Rgba } from './colors.js';
 import { hash } from 'hash-it';
 import type { ColoratiOptions, RgbaArray } from './types.js';
 import { hasDarkLuminanceContrast } from './utils.js';
@@ -9,6 +9,8 @@ export class Colorati {
 
   private _raw: RgbaArray;
 
+  private _cmyk: Cmyk | undefined;
+  private _cmyka: Cmyka | undefined;
   private _harmonies: ColorHarmonies | undefined;
   private _hex: Hex | undefined;
   private _hexa: Hexa | undefined;
@@ -34,43 +36,51 @@ export class Colorati {
     this._raw = [red, green, blue, alpha];
   }
 
-  get harmonies() {
+  get cmky(): Cmyk {
+    return (this._cmyk ??= new Cmyk(this._raw, this.options));
+  }
+
+  get cmkya(): Cmyka {
+    return (this._cmyka ??= new Cmyka(this._raw, this.options));
+  }
+
+  get harmonies(): ColorHarmonies {
     return (this._harmonies ??= new ColorHarmonies(this));
   }
 
-  get hasDarkContrast() {
+  get hasDarkContrast(): boolean {
     return hasDarkLuminanceContrast(this.rgba);
   }
 
-  get hex() {
+  get hex(): Hex {
     return (this._hex ??= new Hex(this._raw, this.options));
   }
 
-  get hexa() {
+  get hexa(): Hexa {
     return (this._hexa ??= new Hexa(this._raw, this.options));
   }
 
-  get hsl() {
+  get hsl(): Hsl {
     return (this._hsl ??= new Hsl(this._raw, this.options));
   }
 
-  get hsla() {
+  get hsla(): Hsla {
     return (this._hsla ??= new Hsla(this._raw, this.options));
   }
 
-  get hsv() {
+  get hsv(): Hsv {
     return (this._hsv ??= new Hsv(this._raw, this.options));
   }
 
-  get hsva() {
+  get hsva(): Hsva {
     return (this._hsva ??= new Hsva(this._raw, this.options));
   }
 
-  get rgb() {
+  get rgb(): Rgb {
     return (this._rgb ??= new Rgb(this._raw, this.options));
   }
 
-  get rgba() {
+  get rgba(): Rgba {
     return (this._rgba ??= new Rgba(this._raw, this.options));
   }
 }
