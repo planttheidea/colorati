@@ -1,8 +1,6 @@
-import { getColorDiff, roundTo } from './utils.js';
 import type {
   CmykaArray,
   CmykArray,
-  ColoratiOptions,
   ColorOptions,
   HslaArray,
   HslArray,
@@ -39,14 +37,20 @@ class BaseColor {
     let hue = 0;
 
     if (max === red) {
-      hue = (green - blue) / delta + (green < blue ? 6 : 0);
+      hue = (green - blue) / delta;
     } else if (max === green) {
       hue = (blue - red) / delta + 2;
     } else {
       hue = (red - green) / delta + 4;
     }
 
-    return roundTo(Math.max(0, hue * 60), 0);
+    hue = Math.min(hue * 60, 360);
+
+    if (hue < 0) {
+      hue += 360;
+    }
+
+    return hue;
   }
 
   get fractionalRgba(): RgbaArray {
@@ -90,10 +94,9 @@ export class Ansi16 extends BaseColor {
 
   get value(): number {
     if (!this._value) {
-      const [red, green, blue] = this._raw;
       const [fractionalRed, fractionalGreen, fractionalBlue] = this.fractionalRgba;
 
-      const max = Math.max(red, green, blue);
+      const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
       const value = Math.round(max / 50);
       const baseAnsi = 30;
 
@@ -102,12 +105,20 @@ export class Ansi16 extends BaseColor {
       }
 
       const ansi =
-        (baseAnsi + (Math.round(fractionalBlue) << 2)) | (Math.round(fractionalGreen) << 1) | Math.round(fractionalRed);
+        baseAnsi + ((Math.round(fractionalBlue) << 2) | (Math.round(fractionalGreen) << 1) | Math.round(fractionalRed));
 
       this._value = value === 2 ? ansi + 60 : ansi;
     }
 
     return this._value;
+  }
+
+  override toJSON(): number {
+    return this.value;
+  }
+
+  override toString(): string {
+    return this.value.toString();
   }
 }
 
@@ -140,7 +151,7 @@ export class Ansi256 extends BaseColor {
         baseAnsi
         + 36 * Math.round(fractionalRed * 5)
         + 6 * Math.round(fractionalGreen * 5)
-        + Math.round(fractionalBlue);
+        + Math.round(fractionalBlue * 5);
     }
 
     return this._value;
@@ -159,10 +170,12 @@ class BaseCmyka extends BaseColor {
   protected _getCmykaArray(): CmykaArray {
     const [red, green, blue, alpha] = this.fractionalRgba;
 
-    const key = 1 - Math.max(red, green, blue);
-    const cyan = (1 - red - key) / (1 - key) || 0;
-    const magenta = (1 - green - key) / (1 - key) || 0;
-    const yellow = (1 - blue - key) / (1 - key) || 0;
+    const referenceKey = Math.min(1 - red, 1 - green, 1 - blue);
+
+    const cyan = ((1 - red - referenceKey) / (1 - referenceKey) || 0) * 100;
+    const magenta = ((1 - green - referenceKey) / (1 - referenceKey) || 0) * 100;
+    const yellow = ((1 - blue - referenceKey) / (1 - referenceKey) || 0) * 100;
+    const key = referenceKey * 100;
 
     return [cyan, magenta, yellow, key, alpha];
   }
@@ -187,7 +200,7 @@ export class Cmyk extends BaseCmyka {
       const [cyan, magenta, yellow, key] = this.value;
       const { cmykPrecision } = this._options;
 
-      this._string = `cmyka(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%)`;
+      this._string = `cmyk(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%)`;
     }
 
     return this._string;
@@ -306,7 +319,7 @@ export class Hsl extends BaseHsla {
       const [hue, saturation, light] = this.value;
       const { hslPrecision } = this._options;
 
-      this._string = `hsl(${hue},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%)`;
+      this._string = `hsl(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%)`;
     }
 
     return this._string;
@@ -326,7 +339,7 @@ export class Hsla extends BaseHsla {
       const [hue, saturation, light, alpha] = this.value;
       const { alphaPrecision, hslPrecision } = this._options;
 
-      this._string = `hsla(${hue},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+      this._string = `hsla(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -336,10 +349,11 @@ export class Hsla extends BaseHsla {
 class BaseHwb extends BaseColor {
   protected _getHwbaArray(): HwbaArray {
     const [red, green, blue, alpha] = this._raw;
+
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
 
-    const hue = this._getHslHue(max, max - min);
+    const hue = this.hsl.value[0];
     const whiteness = (1 / 255) * min * 100;
     const blackness = (1 - (1 / 255) * max) * 100;
 
@@ -366,7 +380,7 @@ export class Hwb extends BaseHwb {
       const [hue, whiteness, blackness] = this.value;
       const { hwbPrecision } = this._options;
 
-      this._string = `rgba(${hue.toFixed(hwbPrecision)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%)`;
+      this._string = `hwb(${hue.toFixed(0)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%)`;
     }
 
     return this._string;
@@ -392,7 +406,7 @@ export class Hwba extends BaseHwb {
       const [hue, whiteness, blackness, alpha] = this.value;
       const { alphaPrecision, hwbPrecision } = this._options;
 
-      this._string = `rgba(${hue.toFixed(hwbPrecision)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+      this._string = `hwba(${hue.toFixed(0)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;

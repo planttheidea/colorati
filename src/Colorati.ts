@@ -35,9 +35,9 @@ export class Colorati {
 
   constructor(
     value: any,
-    { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hsvPrecision = 2, hwbPrecision = 2 }: ColoratiOptions,
+    { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hwbPrecision = 2 }: ColoratiOptions,
   ) {
-    this.options = { alphaPrecision, cmykPrecision, hslPrecision, hsvPrecision, hwbPrecision };
+    this.options = { alphaPrecision, cmykPrecision, hslPrecision, hwbPrecision };
 
     const hashed = hash(value);
     const red = (hashed & 0xff0000) >>> 16;
@@ -56,11 +56,11 @@ export class Colorati {
     return (this._ansi256 ??= new Ansi256(this._raw, this.options));
   }
 
-  get cmky(): Cmyk {
+  get cmyk(): Cmyk {
     return (this._cmyk ??= new Cmyk(this._raw, this.options));
   }
 
-  get cmkya(): Cmyka {
+  get cmyka(): Cmyka {
     return (this._cmyka ??= new Cmyka(this._raw, this.options));
   }
 

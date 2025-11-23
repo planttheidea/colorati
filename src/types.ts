@@ -15,7 +15,6 @@ export interface ColoratiOptions {
   alphaPrecision?: number;
   cmykPrecision?: number;
   hslPrecision?: number;
-  hsvPrecision?: number;
   hwbPrecision?: number;
 }
 
