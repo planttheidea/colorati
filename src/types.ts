@@ -16,8 +16,9 @@ export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 
 export interface ColoratiOptions {
   alphaPrecision?: number;
   cmykPrecision?: number;
-  hslaPrecision?: number;
-  hsvaPrecision?: number;
+  hslPrecision?: number;
+  hsvPrecision?: number;
+  hwbPrecision?: number;
 }
 
 export type ColorOptions = Required<ColoratiOptions>;

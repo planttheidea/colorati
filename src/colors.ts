@@ -8,6 +8,8 @@ import type {
   HslArray,
   HsvaArray,
   HsvArray,
+  HwbaArray,
+  HwbArray,
   RgbaArray,
   RgbArray,
 } from './types.js';
@@ -29,6 +31,26 @@ class BaseColor {
   constructor(value: RgbaArray, options: ColorOptions) {
     this._options = options;
     this._raw = value;
+  }
+
+  protected _getHslHue(max: number, delta: number): number {
+    const [red, green, blue] = this.fractionalRgba;
+
+    if (delta === 0) {
+      return 0;
+    }
+
+    let hue = 0;
+
+    if (max === red) {
+      hue = (green - blue) / delta + (green < blue ? 6 : 0);
+    } else if (max === green) {
+      hue = (blue - red) / delta + 2;
+    } else {
+      hue = (red - green) / delta + 4;
+    }
+
+    return roundTo(Math.max(0, hue * 60), 0);
   }
 
   get fractionalRgba(): RgbaArray {
@@ -257,26 +279,6 @@ export class Hex extends BaseHexa {
 }
 
 class BaseHsla extends BaseColor {
-  private _getHslHue(max: number, delta: number): number {
-    const [red, green, blue] = this.fractionalRgba;
-
-    if (delta === 0) {
-      return 0;
-    }
-
-    let hue = 0;
-
-    if (max === red) {
-      hue = (green - blue) / delta + (green < blue ? 6 : 0);
-    } else if (max === green) {
-      hue = (blue - red) / delta + 2;
-    } else {
-      hue = (red - green) / delta + 4;
-    }
-
-    return roundTo(Math.max(0, hue * 60), 0);
-  }
-
   protected _getHslsArray(): HslaArray {
     const [red, green, blue, alpha] = this.fractionalRgba;
 
@@ -314,9 +316,9 @@ export class Hsl extends BaseHsla {
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, light] = this.value;
-      const { hslaPrecision } = this._options;
+      const { hslPrecision } = this._options;
 
-      this._string = `hsl(${hue},${saturation.toFixed(hslaPrecision)}%,${light.toFixed(hslaPrecision)}%)`;
+      this._string = `hsl(${hue},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%)`;
     }
 
     return this._string;
@@ -334,9 +336,9 @@ export class Hsla extends BaseHsla {
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, light, alpha] = this.value;
-      const { alphaPrecision, hslaPrecision } = this._options;
+      const { alphaPrecision, hslPrecision } = this._options;
 
-      this._string = `hsla(${hue},${saturation.toFixed(hslaPrecision)}%,${light.toFixed(hslaPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+      this._string = `hsla(${hue},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -402,9 +404,9 @@ export class Hsv extends BaseHsva {
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, value] = this.value;
-      const { hsvaPrecision } = this._options;
+      const { hsvPrecision } = this._options;
 
-      this._string = `hsv(${hue},${saturation.toFixed(hsvaPrecision)}%,${value.toFixed(hsvaPrecision)}%)`;
+      this._string = `hsv(${hue},${saturation.toFixed(hsvPrecision)}%,${value.toFixed(hsvPrecision)}%)`;
     }
 
     return this._string;
@@ -422,9 +424,75 @@ export class Hsva extends BaseHsva {
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, value, alpha] = this.value;
-      const { alphaPrecision, hsvaPrecision } = this._options;
+      const { alphaPrecision, hsvPrecision } = this._options;
 
-      this._string = `hsva(${hue},${saturation.toFixed(hsvaPrecision)}%,${value.toFixed(hsvaPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+      this._string = `hsva(${hue},${saturation.toFixed(hsvPrecision)}%,${value.toFixed(hsvPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+    }
+
+    return this._string;
+  }
+}
+
+class BaseHwb extends BaseColor {
+  protected _getHwbaArray(): HwbaArray {
+    const [red, green, blue, alpha] = this._raw;
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+
+    const hue = this._getHslHue(max, max - min);
+    const whiteness = (1 / 255) * min * 100;
+    const blackness = (1 - (1 / 255) * max) * 100;
+
+    return [hue, whiteness, blackness, alpha];
+  }
+}
+
+export class Hwb extends BaseHwb {
+  protected _string: string | undefined;
+  protected _value: HwbArray | undefined;
+
+  get value() {
+    if (!this._value) {
+      const [hue, whiteness, blackness] = this._getHwbaArray();
+
+      this._value = [hue, whiteness, blackness];
+    }
+
+    return this._value;
+  }
+
+  override toString() {
+    if (!this._string) {
+      const [hue, whiteness, blackness] = this.value;
+      const { hwbPrecision } = this._options;
+
+      this._string = `rgba(${hue.toFixed(hwbPrecision)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%)`;
+    }
+
+    return this._string;
+  }
+}
+
+export class Hwba extends BaseHwb {
+  protected _string: string | undefined;
+  protected _value: HwbaArray | undefined;
+
+  get value() {
+    if (!this._value) {
+      const [hue, whiteness, blackness, alpha] = this._getHwbaArray();
+
+      this._value = [hue, whiteness, blackness, alpha];
+    }
+
+    return this._value;
+  }
+
+  override toString() {
+    if (!this._string) {
+      const [hue, whiteness, blackness, alpha] = this.value;
+      const { alphaPrecision, hwbPrecision } = this._options;
+
+      this._string = `rgba(${hue.toFixed(hwbPrecision)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
