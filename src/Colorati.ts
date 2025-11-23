@@ -12,7 +12,9 @@ import type {
   TriadColors,
   Tuple,
 } from './types.js';
-import { hasDarkLuminanceContrast } from './utils.js';
+
+const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
+const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
 export class Colorati {
   options: Required<ColoratiOptions>;
@@ -23,6 +25,7 @@ export class Colorati {
   private _ansi256: Ansi256 | undefined;
   private _cmyk: Cmyk | undefined;
   private _cmyka: Cmyka | undefined;
+  private _darkContrast: boolean | undefined;
   private _harmonies: ColorHarmonies | undefined;
   private _hex: Hex | undefined;
   private _hexa: Hexa | undefined;
@@ -69,7 +72,18 @@ export class Colorati {
   }
 
   get hasDarkContrast(): boolean {
-    return hasDarkLuminanceContrast(this.rgba);
+    if (!this._darkContrast) {
+      const luminance = this.rgba.fractionalRgba.slice(0, 3).reduce<number>((currentLuminance, color, index) => {
+        const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
+        const additive = DARK_TEXT_W3C_ADDITIVE[index];
+
+        return additive != null ? currentLuminance + additive * colorThreshold : currentLuminance;
+      }, 0);
+
+      this._darkContrast = luminance >= LUMINANCE_THRESHOLD;
+    }
+
+    return this._darkContrast;
   }
 
   get hex(): Hex {

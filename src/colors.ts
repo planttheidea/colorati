@@ -27,44 +27,18 @@ class BaseColor {
     this._raw = value;
   }
 
-  protected _getHslHue(max: number, delta: number): number {
-    const [red, green, blue] = this.fractionalRgba;
-
-    if (delta === 0) {
-      return 0;
-    }
-
-    let hue = 0;
-
-    if (max === red) {
-      hue = (green - blue) / delta;
-    } else if (max === green) {
-      hue = (blue - red) / delta + 2;
-    } else {
-      hue = (red - green) / delta + 4;
-    }
-
-    hue = Math.min(hue * 60, 360);
-
-    if (hue < 0) {
-      hue += 360;
-    }
-
-    return hue;
-  }
-
   get fractionalRgba(): RgbaArray {
-    if (this._fractionalRaw) {
-      return this._fractionalRaw;
+    if (!this._fractionalRaw) {
+      const [red, green, blue, alpha] = this._raw;
+
+      const fractionalRed = red / 255;
+      const fractionalGreen = green / 255;
+      const fractionalBlue = blue / 255;
+
+      this._fractionalRaw = [fractionalRed, fractionalGreen, fractionalBlue, alpha];
     }
 
-    const [red, green, blue, alpha] = this._raw;
-
-    const fractionalRed = red / 255;
-    const fractionalGreen = green / 255;
-    const fractionalBlue = blue / 255;
-
-    return (this._fractionalRaw = [fractionalRed, fractionalGreen, fractionalBlue, alpha]);
+    return this._fractionalRaw;
   }
 
   get hsl(): Hsl {
@@ -81,11 +55,6 @@ class BaseColor {
 
   get rgba(): Rgba {
     return (this._rgba ??= new Rgba(this._raw, this._options));
-  }
-
-  toJSON(): number | string {
-    // eslint-disable-next-line @typescript-eslint/no-base-to-string
-    return this.toString();
   }
 }
 
@@ -114,7 +83,7 @@ export class Ansi16 extends BaseColor {
     return this._value;
   }
 
-  override toJSON(): number {
+  toJSON(): number {
     return this.value;
   }
 
@@ -158,7 +127,7 @@ export class Ansi256 extends BaseColor {
     return this._value;
   }
 
-  override toJSON(): number {
+  toJSON(): number {
     return this.value;
   }
 
@@ -190,10 +159,14 @@ export class Cmyk extends BaseCmyka {
     if (!this._value) {
       const [cyan, magenta, yellow, key] = this._getCmykaArray();
 
-      return [cyan, magenta, yellow, key];
+      this._value = [cyan, magenta, yellow, key];
     }
 
     return this._value;
+  }
+
+  toJSON(): string {
+    return this.toString();
   }
 
   override toString(): string {
@@ -214,6 +187,10 @@ export class Cmyka extends BaseCmyka {
 
   get value(): CmykaArray {
     return (this._value ??= this._getCmykaArray());
+  }
+
+  toJSON(): string {
+    return this.toString();
   }
 
   override toString(): string {
@@ -254,6 +231,10 @@ export class Hexa extends BaseHexa {
     return (this._value ??= `${this._getHex()}${this._getAlphaHex()}`);
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   override toString() {
     return (this._string ??= `#${this.value}`);
   }
@@ -265,6 +246,10 @@ export class Hex extends BaseHexa {
 
   get value() {
     return (this._value ??= this._getHex());
+  }
+
+  toJSON(): string {
+    return this.toString();
   }
 
   override toString() {
@@ -286,7 +271,22 @@ class BaseHsla extends BaseColor {
 
     const delta = max - min;
 
-    const hue = this._getHslHue(max, delta);
+    let hue: number;
+
+    if (max === red) {
+      hue = (green - blue) / delta;
+    } else if (max === green) {
+      hue = (blue - red) / delta + 2;
+    } else {
+      hue = (red - green) / delta + 4;
+    }
+
+    hue = Math.min(hue * 60, 360);
+
+    if (hue < 0) {
+      hue += 360;
+    }
+
     const saturation = light > 0.5 ? delta / (2 - max - min) : delta / (max + min);
 
     return [hue, saturation * 100, light * 100, alpha];
@@ -307,6 +307,10 @@ export class Hsl extends BaseHsla {
     return this._value;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, light] = this.value;
@@ -325,6 +329,10 @@ export class Hsla extends BaseHsla {
 
   get value(): HslaArray {
     return (this._value ??= this._getHslsArray());
+  }
+
+  toJSON(): string {
+    return this.toString();
   }
 
   override toString(): string {
@@ -368,6 +376,10 @@ export class Hwb extends BaseHwb {
     return this._value;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   override toString() {
     if (!this._string) {
       const [hue, whiteness, blackness] = this.value;
@@ -392,6 +404,10 @@ export class Hwba extends BaseHwb {
     }
 
     return this._value;
+  }
+
+  toJSON(): string {
+    return this.toString();
   }
 
   override toString() {
@@ -420,15 +436,19 @@ export class Rgba extends BaseColor {
     return this._value;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   override toString() {
-    if (this._string) {
-      return this._string;
+    if (!this._string) {
+      const [red, green, blue, alpha] = this.value;
+      const { alphaPrecision } = this._options;
+
+      this._string = `rgba(${red},${green},${blue},${alpha.toFixed(alphaPrecision)})`;
     }
 
-    const [red, green, blue, alpha] = this.value;
-    const { alphaPrecision } = this._options;
-
-    return (this._string = `rgba(${red},${green},${blue},${alpha.toFixed(alphaPrecision)})`);
+    return this._string;
   }
 }
 
@@ -446,13 +466,17 @@ export class Rgb extends BaseColor {
     return this._value;
   }
 
+  toJSON(): string {
+    return this.toString();
+  }
+
   override toString() {
-    if (this._string) {
-      return this._string;
+    if (!this._string) {
+      const [red, green, blue] = this.value;
+
+      this._string = this._string = `rgb(${red},${green},${blue})`;
     }
 
-    const [red, green, blue] = this.value;
-
-    return (this._string = `rgb(${red},${green},${blue})`);
+    return this._string;
   }
 }

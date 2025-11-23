@@ -27,9 +27,7 @@ test('ansi256', () => {
 test('cmyka', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.cmyka.value).toEqual([
-    0, 0.4149377593360981, 39.834024896265563, 5.490196078431375, 0.25098039215686274,
-  ]);
+  expect(color.cmyka.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
   expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
 
   const [cyan, magenta, yellow, key] = color.cmyka.value;
@@ -42,7 +40,7 @@ test('cmyka', () => {
 test('cmyk', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.cmyk.value).toEqual([0, 0.4149377593360981, 39.834024896265563, 5.490196078431375]);
+  expect(color.cmyk.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375]);
   expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%)');
 
   const [cyan, magenta, yellow, key] = color.cmyk.value;
@@ -55,9 +53,7 @@ test('cmyk', () => {
 test('cmyka', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.cmyka.value).toEqual([
-    0, 0.4149377593360981, 39.834024896265563, 5.490196078431375, 0.25098039215686274,
-  ]);
+  expect(color.cmyka.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
   expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
 
   const [cyan, magenta, yellow, key] = color.cmyka.value;
@@ -151,6 +147,33 @@ test('rgb', () => {
   expect(color.rgb.toString()).toBe('rgb(241,240,145)');
 });
 
+test('hasDarkContrast', () => {
+  const lightColor = colorati({ foo: 'bar' });
+
+  expect(lightColor.hasDarkContrast).toBe(true);
+
+  const darkColor = colorati(['foo', 'bar', 'baz', 'quz']);
+
+  expect(darkColor.hasDarkContrast).toBe(false);
+});
+
+test('toJSON', () => {
+  const color = colorati({ foo: 'bar' });
+
+  expect(JSON.stringify(color.ansi16)).toBe(color.ansi16.toString());
+  expect(JSON.stringify(color.ansi256)).toBe(color.ansi256.toString());
+  expect(JSON.stringify(color.cmyk)).toBe(`"${color.cmyk.toString()}"`);
+  expect(JSON.stringify(color.cmyka)).toBe(`"${color.cmyka.toString()}"`);
+  expect(JSON.stringify(color.hex)).toBe(`"${color.hex.toString()}"`);
+  expect(JSON.stringify(color.hexa)).toBe(`"${color.hexa.toString()}"`);
+  expect(JSON.stringify(color.hsl)).toBe(`"${color.hsl.toString()}"`);
+  expect(JSON.stringify(color.hsla)).toBe(`"${color.hsla.toString()}"`);
+  expect(JSON.stringify(color.hwb)).toBe(`"${color.hwb.toString()}"`);
+  expect(JSON.stringify(color.hwba)).toBe(`"${color.hwba.toString()}"`);
+  expect(JSON.stringify(color.rgb)).toBe(`"${color.rgb.toString()}"`);
+  expect(JSON.stringify(color.rgba)).toBe(`"${color.rgba.toString()}"`);
+});
+
 describe('harmonies', () => {
   test('analogous', () => {
     const color = colorati({ foo: 'bar' });
@@ -224,5 +247,15 @@ describe('harmonies', () => {
 
     expect(triad[0].rgba.value).toEqual([145, 241, 240, color.rgba.value[3]]);
     expect(triad[1].rgba.value).toEqual([240, 145, 241, color.rgba.value[3]]);
+  });
+
+  test('_getRgbaFromHsla', () => {
+    const color = colorati('ignored');
+    // @ts-expect-error - Force internal hidden value to be absolute black.
+    color._raw = [0, 0, 0, 1];
+
+    const { complement } = color.harmonies;
+
+    expect(complement.rgba.value).toEqual([0, 0, 0, 1]);
   });
 });
