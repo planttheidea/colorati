@@ -84,6 +84,7 @@ class BaseColor {
   }
 
   toJSON(): number | string {
+    // eslint-disable-next-line @typescript-eslint/no-base-to-string
     return this.toString();
   }
 }
@@ -212,11 +213,7 @@ export class Cmyka extends BaseCmyka {
   protected _value: CmykaArray | undefined;
 
   get value(): CmykaArray {
-    if (!this._value) {
-      this._value = this._getCmykaArray();
-    }
-
-    return this._value;
+    return (this._value ??= this._getCmykaArray());
   }
 
   override toString(): string {
@@ -254,11 +251,7 @@ export class Hexa extends BaseHexa {
   protected _value: string | undefined;
 
   get value() {
-    if (!this._value) {
-      this._value = `${this._getHex()}${this._getAlphaHex()}`;
-    }
-
-    return this._value;
+    return (this._value ??= `${this._getHex()}${this._getAlphaHex()}`);
   }
 
   override toString() {

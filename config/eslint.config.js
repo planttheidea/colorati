@@ -5,10 +5,11 @@ export default createEslintConfig({
   configs: [
     {
       rules: {
-        '@typescript-eslint/restrict-template-expressions': 'off'
-      }
-    }
-  ]
+        '@typescript-eslint/restrict-template-expressions': 'off',
+        'no-loss-of-precision': 'off',
+      },
+    },
+  ],
   development: 'dev',
   react: false,
   source: 'src',

@@ -1,3 +1,4 @@
+import type { ColorOptions } from 'types.js';
 import { describe, expect, test } from 'vitest';
 import { Hsla } from '../src/colors.js';
 

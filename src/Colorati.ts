@@ -1,5 +1,5 @@
-import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hwb, Hwba, Rgb, Rgba } from './colors.js';
 import { hash } from 'hash-it';
+import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hwb, Hwba, Rgb, Rgba } from './colors.js';
 import type {
   AnalogousColors,
   ClashColors,

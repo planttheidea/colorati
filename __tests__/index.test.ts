@@ -1,5 +1,5 @@
-import { describe, expect, test } from 'vitest';
 import convert from 'color-convert';
+import { describe, expect, test } from 'vitest';
 import { colorati } from '../src/index.js';
 
 test('ansi16', () => {
