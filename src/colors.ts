@@ -1,11 +1,11 @@
 import { hash } from 'hash-it';
-import type { Cmyka, Rgba, Hsla, Hsva, Hwba } from './types.js';
+import type { CmykaArray, RgbaArray, HslaArray, HsvaArray, HwbaArray } from './types.js';
 import { roundTo } from './utils.js';
 
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
-export function getAnsi16FromRgba(rgba: Rgba): number {
+export function getAnsi16FromRgba(rgba: RgbaArray): number {
   const [red, green, blue] = rgba;
   const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
@@ -23,7 +23,7 @@ export function getAnsi16FromRgba(rgba: Rgba): number {
   return value === 2 ? ansi + 60 : ansi;
 }
 
-export function getAnsi256FromRgba(rgba: Rgba): number {
+export function getAnsi256FromRgba(rgba: RgbaArray): number {
   const [red, green, blue] = rgba;
 
   if (red >> 4 === green >> 4 && green >> 4 === blue >> 4) {
@@ -48,9 +48,8 @@ export function getAnsi256FromRgba(rgba: Rgba): number {
   );
 }
 
-export function getBaseColor(value: any, alpha?: boolean): string {
+export function getBaseColor(value: any): string {
   const hashCode = hash(value);
-  const length = alpha ? 8 : 6;
 
   return [
     ((hashCode >> 24) & 0xff).toString(16),
@@ -59,11 +58,11 @@ export function getBaseColor(value: any, alpha?: boolean): string {
     (hashCode & 0xff).toString(16),
   ]
     .join('')
-    .padStart(length, '0')
-    .slice(0, length);
+    .padStart(8, '0')
+    .slice(0, 8);
 }
 
-export function getCmykFromRgba(rgba: Rgba, precision: number): Cmyka {
+export function getCmykFromRgba(rgba: RgbaArray, precision: number): CmykaArray {
   const [red, green, blue, alpha] = getFractionalRgba(rgba);
 
   const rawKey = 1 - Math.max(red, green, blue);
@@ -83,7 +82,7 @@ function getColorDiff(value: number, color: number, delta: number): number {
   return (value - color) / 6 / delta + 1 / 2;
 }
 
-function getFractionalRgba([red, green, blue, alpha]: Rgba): Rgba {
+function getFractionalRgba([red, green, blue, alpha]: RgbaArray): RgbaArray {
   const fractionalRed = red / 255;
   const fractionalGreen = green / 255;
   const fractionalBlue = blue / 255;
@@ -91,7 +90,7 @@ function getFractionalRgba([red, green, blue, alpha]: Rgba): Rgba {
   return [fractionalRed, fractionalGreen, fractionalBlue, alpha];
 }
 
-function getHslHue([red, green, blue]: Rgba, max: number, delta: number): number {
+function getHslHue([red, green, blue]: RgbaArray, max: number, delta: number): number {
   let hue = 0;
 
   if (max === red) {
@@ -105,7 +104,55 @@ function getHslHue([red, green, blue]: Rgba, max: number, delta: number): number
   return hue ? roundTo(Math.max(0, hue * 60), 0) : 0;
 }
 
-export function getHslaFromRgba(rgba: Rgba): Hsla {
+export function getHexFromHsla([hue, saturation, light]: HslaArray): string {
+  const c = (1 - Math.abs(2 * light - 1)) * saturation;
+  const x = c * (1 - Math.abs(((hue / 60) % 2) - 1));
+  const m = light - c / 2;
+
+  let red = 0;
+  let green = 0;
+  let blue = 0;
+
+  if (0 <= hue && hue < 60) {
+    red = c;
+    green = x;
+    blue = 0;
+  } else if (60 <= hue && hue < 120) {
+    red = x;
+    green = c;
+    blue = 0;
+  } else if (120 <= hue && hue < 180) {
+    red = 0;
+    green = c;
+    blue = x;
+  } else if (180 <= hue && hue < 240) {
+    red = 0;
+    green = x;
+    blue = c;
+  } else if (240 <= hue && hue < 300) {
+    red = x;
+    green = 0;
+    blue = c;
+  } else if (300 <= hue && hue < 360) {
+    red = c;
+    green = 0;
+    blue = x;
+  }
+  // Having obtained RGB, convert channels to hex
+  const redHex = Math.round((red + m) * 255)
+    .toString(16)
+    .padStart(2, '0');
+  const greenHex = Math.round((green + m) * 255)
+    .toString(16)
+    .padStart(2, '0');
+  const blueHex = Math.round((blue + m) * 255)
+    .toString(16)
+    .padStart(2, '0');
+
+  return [redHex, blueHex, greenHex].join('');
+}
+
+export function getHslaFromRgba(rgba: RgbaArray): HslaArray {
   const fractionalRgba = getFractionalRgba(rgba);
   const [red, green, blue, alpha] = fractionalRgba;
 
@@ -126,7 +173,7 @@ export function getHslaFromRgba(rgba: Rgba): Hsla {
   return [hue, saturation, light, alpha];
 }
 
-function getHsvHue([red, green, blue]: Rgba, value: number, delta: number): number {
+function getHsvHue([red, green, blue]: RgbaArray, value: number, delta: number): number {
   let hue = 0;
 
   if (value === red) {
@@ -146,7 +193,7 @@ function getHsvHue([red, green, blue]: Rgba, value: number, delta: number): numb
   return hue * 360;
 }
 
-export function getHslvFromRgba(rgba: Rgba): Hsva {
+export function getHslvFromRgba(rgba: RgbaArray): HsvaArray {
   const fractionalRgba = getFractionalRgba(rgba);
   const [red, green, blue, alpha] = fractionalRgba;
 
@@ -165,7 +212,7 @@ export function getHslvFromRgba(rgba: Rgba): Hsva {
   return [hue, saturation, value, alpha];
 }
 
-export function getHwbaFromRgba(rgba: Rgba): Hwba {
+export function getHwbaFromRgba(rgba: RgbaArray): HwbaArray {
   const [red, green, blue, alpha] = rgba;
   const max = Math.max(red, green, blue);
   const min = Math.min(red, green, blue);
@@ -189,7 +236,7 @@ export function getRgbaFromBase(baseColorAlpha: string, alphaPrecision: number):
   return [red, green, blue, alpha];
 }
 
-export function hasDarkLuminanceContrast(rgba: Rgba): boolean {
+export function hasDarkLuminanceContrast(rgba: RgbaArray): boolean {
   const luminance = getFractionalRgba(rgba)
     .slice(0, 3)
     .reduce<number>((currentLuminance, color, index) => {

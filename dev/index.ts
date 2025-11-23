@@ -26,7 +26,14 @@ div.style = style({ padding: 20 });
 div.textContent = 'Start typing to see the output colors change!';
 
 const input = document.createElement('textarea');
-input.style = style({ display: 'block', height: 300, margin: '0 20px', width: 300 });
+input.style = style({
+  backgroundColor: '#1d1d1d',
+  color: '#d5d5d5',
+  display: 'block',
+  height: 300,
+  margin: '0 20px',
+  width: 300,
+});
 
 const opacityToggle = document.createElement('input');
 opacityToggle.type = 'checkbox';
@@ -72,11 +79,15 @@ input.addEventListener('keyup', (event) => {
   if (value) {
     const color = colorati(value);
     const backgroundColor = opacityToggle.checked ? color.rgba : color.rgb;
+    const harmonies = color.getHarmonies();
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
 
+    console.log(harmonies.triad);
+
     label.style = style({
-      borderRadius: 5,
       backgroundColor,
+      borderRadius: 5,
+      boxShadow: `0 0 20px ${harmonies.complement.rgb}`,
       boxSizing: 'border-box',
       color: textColor,
       display: 'block',
