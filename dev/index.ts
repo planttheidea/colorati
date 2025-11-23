@@ -46,9 +46,12 @@ opacityToggle.addEventListener('change', (event) => {
   }
 
   const color = colorati(value);
-  const backgroundColor = (event.currentTarget as HTMLInputElement).checked ? color.rgba : color.rgb;
+  const target = event.currentTarget as HTMLInputElement;
+  const backgroundColor = target.checked ? color.rgba : color.rgb;
+  const boxShadowColor = opacityToggle.checked ? color.harmonies.complement.rgba : color.harmonies.complement.rgb;
 
-  label.style.backgroundColor = backgroundColor;
+  label.style.backgroundColor = `${backgroundColor}`;
+  label.style.boxShadow = `0 0 20px ${boxShadowColor}`;
 
   const lastResult = resultContainer.lastChild;
 
@@ -78,16 +81,16 @@ input.addEventListener('keyup', (event) => {
 
   if (value) {
     const color = colorati(value);
-    const backgroundColor = opacityToggle.checked ? color.rgba : color.rgb;
-    const harmonies = color.getHarmonies();
+    const backgroundColor = opacityToggle.checked ? color.hsla : color.hsl;
+    const boxShadowColor = opacityToggle.checked ? color.harmonies.complement.rgba : color.harmonies.complement.rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
 
-    console.log(harmonies.triad);
+    console.log(JSON.stringify({ backgroundColor, boxShadowColor }, null, 2));
 
     label.style = style({
-      backgroundColor,
+      backgroundColor: backgroundColor.toString(),
       borderRadius: 5,
-      boxShadow: `0 0 20px ${harmonies.complement.rgb}`,
+      boxShadow: `0 0 20px ${boxShadowColor}`,
       boxSizing: 'border-box',
       color: textColor,
       display: 'block',
