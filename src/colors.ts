@@ -69,8 +69,79 @@ class BaseColor {
     return (this._rgba ??= new Rgba(this._raw, this._options));
   }
 
-  toJSON(): string {
+  toJSON(): number | string {
     return this.toString();
+  }
+}
+
+export class Ansi16 extends BaseColor {
+  protected _string: string | undefined;
+  protected _value: number | undefined;
+
+  get value(): number {
+    if (!this._value) {
+      const [red, green, blue] = this._raw;
+      const [fractionalRed, fractionalGreen, fractionalBlue] = this.fractionalRgba;
+
+      const max = Math.max(red, green, blue);
+      const value = Math.round(max / 50);
+      const baseAnsi = 30;
+
+      if (value === 0) {
+        return baseAnsi;
+      }
+
+      const ansi =
+        (baseAnsi + (Math.round(fractionalBlue) << 2)) | (Math.round(fractionalGreen) << 1) | Math.round(fractionalRed);
+
+      this._value = value === 2 ? ansi + 60 : ansi;
+    }
+
+    return this._value;
+  }
+}
+
+export class Ansi256 extends BaseColor {
+  protected _string: string | undefined;
+  protected _value: number | undefined;
+
+  get value(): number {
+    if (!this._value) {
+      const [red, green, blue] = this._raw;
+
+      if (red >> 4 === green >> 4 && green >> 4 === blue >> 4) {
+        // Colors all match, so it is greyscale.
+        if (red < 8) {
+          return 16;
+        }
+
+        if (red > 248) {
+          return 231;
+        }
+
+        return Math.round(((red - 8) / 247) * 24) + 232;
+      }
+
+      const [fractionalRed, fractionalGreen, fractionalBlue] = this.fractionalRgba;
+
+      const baseAnsi = 16;
+
+      this._value =
+        baseAnsi
+        + 36 * Math.round(fractionalRed * 5)
+        + 6 * Math.round(fractionalGreen * 5)
+        + Math.round(fractionalBlue);
+    }
+
+    return this._value;
+  }
+
+  override toJSON(): number {
+    return this.value;
+  }
+
+  override toString(): string {
+    return this.value.toString();
   }
 }
 

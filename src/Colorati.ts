@@ -1,4 +1,4 @@
-import { Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hsv, Hsva, Rgb, Rgba } from './colors.js';
+import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hsv, Hsva, Rgb, Rgba } from './colors.js';
 import { hash } from 'hash-it';
 import type { ColoratiOptions, RgbaArray } from './types.js';
 import { hasDarkLuminanceContrast } from './utils.js';
@@ -9,6 +9,8 @@ export class Colorati {
 
   private _raw: RgbaArray;
 
+  private _ansi16: Ansi16 | undefined;
+  private _ansi256: Ansi256 | undefined;
   private _cmyk: Cmyk | undefined;
   private _cmyka: Cmyka | undefined;
   private _harmonies: ColorHarmonies | undefined;
@@ -34,6 +36,14 @@ export class Colorati {
     const alpha = ((hashed & 0xff000000) >>> 24) / 255;
 
     this._raw = [red, green, blue, alpha];
+  }
+
+  get ansi16(): Ansi16 {
+    return (this._ansi16 ??= new Ansi16(this._raw, this.options));
+  }
+
+  get ansi256(): Ansi256 {
+    return (this._ansi256 ??= new Ansi256(this._raw, this.options));
   }
 
   get cmky(): Cmyk {
