@@ -5,7 +5,7 @@
     "url": "https://github.com/planttheidea/colorati/issues"
   },
   "dependencies": {
-    "hash-it": "^7.0.0-rc.0"
+    "hash-it": "^7.0.1"
   },
   "description": "Transform values into consistent colors",
   "devDependencies": {
