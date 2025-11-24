@@ -1,14 +1,15 @@
 import convert from 'color-convert';
+import type { HslArray, HwbArray, RgbArray } from 'types.js';
 import { describe, expect, test } from 'vitest';
 import { colorati } from '../src/index.js';
 
 test('ansi16', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.ansi16.value).toBe(97);
+  expect(+color.ansi16).toBe(97);
   expect(color.ansi16.toString()).toBe('97');
 
-  const ansi = convert.rgb.ansi16(color.rgb.value);
+  const ansi = convert.rgb.ansi16(color.rgb as RgbArray);
 
   expect(color.ansi16.value).toEqual(ansi);
 });
@@ -16,10 +17,10 @@ test('ansi16', () => {
 test('ansi256', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.ansi256.value).toBe(229);
+  expect(+color.ansi256).toBe(229);
   expect(color.ansi256.toString()).toBe('229');
 
-  const ansi = convert.rgb.ansi256(color.rgb.value);
+  const ansi = convert.rgb.ansi256(color.rgb as RgbArray);
 
   expect(color.ansi256.value).toEqual(ansi);
 });
@@ -27,10 +28,10 @@ test('ansi256', () => {
 test('cmyka', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.cmyka.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
+  expect([...color.cmyka]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
   expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
 
-  const [cyan, magenta, yellow, key] = color.cmyka.value;
+  const [cyan, magenta, yellow, key] = color.cmyka;
 
   const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
 
@@ -40,23 +41,10 @@ test('cmyka', () => {
 test('cmyk', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.cmyk.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375]);
+  expect([...color.cmyk]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375]);
   expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%)');
 
-  const [cyan, magenta, yellow, key] = color.cmyk.value;
-
-  const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
-
-  expect(color.rgb.value).toEqual(rgb);
-});
-
-test('cmyka', () => {
-  const color = colorati({ foo: 'bar' });
-
-  expect(color.cmyka.value).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
-  expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
-
-  const [cyan, magenta, yellow, key] = color.cmyka.value;
+  const [cyan, magenta, yellow, key] = color.cmyk;
 
   const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
 
@@ -66,8 +54,9 @@ test('cmyka', () => {
 test('hexa', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hexa.value).toBe('F1F09140');
+  expect(color.hexa.valueOf()).toBe('F1F09140');
   expect(color.hexa.toString()).toBe('#F1F09140');
+  expect(color.hexa.value).toBe('#F1F09140');
 
   const rgb = convert.hex.rgb(color.hex.toString());
 
@@ -77,8 +66,9 @@ test('hexa', () => {
 test('hex', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hex.value).toBe('F1F091');
+  expect(color.hex.valueOf()).toBe('F1F091');
   expect(color.hex.toString()).toBe('#F1F091');
+  expect(color.hex.value).toBe('#F1F091');
 
   const rgb = convert.hex.rgb(color.hex.toString());
 
@@ -88,10 +78,10 @@ test('hex', () => {
 test('hsla', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hsla.value).toEqual([59.375, 77.41935483870967, 75.68627450980392, 0.25098039215686274]);
+  expect([...color.hsla]).toEqual([59.375, 77.41935483870967, 75.68627450980392, 0.25098039215686274]);
   expect(color.hsla.toString()).toBe(`hsla(59,77.42%,75.69%,0.25)`);
 
-  const [hue, saturation, light] = color.hsla.value;
+  const [hue, saturation, light] = color.hsla;
 
   const rgb = convert.hsl.rgb(hue, saturation, light);
 
@@ -101,10 +91,10 @@ test('hsla', () => {
 test('hsl', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hsl.value).toEqual([59.375, 77.41935483870967, 75.68627450980392]);
+  expect([...color.hsl]).toEqual([59.375, 77.41935483870967, 75.68627450980392]);
   expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%)`);
 
-  const rgb = convert.hsl.rgb(...color.hsl.value);
+  const rgb = convert.hsl.rgb(color.hsl as HslArray);
 
   expect(color.rgb.value).toEqual(rgb);
 });
@@ -112,10 +102,10 @@ test('hsl', () => {
 test('hwba', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hwba.value).toEqual([59.375, 56.86274509803921, 5.490196078431375, 0.25098039215686274]);
+  expect([...color.hwba]).toEqual([59.375, 56.86274509803921, 5.490196078431375, 0.25098039215686274]);
   expect(color.hwba.toString()).toBe(`hwba(59,56.86%,5.49%,0.25)`);
 
-  const [hue, whiteness, blackness] = color.hwba.value;
+  const [hue, whiteness, blackness] = color.hwba;
 
   const rgb = convert.hwb.rgb(hue, whiteness, blackness);
 
@@ -125,10 +115,10 @@ test('hwba', () => {
 test('hwb', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.hwb.value).toEqual([59.375, 56.86274509803921, 5.490196078431375]);
+  expect([...color.hwb]).toEqual([59.375, 56.86274509803921, 5.490196078431375]);
   expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%)`);
 
-  const rgb = convert.hwb.rgb(...color.hwb.value);
+  const rgb = convert.hwb.rgb(color.hwb as HwbArray);
 
   expect(color.rgb.value).toEqual(rgb);
 });
@@ -136,7 +126,7 @@ test('hwb', () => {
 test('rgba', () => {
   const color = colorati({ foo: 'bar' });
 
-  expect(color.rgba.value).toEqual([241, 240, 145, 0.25098039215686274]);
+  expect([...color.rgba]).toEqual([241, 240, 145, 0.25098039215686274]);
   expect(color.rgba.toString()).toBe('rgba(241,240,145,0.25)');
 });
 
@@ -174,6 +164,59 @@ test('toJSON', () => {
   expect(JSON.stringify(color.rgba)).toBe(`"${color.rgba.toString()}"`);
 });
 
+describe('conversions to other colors', () => {
+  test('array color', () => {
+    const color = colorati({ foo: 'bar' }).rgb;
+
+    expect(color.ansi16.toString()).toBe('97');
+    expect(color.ansi256.toString()).toBe('229');
+    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%)');
+    expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
+    expect(color.hex.toString()).toBe('#F1F091');
+    expect(color.hexa.toString()).toBe('#F1F09140');
+    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%)`);
+    expect(color.hsla.toString()).toBe(`hsla(59,77.42%,75.69%,0.25)`);
+    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%)`);
+    expect(color.hwba.toString()).toBe(`hwba(59,56.86%,5.49%,0.25)`);
+    expect(color.rgb.toString()).toBe('rgb(241,240,145)');
+    expect(color.rgba.toString()).toBe('rgba(241,240,145,0.25)');
+  });
+
+  test('number color', () => {
+    const color = colorati({ foo: 'bar' }).ansi16;
+
+    expect(color.ansi16.toString()).toBe('97');
+    expect(color.ansi256.toString()).toBe('229');
+    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%)');
+    expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
+    expect(color.hex.toString()).toBe('#F1F091');
+    expect(color.hexa.toString()).toBe('#F1F09140');
+    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%)`);
+    expect(color.hsla.toString()).toBe(`hsla(59,77.42%,75.69%,0.25)`);
+    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%)`);
+    expect(color.hwba.toString()).toBe(`hwba(59,56.86%,5.49%,0.25)`);
+    expect(color.rgb.toString()).toBe('rgb(241,240,145)');
+    expect(color.rgba.toString()).toBe('rgba(241,240,145,0.25)');
+  });
+
+  test('string color', () => {
+    const color = colorati({ foo: 'bar' }).hex;
+
+    expect(color.ansi16.toString()).toBe('97');
+    expect(color.ansi256.toString()).toBe('229');
+    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%)');
+    expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
+    expect(color.hex.toString()).toBe('#F1F091');
+    expect(color.hexa.toString()).toBe('#F1F09140');
+    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%)`);
+    expect(color.hsla.toString()).toBe(`hsla(59,77.42%,75.69%,0.25)`);
+    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%)`);
+    expect(color.hwba.toString()).toBe(`hwba(59,56.86%,5.49%,0.25)`);
+    expect(color.rgb.toString()).toBe('rgb(241,240,145)');
+    expect(color.rgba.toString()).toBe('rgba(241,240,145,0.25)');
+  });
+});
+
 describe('harmonies', () => {
   test('analogous', () => {
     const color = colorati({ foo: 'bar' });
@@ -181,11 +224,11 @@ describe('harmonies', () => {
 
     expect(analogous.length).toBe(5);
 
-    expect(analogous[0].rgba.value).toEqual([194, 241, 145, color.rgba.value[3]]);
-    expect(analogous[1].rgba.value).toEqual([146, 241, 145, color.rgba.value[3]]);
-    expect(analogous[2].rgba.value).toEqual([145, 241, 192, color.rgba.value[3]]);
-    expect(analogous[3].rgba.value).toEqual([145, 241, 240, color.rgba.value[3]]);
-    expect(analogous[4].rgba.value).toEqual([145, 194, 241, color.rgba.value[3]]);
+    expect([...analogous[0].rgba]).toEqual([194, 241, 145, color.rgba[3]]);
+    expect([...analogous[1].rgba]).toEqual([146, 241, 145, color.rgba[3]]);
+    expect([...analogous[2].rgba]).toEqual([145, 241, 192, color.rgba[3]]);
+    expect([...analogous[3].rgba]).toEqual([145, 241, 240, color.rgba[3]]);
+    expect([...analogous[4].rgba]).toEqual([145, 194, 241, color.rgba[3]]);
   });
 
   test('clash', () => {
@@ -194,15 +237,15 @@ describe('harmonies', () => {
 
     expect(clash.length).toBe(2);
 
-    expect(clash[0].rgba.value).toEqual([145, 241, 192, color.rgba.value[3]]);
-    expect(clash[1].rgba.value).toEqual([241, 145, 194, color.rgba.value[3]]);
+    expect([...clash[0].rgba]).toEqual([145, 241, 192, color.rgba[3]]);
+    expect([...clash[1].rgba]).toEqual([241, 145, 194, color.rgba[3]]);
   });
 
   test('complement', () => {
     const color = colorati({ foo: 'bar' });
     const { complement } = color.harmonies;
 
-    expect(complement.rgba.value).toEqual([145, 146, 241, color.rgba.value[3]]);
+    expect([...complement.rgba]).toEqual([145, 146, 241, color.rgba[3]]);
   });
 
   test('neutral', () => {
@@ -211,11 +254,11 @@ describe('harmonies', () => {
 
     expect(neutral.length).toBe(5);
 
-    expect(neutral[0].rgba.value).toEqual([218, 241, 145, color.rgba.value[3]]);
-    expect(neutral[1].rgba.value).toEqual([194, 241, 145, color.rgba.value[3]]);
-    expect(neutral[2].rgba.value).toEqual([170, 241, 145, color.rgba.value[3]]);
-    expect(neutral[3].rgba.value).toEqual([146, 241, 145, color.rgba.value[3]]);
-    expect(neutral[4].rgba.value).toEqual([145, 241, 168, color.rgba.value[3]]);
+    expect([...neutral[0].rgba]).toEqual([218, 241, 145, color.rgba[3]]);
+    expect([...neutral[1].rgba]).toEqual([194, 241, 145, color.rgba[3]]);
+    expect([...neutral[2].rgba]).toEqual([170, 241, 145, color.rgba[3]]);
+    expect([...neutral[3].rgba]).toEqual([146, 241, 145, color.rgba[3]]);
+    expect([...neutral[4].rgba]).toEqual([145, 241, 168, color.rgba[3]]);
   });
 
   test('split', () => {
@@ -224,8 +267,8 @@ describe('harmonies', () => {
 
     expect(split.length).toBe(2);
 
-    expect(split[0].rgba.value).toEqual([145, 194, 241, color.rgba.value[3]]);
-    expect(split[1].rgba.value).toEqual([192, 145, 241, color.rgba.value[3]]);
+    expect([...split[0].rgba]).toEqual([145, 194, 241, color.rgba[3]]);
+    expect([...split[1].rgba]).toEqual([192, 145, 241, color.rgba[3]]);
   });
 
   test('tetrad', () => {
@@ -234,9 +277,9 @@ describe('harmonies', () => {
 
     expect(tetrad.length).toBe(3);
 
-    expect(tetrad[0].rgba.value).toEqual([145, 241, 192, color.rgba.value[3]]);
-    expect(tetrad[1].rgba.value).toEqual([145, 146, 241, color.rgba.value[3]]);
-    expect(tetrad[2].rgba.value).toEqual([241, 145, 194, color.rgba.value[3]]);
+    expect([...tetrad[0].rgba]).toEqual([145, 241, 192, color.rgba[3]]);
+    expect([...tetrad[1].rgba]).toEqual([145, 146, 241, color.rgba[3]]);
+    expect([...tetrad[2].rgba]).toEqual([241, 145, 194, color.rgba[3]]);
   });
 
   test('triad', () => {
@@ -245,8 +288,8 @@ describe('harmonies', () => {
 
     expect(triad.length).toBe(2);
 
-    expect(triad[0].rgba.value).toEqual([145, 241, 240, color.rgba.value[3]]);
-    expect(triad[1].rgba.value).toEqual([240, 145, 241, color.rgba.value[3]]);
+    expect([...triad[0].rgba]).toEqual([145, 241, 240, color.rgba[3]]);
+    expect([...triad[1].rgba]).toEqual([240, 145, 241, color.rgba[3]]);
   });
 
   test('_getRgbaFromHsla', () => {
@@ -256,6 +299,6 @@ describe('harmonies', () => {
 
     const { complement } = color.harmonies;
 
-    expect(complement.rgba.value).toEqual([0, 0, 0, 1]);
+    expect([...complement.rgba]).toEqual([0, 0, 0, 1]);
   });
 });

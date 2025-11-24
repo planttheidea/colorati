@@ -81,7 +81,7 @@ input.addEventListener('keyup', (event) => {
 
   if (value) {
     const color = colorati(value);
-    const backgroundColor = opacityToggle.checked ? color.hsla : color.hsl;
+    const backgroundColor = opacityToggle.checked ? color.hexa : color.hex;
     const boxShadowColor = opacityToggle.checked ? color.harmonies.complement.rgba : color.harmonies.complement.rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
 
@@ -134,23 +134,66 @@ document.body.appendChild(label);
 document.body.appendChild(clearResults);
 document.body.appendChild(resultContainer);
 
-// [
-//   'foobar',
-//   { hello: 'world' },
-//   [
-//     ['foo', 'bar'],
-//     ['bar', 'baz'],
-//   ],
-//   1234567890,
-// ].forEach((value) => {
-//   //   const color = colorati(value);
-//   const color = colorati(value, { alphaPrecision: Infinity, cmykPrecision: Infinity });
+[
+  'foobar',
+  { hello: 'world' },
+  [
+    ['foo', 'bar'],
+    ['bar', 'baz'],
+  ],
+  1234567890,
+].forEach((value) => {
+  const color = colorati(value);
 
-//   const element = document.createElement('div');
-//   element.textContent = JSON.stringify(value);
-//   element.style = `color:${color.rgb}`;
+  console.log({
+    raw: {
+      ansi16: color.ansi16,
+      ansi256: color.ansi256,
+      cmyk: color.cmyk,
+      cmyka: color.cmyka,
+      hex: color.hex,
+      hexa: color.hexa,
+      hsl: color.hsl,
+      hsla: color.hsla,
+      hwb: color.hwb,
+      hwba: color.hwba,
+      rgb: color.rgb,
+      rgba: color.rgba,
+    },
+    values: {
+      ansi16: color.ansi16.value,
+      ansi256: color.ansi256.value,
+      cmyk: color.cmyk.value,
+      cmyka: color.cmyka.value,
+      hex: color.hex.value,
+      hexa: color.hexa.value,
+      hsl: color.hsl.value,
+      hsla: color.hsla.value,
+      hwb: color.hwb.value,
+      hwba: color.hwba.value,
+      rgb: color.rgb.value,
+      rgba: color.rgba.value,
+    },
+  });
 
-//   console.log(value, color.hsla, color.rawObject('cmyka'));
-
-//   div.appendChild(element);
-// });
+  console.log(
+    JSON.stringify(
+      {
+        ansi16: color.ansi16,
+        ansi256: color.ansi256,
+        cmyk: color.cmyk,
+        cmyka: color.cmyka,
+        hex: color.hex,
+        hexa: color.hexa,
+        hsl: color.hsl,
+        hsla: color.hsla,
+        hwb: color.hwb,
+        hwba: color.hwba,
+        rgb: color.rgb,
+        rgba: color.rgba,
+      },
+      null,
+      2,
+    ),
+  );
+});

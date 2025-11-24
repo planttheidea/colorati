@@ -9,36 +9,57 @@ import type {
   RgbaArray,
   RgbArray,
 } from './types.js';
+import { getAlphaHex, getFractionalRgba, getHex } from './utils.js';
 
-class BaseColor {
-  protected _fractionalRaw: RgbaArray | undefined;
+class BaseArrayColor<const Type extends any[]> extends Array<Type[number]> {
   protected _options: ColorOptions;
   protected _raw: RgbaArray;
+  protected _string: string | undefined;
 
-  protected _hex: string | undefined;
-  protected _hexa: string | undefined;
-  protected _hsl: Hsl | undefined;
-  protected _hsla: Hsla | undefined;
-  protected _rgb: Rgb | undefined;
-  protected _rgba: Rgba | undefined;
+  private _ansi16: Ansi16 | undefined;
+  private _ansi256: Ansi256 | undefined;
+  private _cmyk: Cmyk | undefined;
+  private _cmyka: Cmyka | undefined;
+  private _hex: Hex | undefined;
+  private _hexa: Hexa | undefined;
+  private _hsl: Hsl | undefined;
+  private _hsla: Hsla | undefined;
+  private _hwb: Hwb | undefined;
+  private _hwba: Hwba | undefined;
+  private _rgb: Rgb | undefined;
+  private _rgba: Rgba | undefined;
 
-  constructor(value: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: ColorOptions, includeAlpha: boolean) {
+    const size = includeAlpha ? rgba.length : rgba.length - 1;
+
+    super(size);
+
     this._options = options;
-    this._raw = value;
+    this._raw = rgba;
   }
 
-  get fractionalRgba(): RgbaArray {
-    if (!this._fractionalRaw) {
-      const [red, green, blue, alpha] = this._raw;
+  get ansi16(): Ansi16 {
+    return (this._ansi16 ??= new Ansi16(this._raw, this._options));
+  }
 
-      const fractionalRed = red / 255;
-      const fractionalGreen = green / 255;
-      const fractionalBlue = blue / 255;
+  get ansi256(): Ansi16 {
+    return (this._ansi256 ??= new Ansi256(this._raw, this._options));
+  }
 
-      this._fractionalRaw = [fractionalRed, fractionalGreen, fractionalBlue, alpha];
-    }
+  get cmyk(): Cmyk {
+    return (this._cmyk ??= new Cmyk(this._raw, this._options));
+  }
 
-    return this._fractionalRaw;
+  get cmyka(): Cmyka {
+    return (this._cmyka ??= new Cmyka(this._raw, this._options));
+  }
+
+  get hex(): Hex {
+    return (this._hex ??= new Hex(this._raw, this._options));
+  }
+
+  get hexa(): Hexa {
+    return (this._hexa ??= new Hexa(this._raw, this._options));
   }
 
   get hsl(): Hsl {
@@ -49,6 +70,14 @@ class BaseColor {
     return (this._hsla ??= new Hsla(this._raw, this._options));
   }
 
+  get hwb(): Hwb {
+    return (this._hwb ??= new Hwb(this._raw, this._options));
+  }
+
+  get hwba(): Hwba {
+    return (this._hwba ??= new Hwba(this._raw, this._options));
+  }
+
   get rgb(): Rgb {
     return (this._rgb ??= new Rgb(this._raw, this._options));
   }
@@ -56,89 +85,241 @@ class BaseColor {
   get rgba(): Rgba {
     return (this._rgba ??= new Rgba(this._raw, this._options));
   }
+
+  get value(): Type {
+    return Array.from(this) as Type;
+  }
+
+  toJSON(): string {
+    return this.toString();
+  }
 }
 
-export class Ansi16 extends BaseColor {
+class BaseNumberColor extends Number {
+  protected _options: ColorOptions;
+  protected _raw: RgbaArray;
   protected _string: string | undefined;
-  protected _value: number | undefined;
+
+  private _ansi16: Ansi16 | undefined;
+  private _ansi256: Ansi256 | undefined;
+  private _cmyk: Cmyk | undefined;
+  private _cmyka: Cmyka | undefined;
+  private _hex: Hex | undefined;
+  private _hexa: Hexa | undefined;
+  private _hsl: Hsl | undefined;
+  private _hsla: Hsla | undefined;
+  private _hwb: Hwb | undefined;
+  private _hwba: Hwba | undefined;
+  private _rgb: Rgb | undefined;
+  private _rgba: Rgba | undefined;
+
+  constructor(value: number, rgba: RgbaArray, options: ColorOptions) {
+    super(value);
+
+    this._options = options;
+    this._raw = rgba;
+  }
+
+  get ansi16(): Ansi16 {
+    return (this._ansi16 ??= new Ansi16(this._raw, this._options));
+  }
+
+  get ansi256(): Ansi16 {
+    return (this._ansi256 ??= new Ansi256(this._raw, this._options));
+  }
+
+  get cmyk(): Cmyk {
+    return (this._cmyk ??= new Cmyk(this._raw, this._options));
+  }
+
+  get cmyka(): Cmyka {
+    return (this._cmyka ??= new Cmyka(this._raw, this._options));
+  }
+
+  get hex(): Hex {
+    return (this._hex ??= new Hex(this._raw, this._options));
+  }
+
+  get hexa(): Hexa {
+    return (this._hexa ??= new Hexa(this._raw, this._options));
+  }
+
+  get hsl(): Hsl {
+    return (this._hsl ??= new Hsl(this._raw, this._options));
+  }
+
+  get hsla(): Hsla {
+    return (this._hsla ??= new Hsla(this._raw, this._options));
+  }
+
+  get hwb(): Hwb {
+    return (this._hwb ??= new Hwb(this._raw, this._options));
+  }
+
+  get hwba(): Hwba {
+    return (this._hwba ??= new Hwba(this._raw, this._options));
+  }
+
+  get rgb(): Rgb {
+    return (this._rgb ??= new Rgb(this._raw, this._options));
+  }
+
+  get rgba(): Rgba {
+    return (this._rgba ??= new Rgba(this._raw, this._options));
+  }
 
   get value(): number {
-    if (!this._value) {
-      const [fractionalRed, fractionalGreen, fractionalBlue] = this.fractionalRgba;
-
-      const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
-      const value = Math.round(max / 50);
-      const baseAnsi = 30;
-
-      if (value === 0) {
-        return baseAnsi;
-      }
-
-      const ansi =
-        baseAnsi + ((Math.round(fractionalBlue) << 2) | (Math.round(fractionalGreen) << 1) | Math.round(fractionalRed));
-
-      this._value = value === 2 ? ansi + 60 : ansi;
-    }
-
-    return this._value;
+    return this.valueOf();
   }
 
   toJSON(): number {
-    return this.value;
+    return this.valueOf();
   }
 
   override toString(): string {
-    return this.value.toString();
+    return this.valueOf().toString();
   }
 }
 
-export class Ansi256 extends BaseColor {
+class BaseStringColor extends String {
+  protected _options: ColorOptions;
+  protected _raw: RgbaArray;
   protected _string: string | undefined;
-  protected _value: number | undefined;
 
-  get value(): number {
-    if (!this._value) {
-      const [red, green, blue] = this._raw;
+  private _ansi16: Ansi16 | undefined;
+  private _ansi256: Ansi256 | undefined;
+  private _cmyk: Cmyk | undefined;
+  private _cmyka: Cmyka | undefined;
+  private _hex: Hex | undefined;
+  private _hexa: Hexa | undefined;
+  private _hsl: Hsl | undefined;
+  private _hsla: Hsla | undefined;
+  private _hwb: Hwb | undefined;
+  private _hwba: Hwba | undefined;
+  private _rgb: Rgb | undefined;
+  private _rgba: Rgba | undefined;
 
-      if (red >> 4 === green >> 4 && green >> 4 === blue >> 4) {
-        // Colors all match, so it is greyscale.
-        if (red < 8) {
-          return 16;
-        }
+  constructor(value: string, rgba: RgbaArray, options: ColorOptions) {
+    super(value);
 
-        if (red > 248) {
-          return 231;
-        }
+    this._options = options;
+    this._raw = rgba;
+  }
 
-        return Math.round(((red - 8) / 247) * 24) + 232;
+  get ansi16(): Ansi16 {
+    return (this._ansi16 ??= new Ansi16(this._raw, this._options));
+  }
+
+  get ansi256(): Ansi16 {
+    return (this._ansi256 ??= new Ansi256(this._raw, this._options));
+  }
+
+  get cmyk(): Cmyk {
+    return (this._cmyk ??= new Cmyk(this._raw, this._options));
+  }
+
+  get cmyka(): Cmyka {
+    return (this._cmyka ??= new Cmyka(this._raw, this._options));
+  }
+
+  get hex(): Hex {
+    return (this._hex ??= new Hex(this._raw, this._options));
+  }
+
+  get hexa(): Hexa {
+    return (this._hexa ??= new Hexa(this._raw, this._options));
+  }
+
+  get hsl(): Hsl {
+    return (this._hsl ??= new Hsl(this._raw, this._options));
+  }
+
+  get hsla(): Hsla {
+    return (this._hsla ??= new Hsla(this._raw, this._options));
+  }
+
+  get hwb(): Hwb {
+    return (this._hwb ??= new Hwb(this._raw, this._options));
+  }
+
+  get hwba(): Hwba {
+    return (this._hwba ??= new Hwba(this._raw, this._options));
+  }
+
+  get rgb(): Rgb {
+    return (this._rgb ??= new Rgb(this._raw, this._options));
+  }
+
+  get rgba(): Rgba {
+    return (this._rgba ??= new Rgba(this._raw, this._options));
+  }
+
+  get value(): string {
+    return this.toString();
+  }
+
+  toJSON(): string {
+    return this.toString();
+  }
+}
+
+export class Ansi16 extends BaseNumberColor {
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
+
+    const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
+    const value = Math.round(max / 50);
+    const baseAnsi = 30;
+
+    let ansi: number;
+
+    if (value === 0) {
+      ansi = baseAnsi;
+    } else {
+      ansi =
+        baseAnsi + ((Math.round(fractionalBlue) << 2) | (Math.round(fractionalGreen) << 1) | Math.round(fractionalRed));
+    }
+
+    ansi = value === 2 ? ansi + 60 : ansi;
+
+    super(ansi, rgba, options);
+  }
+}
+
+export class Ansi256 extends BaseNumberColor {
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    const [red, green, blue] = rgba;
+
+    let ansi: number;
+
+    if (red >> 4 === green >> 4 && green >> 4 === blue >> 4) {
+      // Colors all match, so it is greyscale.
+      if (red < 8) {
+        ansi = 16;
+      } else if (red > 248) {
+        ansi = 231;
+      } else {
+        ansi = Math.round(((red - 8) / 247) * 24) + 232;
       }
-
-      const [fractionalRed, fractionalGreen, fractionalBlue] = this.fractionalRgba;
+    } else {
+      const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
       const baseAnsi = 16;
 
-      this._value =
+      ansi =
         baseAnsi
         + 36 * Math.round(fractionalRed * 5)
         + 6 * Math.round(fractionalGreen * 5)
         + Math.round(fractionalBlue * 5);
     }
 
-    return this._value;
-  }
-
-  toJSON(): number {
-    return this.value;
-  }
-
-  override toString(): string {
-    return this.value.toString();
+    super(ansi, rgba, options);
   }
 }
 
-class BaseCmyka extends BaseColor {
+class BaseCmyka<const Type extends CmykArray | CmykaArray> extends BaseArrayColor<Type> {
   protected _getCmykaArray(): CmykaArray {
-    const [red, green, blue, alpha] = this.fractionalRgba;
+    const [red, green, blue, alpha] = getFractionalRgba(this._raw);
 
     const referenceKey = Math.min(1 - red, 1 - green, 1 - blue);
 
@@ -151,27 +332,26 @@ class BaseCmyka extends BaseColor {
   }
 }
 
-export class Cmyk extends BaseCmyka {
-  protected _string: string | undefined;
-  protected _value: CmykArray | undefined;
+export class Cmyk extends BaseCmyka<CmykArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
 
-  get value(): CmykArray {
-    if (!this._value) {
-      const [cyan, magenta, yellow, key] = this._getCmykaArray();
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, false);
 
-      this._value = [cyan, magenta, yellow, key];
-    }
+    const [cyan, magenta, yellow, key] = this._getCmykaArray();
 
-    return this._value;
-  }
-
-  toJSON(): string {
-    return this.toString();
+    this[0] = cyan;
+    this[1] = magenta;
+    this[2] = yellow;
+    this[3] = key;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [cyan, magenta, yellow, key] = this.value;
+      const [cyan, magenta, yellow, key] = this;
       const { cmykPrecision } = this._options;
 
       this._string = `cmyk(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%)`;
@@ -181,21 +361,28 @@ export class Cmyk extends BaseCmyka {
   }
 }
 
-export class Cmyka extends BaseCmyka {
-  protected _string: string | undefined;
-  protected _value: CmykaArray | undefined;
+export class Cmyka extends BaseCmyka<CmykaArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
+  [4]: number;
 
-  get value(): CmykaArray {
-    return (this._value ??= this._getCmykaArray());
-  }
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, true);
 
-  toJSON(): string {
-    return this.toString();
+    const [cyan, magenta, yellow, key, alpha] = this._getCmykaArray();
+
+    this[0] = cyan;
+    this[1] = magenta;
+    this[2] = yellow;
+    this[3] = key;
+    this[4] = alpha;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [cyan, magenta, yellow, key, alpha] = this.value;
+      const [cyan, magenta, yellow, key, alpha] = this;
       const { alphaPrecision, cmykPrecision } = this._options;
 
       this._string = `cmyka(${cyan.toFixed(cmykPrecision)}%,${magenta.toFixed(cmykPrecision)}%,${yellow.toFixed(cmykPrecision)}%,${key.toFixed(cmykPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
@@ -205,61 +392,31 @@ export class Cmyka extends BaseCmyka {
   }
 }
 
-class BaseHexa extends BaseColor {
-  protected _getAlphaHex(): string {
-    const [, , , alpha] = this._raw;
-
-    return Math.round(alpha * 255)
-      .toString(16)
-      .padStart(2, '0')
-      .toUpperCase();
-  }
-  protected _getHex(): string {
-    const [red, green, blue] = this._raw;
-
-    const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
-
-    return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
-  }
-}
-
-export class Hexa extends BaseHexa {
-  protected _string: string | undefined;
-  protected _value: string | undefined;
-
-  get value() {
-    return (this._value ??= `${this._getHex()}${this._getAlphaHex()}`);
-  }
-
-  toJSON(): string {
-    return this.toString();
-  }
-
+class BaseHexa extends BaseStringColor {
   override toString() {
-    return (this._string ??= `#${this.value}`);
+    return (this._string ??= `#${this.valueOf()}`);
   }
 }
 
 export class Hex extends BaseHexa {
-  protected _string: string | undefined;
-  protected _value: string | undefined;
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    const string = getHex(rgba);
 
-  get value() {
-    return (this._value ??= this._getHex());
-  }
-
-  toJSON(): string {
-    return this.toString();
-  }
-
-  override toString() {
-    return (this._string ??= `#${this.value}`);
+    super(string, rgba, options);
   }
 }
 
-class BaseHsla extends BaseColor {
+export class Hexa extends BaseHexa {
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    const string = `${getHex(rgba)}${getAlphaHex(rgba[3])}`;
+
+    super(string, rgba, options);
+  }
+}
+
+class BaseHsla<const Type extends HslArray | HslaArray> extends BaseArrayColor<Type> {
   protected _getHslsArray(): HslaArray {
-    const [red, green, blue, alpha] = this.fractionalRgba;
+    const [red, green, blue, alpha] = getFractionalRgba(this._raw);
 
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
@@ -293,27 +450,24 @@ class BaseHsla extends BaseColor {
   }
 }
 
-export class Hsl extends BaseHsla {
-  protected _string: string | undefined;
-  protected _value: HslArray | undefined;
+export class Hsl extends BaseHsla<HslArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
 
-  get value(): HslArray {
-    if (!this._value) {
-      const [hue, saturation, light] = this._getHslsArray();
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, false);
 
-      this._value = [hue, saturation, light];
-    }
+    const [hue, saturation, light] = this._getHslsArray();
 
-    return this._value;
-  }
-
-  toJSON(): string {
-    return this.toString();
+    this[0] = hue;
+    this[1] = saturation;
+    this[2] = light;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [hue, saturation, light] = this.value;
+      const [hue, saturation, light] = this;
       const { hslPrecision } = this._options;
 
       this._string = `hsl(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%)`;
@@ -323,21 +477,26 @@ export class Hsl extends BaseHsla {
   }
 }
 
-export class Hsla extends BaseHsla {
-  protected _string: string | undefined;
-  protected _value: HslaArray | undefined;
+export class Hsla extends BaseHsla<HslaArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
 
-  get value(): HslaArray {
-    return (this._value ??= this._getHslsArray());
-  }
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, true);
 
-  toJSON(): string {
-    return this.toString();
+    const [hue, saturation, light, alpha] = this._getHslsArray();
+
+    this[0] = hue;
+    this[1] = saturation;
+    this[2] = light;
+    this[3] = alpha;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [hue, saturation, light, alpha] = this.value;
+      const [hue, saturation, light, alpha] = this;
       const { alphaPrecision, hslPrecision } = this._options;
 
       this._string = `hsla(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
@@ -347,14 +506,14 @@ export class Hsla extends BaseHsla {
   }
 }
 
-class BaseHwb extends BaseColor {
+class BaseHwb<const Type extends HwbArray | HwbaArray> extends BaseArrayColor<Type> {
   protected _getHwbaArray(): HwbaArray {
     const [red, green, blue, alpha] = this._raw;
 
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
 
-    const hue = this.hsl.value[0];
+    const hue = this.hsl[0];
     const whiteness = (1 / 255) * min * 100;
     const blackness = (1 - (1 / 255) * max) * 100;
 
@@ -362,27 +521,24 @@ class BaseHwb extends BaseColor {
   }
 }
 
-export class Hwb extends BaseHwb {
-  protected _string: string | undefined;
-  protected _value: HwbArray | undefined;
+export class Hwb extends BaseHwb<HwbArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
 
-  get value() {
-    if (!this._value) {
-      const [hue, whiteness, blackness] = this._getHwbaArray();
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, false);
 
-      this._value = [hue, whiteness, blackness];
-    }
+    const [hue, whiteness, blackness] = this._getHwbaArray();
 
-    return this._value;
+    this[0] = hue;
+    this[1] = whiteness;
+    this[2] = blackness;
   }
 
-  toJSON(): string {
-    return this.toString();
-  }
-
-  override toString() {
+  override toString(): string {
     if (!this._string) {
-      const [hue, whiteness, blackness] = this.value;
+      const [hue, whiteness, blackness] = this;
       const { hwbPrecision } = this._options;
 
       this._string = `hwb(${hue.toFixed(0)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%)`;
@@ -392,27 +548,26 @@ export class Hwb extends BaseHwb {
   }
 }
 
-export class Hwba extends BaseHwb {
-  protected _string: string | undefined;
-  protected _value: HwbaArray | undefined;
+export class Hwba extends BaseHwb<HwbaArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
 
-  get value() {
-    if (!this._value) {
-      const [hue, whiteness, blackness, alpha] = this._getHwbaArray();
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, true);
 
-      this._value = [hue, whiteness, blackness, alpha];
-    }
+    const [hue, whiteness, blackness, alpha] = this._getHwbaArray();
 
-    return this._value;
+    this[0] = hue;
+    this[1] = whiteness;
+    this[2] = blackness;
+    this[3] = alpha;
   }
 
-  toJSON(): string {
-    return this.toString();
-  }
-
-  override toString() {
+  override toString(): string {
     if (!this._string) {
-      const [hue, whiteness, blackness, alpha] = this.value;
+      const [hue, whiteness, blackness, alpha] = this;
       const { alphaPrecision, hwbPrecision } = this._options;
 
       this._string = `hwba(${hue.toFixed(0)},${whiteness.toFixed(hwbPrecision)}%,${blackness.toFixed(hwbPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
@@ -422,59 +577,49 @@ export class Hwba extends BaseHwb {
   }
 }
 
-export class Rgba extends BaseColor {
-  protected _string: string | undefined;
-  protected _value: RgbaArray | undefined;
+export class Rgb extends BaseArrayColor<RgbArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
 
-  get value() {
-    if (!this._value) {
-      const [red, green, blue, alpha] = this._raw;
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, false);
 
-      this._value = [red, green, blue, alpha];
-    }
+    const [red, green, blue] = rgba;
 
-    return this._value;
+    this[0] = red;
+    this[1] = green;
+    this[2] = blue;
   }
 
-  toJSON(): string {
-    return this.toString();
-  }
-
-  override toString() {
-    if (!this._string) {
-      const [red, green, blue, alpha] = this.value;
-      const { alphaPrecision } = this._options;
-
-      this._string = `rgba(${red},${green},${blue},${alpha.toFixed(alphaPrecision)})`;
-    }
-
-    return this._string;
+  override toString(): string {
+    return (this._string ??= `rgb(${this[0]},${this[1]},${this[2]})`);
   }
 }
 
-export class Rgb extends BaseColor {
-  protected _string: string | undefined;
-  protected _value: RgbArray | undefined;
+export class Rgba extends BaseArrayColor<RgbaArray> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
 
-  get value() {
-    if (!this._value) {
-      const [red, green, blue] = this._raw;
+  constructor(rgba: RgbaArray, options: ColorOptions) {
+    super(rgba, options, true);
 
-      this._value = [red, green, blue];
-    }
+    const [red, green, blue, alpha] = rgba;
 
-    return this._value;
+    this[0] = red;
+    this[1] = green;
+    this[2] = blue;
+    this[3] = alpha;
   }
 
-  toJSON(): string {
-    return this.toString();
-  }
-
-  override toString() {
+  override toString(): string {
     if (!this._string) {
-      const [red, green, blue] = this.value;
+      const [red, green, blue, alpha] = this;
+      const { alphaPrecision } = this._options;
 
-      this._string = this._string = `rgb(${red},${green},${blue})`;
+      this._string = `rgba(${red},${green},${blue},${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;

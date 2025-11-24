@@ -12,6 +12,7 @@ import type {
   TriadColors,
   Tuple,
 } from './types.js';
+import { getFractionalRgba } from './utils.js';
 
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
@@ -72,13 +73,15 @@ export class Colorati {
   }
 
   get hasDarkContrast(): boolean {
-    if (!this._darkContrast) {
-      const luminance = this.rgba.fractionalRgba.slice(0, 3).reduce<number>((currentLuminance, color, index) => {
-        const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
-        const additive = DARK_TEXT_W3C_ADDITIVE[index];
+    if (this._darkContrast == null) {
+      const luminance = getFractionalRgba(this.rgba)
+        .slice(0, 3)
+        .reduce<number>((currentLuminance, color, index) => {
+          const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
+          const additive = DARK_TEXT_W3C_ADDITIVE[index];
 
-        return additive != null ? currentLuminance + additive * colorThreshold : currentLuminance;
-      }, 0);
+          return additive != null ? currentLuminance + additive * colorThreshold : currentLuminance;
+        }, 0);
 
       this._darkContrast = luminance >= LUMINANCE_THRESHOLD;
     }
@@ -174,7 +177,7 @@ export class ColorHarmonies {
   }
 
   private _harmonize<Length extends number>(start: number, end: number, interval: number): Tuple<Colorati, Length> {
-    const [hue, saturation, light, alpha] = this._base.hsla.value;
+    const [hue, saturation, light, alpha] = this._base.hsla;
 
     const fractionalSaturation = saturation / 100;
     const fractionalLight = light / 100;
