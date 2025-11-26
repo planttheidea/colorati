@@ -1,6 +1,6 @@
 import { hash } from 'hash-it';
 import type { Rgba } from './colors.js';
-import type { RgbaArray } from './types.js';
+import type { ColoratiOptions, RgbaArray } from './types.js';
 
 export function getAlphaHex(alpha: number): string {
   return Math.round(alpha * 255)
@@ -9,7 +9,7 @@ export function getAlphaHex(alpha: number): string {
     .toUpperCase();
 }
 
-export function getFractionalRgba(rgba: Rgba | RgbaArray): RgbaArray {
+export function getFractionalRgba(rgba: Rgba<ColoratiOptions> | RgbaArray): RgbaArray {
   const [red, green, blue, alpha] = rgba;
 
   const fractionalRed = red / 255;

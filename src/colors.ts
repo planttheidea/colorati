@@ -1,7 +1,7 @@
 import type {
   CmykaArray,
   CmykArray,
-  ColorOptions,
+  ColoratiOptions,
   HslaArray,
   HslArray,
   HwbaArray,
@@ -11,25 +11,25 @@ import type {
 } from './types.js';
 import { getAlphaHex, getFractionalRgba, getHex } from './utils.js';
 
-class BaseArrayColor<const Type extends any[]> extends Array<Type[number]> {
-  protected _options: ColorOptions;
+class BaseArrayColor<const Type extends any[], const Options extends ColoratiOptions> extends Array<Type[number]> {
+  protected _options: Options;
   protected _raw: RgbaArray;
   protected _string: string | undefined;
 
-  private _ansi16: Ansi16 | undefined;
-  private _ansi256: Ansi256 | undefined;
-  private _cmyk: Cmyk | undefined;
-  private _cmyka: Cmyka | undefined;
-  private _hex: Hex | undefined;
-  private _hexa: Hexa | undefined;
-  private _hsl: Hsl | undefined;
-  private _hsla: Hsla | undefined;
-  private _hwb: Hwb | undefined;
-  private _hwba: Hwba | undefined;
-  private _rgb: Rgb | undefined;
-  private _rgba: Rgba | undefined;
+  private _ansi16: Ansi16<Options> | undefined;
+  private _ansi256: Ansi256<Options> | undefined;
+  private _cmyk: Cmyk<Options> | undefined;
+  private _cmyka: Cmyka<Options> | undefined;
+  private _hex: Hex<Options> | undefined;
+  private _hexa: Hexa<Options> | undefined;
+  private _hsl: Hsl<Options> | undefined;
+  private _hsla: Hsla<Options> | undefined;
+  private _hwb: Hwb<Options> | undefined;
+  private _hwba: Hwba<Options> | undefined;
+  private _rgb: Rgb<Options> | undefined;
+  private _rgba: Rgba<Options> | undefined;
 
-  constructor(rgba: RgbaArray, options: ColorOptions, includeAlpha: boolean) {
+  constructor(rgba: RgbaArray, options: Options, includeAlpha: boolean) {
     const size = includeAlpha ? rgba.length : rgba.length - 1;
 
     super(size);
@@ -38,51 +38,51 @@ class BaseArrayColor<const Type extends any[]> extends Array<Type[number]> {
     this._raw = rgba;
   }
 
-  get ansi16(): Ansi16 {
+  get ansi16(): Ansi16<Options> {
     return (this._ansi16 ??= new Ansi16(this._raw, this._options));
   }
 
-  get ansi256(): Ansi16 {
+  get ansi256(): Ansi16<Options> {
     return (this._ansi256 ??= new Ansi256(this._raw, this._options));
   }
 
-  get cmyk(): Cmyk {
+  get cmyk(): Cmyk<Options> {
     return (this._cmyk ??= new Cmyk(this._raw, this._options));
   }
 
-  get cmyka(): Cmyka {
+  get cmyka(): Cmyka<Options> {
     return (this._cmyka ??= new Cmyka(this._raw, this._options));
   }
 
-  get hex(): Hex {
+  get hex(): Hex<Options> {
     return (this._hex ??= new Hex(this._raw, this._options));
   }
 
-  get hexa(): Hexa {
+  get hexa(): Hexa<Options> {
     return (this._hexa ??= new Hexa(this._raw, this._options));
   }
 
-  get hsl(): Hsl {
+  get hsl(): Hsl<Options> {
     return (this._hsl ??= new Hsl(this._raw, this._options));
   }
 
-  get hsla(): Hsla {
+  get hsla(): Hsla<Options> {
     return (this._hsla ??= new Hsla(this._raw, this._options));
   }
 
-  get hwb(): Hwb {
+  get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this._options));
   }
 
-  get hwba(): Hwba {
+  get hwba(): Hwba<Options> {
     return (this._hwba ??= new Hwba(this._raw, this._options));
   }
 
-  get rgb(): Rgb {
+  get rgb(): Rgb<Options> {
     return (this._rgb ??= new Rgb(this._raw, this._options));
   }
 
-  get rgba(): Rgba {
+  get rgba(): Rgba<Options> {
     return (this._rgba ??= new Rgba(this._raw, this._options));
   }
 
@@ -95,76 +95,76 @@ class BaseArrayColor<const Type extends any[]> extends Array<Type[number]> {
   }
 }
 
-class BaseNumberColor extends Number {
-  protected _options: ColorOptions;
+class BaseNumberColor<const Options extends ColoratiOptions> extends Number {
+  protected _options: Options;
   protected _raw: RgbaArray;
   protected _string: string | undefined;
 
-  private _ansi16: Ansi16 | undefined;
-  private _ansi256: Ansi256 | undefined;
-  private _cmyk: Cmyk | undefined;
-  private _cmyka: Cmyka | undefined;
-  private _hex: Hex | undefined;
-  private _hexa: Hexa | undefined;
-  private _hsl: Hsl | undefined;
-  private _hsla: Hsla | undefined;
-  private _hwb: Hwb | undefined;
-  private _hwba: Hwba | undefined;
-  private _rgb: Rgb | undefined;
-  private _rgba: Rgba | undefined;
+  private _ansi16: Ansi16<Options> | undefined;
+  private _ansi256: Ansi256<Options> | undefined;
+  private _cmyk: Cmyk<Options> | undefined;
+  private _cmyka: Cmyka<Options> | undefined;
+  private _hex: Hex<Options> | undefined;
+  private _hexa: Hexa<Options> | undefined;
+  private _hsl: Hsl<Options> | undefined;
+  private _hsla: Hsla<Options> | undefined;
+  private _hwb: Hwb<Options> | undefined;
+  private _hwba: Hwba<Options> | undefined;
+  private _rgb: Rgb<Options> | undefined;
+  private _rgba: Rgba<Options> | undefined;
 
-  constructor(value: number, rgba: RgbaArray, options: ColorOptions) {
+  constructor(value: number, rgba: RgbaArray, options: Options) {
     super(value);
 
     this._options = options;
     this._raw = rgba;
   }
 
-  get ansi16(): Ansi16 {
+  get ansi16(): Ansi16<Options> {
     return (this._ansi16 ??= new Ansi16(this._raw, this._options));
   }
 
-  get ansi256(): Ansi16 {
+  get ansi256(): Ansi16<Options> {
     return (this._ansi256 ??= new Ansi256(this._raw, this._options));
   }
 
-  get cmyk(): Cmyk {
+  get cmyk(): Cmyk<Options> {
     return (this._cmyk ??= new Cmyk(this._raw, this._options));
   }
 
-  get cmyka(): Cmyka {
+  get cmyka(): Cmyka<Options> {
     return (this._cmyka ??= new Cmyka(this._raw, this._options));
   }
 
-  get hex(): Hex {
+  get hex(): Hex<Options> {
     return (this._hex ??= new Hex(this._raw, this._options));
   }
 
-  get hexa(): Hexa {
+  get hexa(): Hexa<Options> {
     return (this._hexa ??= new Hexa(this._raw, this._options));
   }
 
-  get hsl(): Hsl {
+  get hsl(): Hsl<Options> {
     return (this._hsl ??= new Hsl(this._raw, this._options));
   }
 
-  get hsla(): Hsla {
+  get hsla(): Hsla<Options> {
     return (this._hsla ??= new Hsla(this._raw, this._options));
   }
 
-  get hwb(): Hwb {
+  get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this._options));
   }
 
-  get hwba(): Hwba {
+  get hwba(): Hwba<Options> {
     return (this._hwba ??= new Hwba(this._raw, this._options));
   }
 
-  get rgb(): Rgb {
+  get rgb(): Rgb<Options> {
     return (this._rgb ??= new Rgb(this._raw, this._options));
   }
 
-  get rgba(): Rgba {
+  get rgba(): Rgba<Options> {
     return (this._rgba ??= new Rgba(this._raw, this._options));
   }
 
@@ -181,76 +181,76 @@ class BaseNumberColor extends Number {
   }
 }
 
-class BaseStringColor extends String {
-  protected _options: ColorOptions;
+class BaseStringColor<const Options extends ColoratiOptions> extends String {
+  protected _options: Options;
   protected _raw: RgbaArray;
   protected _string: string | undefined;
 
-  private _ansi16: Ansi16 | undefined;
-  private _ansi256: Ansi256 | undefined;
-  private _cmyk: Cmyk | undefined;
-  private _cmyka: Cmyka | undefined;
-  private _hex: Hex | undefined;
-  private _hexa: Hexa | undefined;
-  private _hsl: Hsl | undefined;
-  private _hsla: Hsla | undefined;
-  private _hwb: Hwb | undefined;
-  private _hwba: Hwba | undefined;
-  private _rgb: Rgb | undefined;
-  private _rgba: Rgba | undefined;
+  private _ansi16: Ansi16<Options> | undefined;
+  private _ansi256: Ansi256<Options> | undefined;
+  private _cmyk: Cmyk<Options> | undefined;
+  private _cmyka: Cmyka<Options> | undefined;
+  private _hex: Hex<Options> | undefined;
+  private _hexa: Hexa<Options> | undefined;
+  private _hsl: Hsl<Options> | undefined;
+  private _hsla: Hsla<Options> | undefined;
+  private _hwb: Hwb<Options> | undefined;
+  private _hwba: Hwba<Options> | undefined;
+  private _rgb: Rgb<Options> | undefined;
+  private _rgba: Rgba<Options> | undefined;
 
-  constructor(value: string, rgba: RgbaArray, options: ColorOptions) {
+  constructor(value: string, rgba: RgbaArray, options: Options) {
     super(value);
 
     this._options = options;
     this._raw = rgba;
   }
 
-  get ansi16(): Ansi16 {
+  get ansi16(): Ansi16<Options> {
     return (this._ansi16 ??= new Ansi16(this._raw, this._options));
   }
 
-  get ansi256(): Ansi16 {
+  get ansi256(): Ansi16<Options> {
     return (this._ansi256 ??= new Ansi256(this._raw, this._options));
   }
 
-  get cmyk(): Cmyk {
+  get cmyk(): Cmyk<Options> {
     return (this._cmyk ??= new Cmyk(this._raw, this._options));
   }
 
-  get cmyka(): Cmyka {
+  get cmyka(): Cmyka<Options> {
     return (this._cmyka ??= new Cmyka(this._raw, this._options));
   }
 
-  get hex(): Hex {
+  get hex(): Hex<Options> {
     return (this._hex ??= new Hex(this._raw, this._options));
   }
 
-  get hexa(): Hexa {
+  get hexa(): Hexa<Options> {
     return (this._hexa ??= new Hexa(this._raw, this._options));
   }
 
-  get hsl(): Hsl {
+  get hsl(): Hsl<Options> {
     return (this._hsl ??= new Hsl(this._raw, this._options));
   }
 
-  get hsla(): Hsla {
+  get hsla(): Hsla<Options> {
     return (this._hsla ??= new Hsla(this._raw, this._options));
   }
 
-  get hwb(): Hwb {
+  get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this._options));
   }
 
-  get hwba(): Hwba {
+  get hwba(): Hwba<Options> {
     return (this._hwba ??= new Hwba(this._raw, this._options));
   }
 
-  get rgb(): Rgb {
+  get rgb(): Rgb<Options> {
     return (this._rgb ??= new Rgb(this._raw, this._options));
   }
 
-  get rgba(): Rgba {
+  get rgba(): Rgba<Options> {
     return (this._rgba ??= new Rgba(this._raw, this._options));
   }
 
@@ -263,8 +263,8 @@ class BaseStringColor extends String {
   }
 }
 
-export class Ansi16 extends BaseNumberColor {
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+export class Ansi16<const Options extends ColoratiOptions> extends BaseNumberColor<Options> {
+  constructor(rgba: RgbaArray, options: Options) {
     const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
     const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
@@ -286,8 +286,8 @@ export class Ansi16 extends BaseNumberColor {
   }
 }
 
-export class Ansi256 extends BaseNumberColor {
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+export class Ansi256<const Options extends ColoratiOptions> extends BaseNumberColor<Options> {
+  constructor(rgba: RgbaArray, options: Options) {
     const [red, green, blue] = rgba;
 
     let ansi: number;
@@ -317,7 +317,10 @@ export class Ansi256 extends BaseNumberColor {
   }
 }
 
-class BaseCmyka<const Type extends CmykArray | CmykaArray> extends BaseArrayColor<Type> {
+class BaseCmyka<
+  const Type extends CmykArray | CmykaArray,
+  const Options extends ColoratiOptions,
+> extends BaseArrayColor<Type, Options> {
   protected _getCmykaArray(): CmykaArray {
     const [red, green, blue, alpha] = getFractionalRgba(this._raw);
 
@@ -332,13 +335,13 @@ class BaseCmyka<const Type extends CmykArray | CmykaArray> extends BaseArrayColo
   }
 }
 
-export class Cmyk extends BaseCmyka<CmykArray> {
+export class Cmyk<const Options extends ColoratiOptions> extends BaseCmyka<CmykArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, false);
 
     const [cyan, magenta, yellow, key] = this._getCmykaArray();
@@ -361,14 +364,14 @@ export class Cmyk extends BaseCmyka<CmykArray> {
   }
 }
 
-export class Cmyka extends BaseCmyka<CmykaArray> {
+export class Cmyka<const Options extends ColoratiOptions> extends BaseCmyka<CmykaArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
   [4]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, true);
 
     const [cyan, magenta, yellow, key, alpha] = this._getCmykaArray();
@@ -392,29 +395,32 @@ export class Cmyka extends BaseCmyka<CmykaArray> {
   }
 }
 
-class BaseHexa extends BaseStringColor {
+class BaseHexa<const Options extends ColoratiOptions> extends BaseStringColor<Options> {
   override toString() {
     return (this._string ??= `#${this.valueOf()}`);
   }
 }
 
-export class Hex extends BaseHexa {
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+export class Hex<const Options extends ColoratiOptions> extends BaseHexa<Options> {
+  constructor(rgba: RgbaArray, options: Options) {
     const string = getHex(rgba);
 
     super(string, rgba, options);
   }
 }
 
-export class Hexa extends BaseHexa {
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+export class Hexa<const Options extends ColoratiOptions> extends BaseHexa<Options> {
+  constructor(rgba: RgbaArray, options: Options) {
     const string = `${getHex(rgba)}${getAlphaHex(rgba[3])}`;
 
     super(string, rgba, options);
   }
 }
 
-class BaseHsla<const Type extends HslArray | HslaArray> extends BaseArrayColor<Type> {
+class BaseHsla<const Type extends HslArray | HslaArray, const Options extends ColoratiOptions> extends BaseArrayColor<
+  Type,
+  Options
+> {
   protected _getHslsArray(): HslaArray {
     const [red, green, blue, alpha] = getFractionalRgba(this._raw);
 
@@ -450,12 +456,12 @@ class BaseHsla<const Type extends HslArray | HslaArray> extends BaseArrayColor<T
   }
 }
 
-export class Hsl extends BaseHsla<HslArray> {
+export class Hsl<const Options extends ColoratiOptions> extends BaseHsla<HslArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, false);
 
     const [hue, saturation, lightness] = this._getHslsArray();
@@ -477,13 +483,13 @@ export class Hsl extends BaseHsla<HslArray> {
   }
 }
 
-export class Hsla extends BaseHsla<HslaArray> {
+export class Hsla<const Options extends ColoratiOptions> extends BaseHsla<HslaArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, true);
 
     const [hue, saturation, lightness, alpha] = this._getHslsArray();
@@ -506,7 +512,10 @@ export class Hsla extends BaseHsla<HslaArray> {
   }
 }
 
-class BaseHwb<const Type extends HwbArray | HwbaArray> extends BaseArrayColor<Type> {
+class BaseHwb<const Type extends HwbArray | HwbaArray, const Options extends ColoratiOptions> extends BaseArrayColor<
+  Type,
+  Options
+> {
   protected _getHwbaArray(): HwbaArray {
     const [red, green, blue, alpha] = this._raw;
 
@@ -521,12 +530,12 @@ class BaseHwb<const Type extends HwbArray | HwbaArray> extends BaseArrayColor<Ty
   }
 }
 
-export class Hwb extends BaseHwb<HwbArray> {
+export class Hwb<const Options extends ColoratiOptions> extends BaseHwb<HwbArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, false);
 
     const [hue, whiteness, blackness] = this._getHwbaArray();
@@ -548,13 +557,13 @@ export class Hwb extends BaseHwb<HwbArray> {
   }
 }
 
-export class Hwba extends BaseHwb<HwbaArray> {
+export class Hwba<const Options extends ColoratiOptions> extends BaseHwb<HwbaArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, true);
 
     const [hue, whiteness, blackness, alpha] = this._getHwbaArray();
@@ -577,12 +586,12 @@ export class Hwba extends BaseHwb<HwbaArray> {
   }
 }
 
-export class Rgb extends BaseArrayColor<RgbArray> {
+export class Rgb<const Options extends ColoratiOptions> extends BaseArrayColor<RgbArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, false);
 
     const [red, green, blue] = rgba;
@@ -597,13 +606,13 @@ export class Rgb extends BaseArrayColor<RgbArray> {
   }
 }
 
-export class Rgba extends BaseArrayColor<RgbaArray> {
+export class Rgba<const Options extends ColoratiOptions> extends BaseArrayColor<RgbaArray, Options> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbaArray, options: ColorOptions) {
+  constructor(rgba: RgbaArray, options: Options) {
     super(rgba, options, true);
 
     const [red, green, blue, alpha] = rgba;

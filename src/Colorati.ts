@@ -16,51 +16,54 @@ import { getFractionalRgba } from './utils.js';
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
-export class Colorati {
-  options: Required<ColoratiOptions>;
+export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
+  options: Options;
 
   private _raw: RgbaArray;
 
-  private _ansi16: Ansi16 | undefined;
-  private _ansi256: Ansi256 | undefined;
-  private _cmyk: Cmyk | undefined;
-  private _cmyka: Cmyka | undefined;
+  private _ansi16: Ansi16<Options> | undefined;
+  private _ansi256: Ansi256<Options> | undefined;
+  private _cmyk: Cmyk<Options> | undefined;
+  private _cmyka: Cmyka<Options> | undefined;
   private _darkContrast: boolean | undefined;
-  private _harmonies: ColorHarmonies | undefined;
-  private _hex: Hex | undefined;
-  private _hexa: Hexa | undefined;
-  private _hsl: Hsl | undefined;
-  private _hsla: Hsla | undefined;
-  private _hwb: Hwb | undefined;
-  private _hwba: Hwba | undefined;
-  private _rgb: Rgb | undefined;
-  private _rgba: Rgba | undefined;
+  private _harmonies: ColorHarmonies<typeof this> | undefined;
+  private _hex: Hex<Options> | undefined;
+  private _hexa: Hexa<Options> | undefined;
+  private _hsl: Hsl<Options> | undefined;
+  private _hsla: Hsla<Options> | undefined;
+  private _hwb: Hwb<Options> | undefined;
+  private _hwba: Hwba<Options> | undefined;
+  private _rgb: Rgb<Options> | undefined;
+  private _rgba: Rgba<Options> | undefined;
 
   constructor(
     raw: RgbaArray,
-    { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hwbPrecision = 2 }: ColoratiOptions,
+    { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hwbPrecision = 2, includeAlpha }: Options,
   ) {
-    this.options = { alphaPrecision, cmykPrecision, hslPrecision, hwbPrecision };
+    // @ts-expect-error - Allow setting colorati options locally
+    this.options = includeAlpha
+      ? { alphaPrecision, cmykPrecision, hslPrecision, hwbPrecision, includeAlpha }
+      : { cmykPrecision, hslPrecision, hwbPrecision, includeAlpha: false };
     this._raw = raw;
   }
 
-  get ansi16(): Ansi16 {
+  get ansi16(): Ansi16<Options> {
     return (this._ansi16 ??= new Ansi16(this._raw, this.options));
   }
 
-  get ansi256(): Ansi256 {
+  get ansi256(): Ansi256<Options> {
     return (this._ansi256 ??= new Ansi256(this._raw, this.options));
   }
 
-  get cmyk(): Cmyk {
+  get cmyk(): Cmyk<Options> {
     return (this._cmyk ??= new Cmyk(this._raw, this.options));
   }
 
-  get cmyka(): Cmyka {
+  get cmyka(): Cmyka<Options> {
     return (this._cmyka ??= new Cmyka(this._raw, this.options));
   }
 
-  get harmonies(): ColorHarmonies {
+  get harmonies(): ColorHarmonies<typeof this> {
     return (this._harmonies ??= new ColorHarmonies(this));
   }
 
@@ -81,41 +84,41 @@ export class Colorati {
     return this._darkContrast;
   }
 
-  get hex(): Hex {
+  get hex(): Hex<Options> {
     return (this._hex ??= new Hex(this._raw, this.options));
   }
 
-  get hexa(): Hexa {
+  get hexa(): Hexa<Options> {
     return (this._hexa ??= new Hexa(this._raw, this.options));
   }
 
-  get hsl(): Hsl {
+  get hsl(): Hsl<Options> {
     return (this._hsl ??= new Hsl(this._raw, this.options));
   }
 
-  get hsla(): Hsla {
+  get hsla(): Hsla<Options> {
     return (this._hsla ??= new Hsla(this._raw, this.options));
   }
 
-  get hwb(): Hwb {
+  get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this.options));
   }
 
-  get hwba(): Hwba {
+  get hwba(): Hwba<Options> {
     return (this._hwba ??= new Hwba(this._raw, this.options));
   }
 
-  get rgb(): Rgb {
+  get rgb(): Rgb<Options> {
     return (this._rgb ??= new Rgb(this._raw, this.options));
   }
 
-  get rgba(): Rgba {
+  get rgba(): Rgba<Options> {
     return (this._rgba ??= new Rgba(this._raw, this.options));
   }
 }
 
-export class ColorHarmonies {
-  private _base: Colorati;
+export class ColorHarmonies<const Instance extends Colorati> {
+  private _base: Instance;
 
   private _analogous: AnalogousColors | undefined;
   private _clash: ClashColors | undefined;
@@ -125,7 +128,7 @@ export class ColorHarmonies {
   private _tetrad: TetradColors | undefined;
   private _triad: TriadColors | undefined;
 
-  constructor(base: Colorati) {
+  constructor(base: Instance) {
     this._base = base;
   }
 
@@ -168,24 +171,28 @@ export class ColorHarmonies {
     return rgba;
   }
 
-  private _harmonize<Length extends number>(start: number, end: number, interval: number): Tuple<Colorati, Length> {
+  private _harmonize<Length extends number>(
+    start: number,
+    end: number,
+    interval: number,
+  ): Tuple<Colorati<Instance['options']>, Length> {
     const [hue, saturation, lightness, alpha] = this._base.hsla;
 
     const fractionalSaturation = saturation / 100;
     const fractionalLightness = lightness / 100;
 
-    const colors: Colorati[] = [];
+    const colors: Array<Colorati<Instance['options']>> = [];
     const { options } = this._base;
 
     for (let index = start; index <= end; index += interval) {
       const newHue = (hue + index) % 360;
       const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLightness, alpha);
-      const color = new Colorati(raw, options);
+      const color = new Colorati<Instance['options']>(raw, options);
 
       colors.push(color);
     }
 
-    return colors as Tuple<Colorati, Length>;
+    return colors as Tuple<Colorati<Instance['options']>, Length>;
   }
 
   get analogous(): AnalogousColors {
@@ -196,7 +203,7 @@ export class ColorHarmonies {
     return (this._clash ??= this._harmonize<2>(90, 270, 180));
   }
 
-  get complement(): Colorati {
+  get complement(): Colorati<Instance['options']> {
     return (this._complement ??= this._harmonize<1>(180, 180, 1))[0];
   }
 
