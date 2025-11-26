@@ -242,6 +242,50 @@ describe('lab', () => {
   });
 });
 
+describe('lch', () => {
+  test('opaque', () => {
+    const color = colorati({ foo: 'bar' });
+
+    expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 1]);
+    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87,1)`);
+
+    const [lightness, aAxis, bAxis] = color.lch;
+
+    const rgb = convert.lch.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('computed alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: true });
+
+    expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 0.25098039215686274]);
+    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87,0.25)`);
+
+    const [lightness, aAxis, bAxis] = color.lch;
+
+    const rgb = convert.lch.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('manual alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
+
+    expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 0.65]);
+    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87,0.65)`);
+
+    const [lightness, aAxis, bAxis] = color.lch;
+
+    const rgb = convert.lch.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+});
+
 describe('oklab', () => {
   test('opaque', () => {
     const color = colorati({ foo: 'bar' });
@@ -286,6 +330,56 @@ describe('oklab', () => {
     // @ts-expect-error - `oklab` does not exist as a namespace on `convert`
     // eslint-disable-next-line
     const rgb = convert.oklab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+});
+
+describe('oklch', () => {
+  test('opaque', () => {
+    const color = colorati({ foo: 'bar' });
+
+    expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 1]);
+    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94,1)`);
+
+    const [lightness, aAxis, bAxis] = color.oklch;
+
+    // @ts-expect-error - `oklch` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklch.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('computed alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: true });
+
+    expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.25098039215686274]);
+    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94,0.25)`);
+
+    const [lightness, aAxis, bAxis] = color.oklch;
+
+    // @ts-expect-error - `oklch` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklch.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('manual alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
+
+    expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.65]);
+    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94,0.65)`);
+
+    const [lightness, aAxis, bAxis] = color.oklch;
+
+    // @ts-expect-error - `oklch` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklch.rgb(lightness, aAxis, bAxis);
     const [r, g, b] = color.rgb;
 
     expect(rgb).toEqual([r, g, b]);
@@ -337,6 +431,56 @@ test('toJSON', () => {
   expect(JSON.stringify(color.rgb)).toBe(`"${color.rgb.toString()}"`);
 });
 
+describe('iteration', () => {
+  test('array color', () => {
+    const color = colorati({ foo: 'bar' });
+    const expectedOpaque = [0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 1];
+
+    let index = 0;
+
+    for (const value of color.cmyk) {
+      expect(value).toBe(expectedOpaque[index++]);
+    }
+
+    expect(index).toBe(5);
+
+    const colorAlpha = colorati({ foo: 'bar' }, { alpha: true });
+    const expectedAlpha = [0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274];
+
+    index = 0;
+
+    for (const value of colorAlpha.cmyk) {
+      expect(value).toBe(expectedAlpha[index++]);
+    }
+
+    expect(index).toBe(5);
+  });
+
+  test('string color', () => {
+    const color = colorati({ foo: 'bar' });
+    const expectedOpaque = color.hex.value.split('');
+
+    let index = 0;
+
+    for (const value of color.hex) {
+      expect(value).toBe(expectedOpaque[index++]);
+    }
+
+    expect(index).toBe(7);
+
+    const colorAlpha = colorati({ foo: 'bar' }, { alpha: true });
+    const expectedAlpha = colorAlpha.hex.value.split('');
+
+    index = 0;
+
+    for (const value of colorAlpha.hex) {
+      expect(value).toBe(expectedAlpha[index++]);
+    }
+
+    expect(index).toBe(9);
+  });
+});
+
 describe('conversions to other colors', () => {
   test('array color', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true }).rgb;
@@ -347,6 +491,10 @@ describe('conversions to other colors', () => {
     expect(color.hex.toString()).toBe('#F1F09140');
     expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
     expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
+    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
+    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
+    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
+    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
     expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
   });
 
@@ -358,6 +506,10 @@ describe('conversions to other colors', () => {
     expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%,0.25)');
     expect(color.hex.toString()).toBe('#F1F09140');
     expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
+    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
+    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
+    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
+    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
     expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
   });
 
@@ -370,6 +522,10 @@ describe('conversions to other colors', () => {
     expect(color.hex.toString()).toBe('#F1F09140');
     expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
     expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
+    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
+    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
+    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
+    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
     expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
   });
 });

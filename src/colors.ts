@@ -1,7 +1,15 @@
-import type { CmykArray, ColoratiOptions, HslArray, HwbArray, LabArray, OkLabArray, RgbArray } from './types.js';
-import { getAlphaHex, getFractionalRgba, getHex, getNonLinearValue } from './utils.js';
-
-const LAB_FT = (6 / 29) ** 3;
+import type {
+  CmykArray,
+  ColoratiOptions,
+  HslArray,
+  HwbArray,
+  LabArray,
+  LchArray,
+  OkLabArray,
+  OkLchArray,
+  RgbArray,
+} from './types.js';
+import { getAlphaHex, getFractionalRgba, getHex, getLab, getLch, getOkLab } from './utils.js';
 
 class BaseColor<const Options extends ColoratiOptions> {
   protected _options: Options;
@@ -15,7 +23,9 @@ class BaseColor<const Options extends ColoratiOptions> {
   private _hsl: Hsl<Options> | undefined;
   private _hwb: Hwb<Options> | undefined;
   private _lab: Lab<Options> | undefined;
+  private _lch: Lch<Options> | undefined;
   private _oklab: OkLab<Options> | undefined;
+  private _oklch: OkLch<Options> | undefined;
   private _rgb: Rgb<Options> | undefined;
 
   constructor(rgba: RgbArray, options: Options) {
@@ -51,8 +61,16 @@ class BaseColor<const Options extends ColoratiOptions> {
     return (this._lab ??= new Lab(this._raw, this._options));
   }
 
+  get lch(): Lch<Options> {
+    return (this._lch ??= new Lch(this._raw, this._options));
+  }
+
   get oklab(): OkLab<Options> {
     return (this._oklab ??= new OkLab(this._raw, this._options));
+  }
+
+  get oklch(): OkLch<Options> {
+    return (this._oklch ??= new OkLch(this._raw, this._options));
   }
 
   get rgb(): Rgb<Options> {
@@ -389,28 +407,12 @@ export class Lab<const Options extends ColoratiOptions> extends BaseArrayColor<L
   constructor(rgba: RgbArray, options: Options) {
     super(rgba, options);
 
-    const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(this._raw);
-
-    const red = getNonLinearValue(fractionalRed);
-    const green = getNonLinearValue(fractionalGreen);
-    const blue = getNonLinearValue(fractionalBlue);
-
-    let x = (red * 0.412_456_4 + green * 0.357_576_1 + blue * 0.180_437_5) * (100 / 95.047);
-    let y = red * 0.212_672_9 + green * 0.715_152_2 + blue * 0.072_175;
-    let z = (red * 0.019_333_9 + green * 0.119_192 + blue * 0.950_304_1) * (100 / 108.883);
-
-    x = x > LAB_FT ? x ** (1 / 3) : 7.787 * x + 16 / 116;
-    y = y > LAB_FT ? y ** (1 / 3) : 7.787 * y + 16 / 116;
-    z = z > LAB_FT ? z ** (1 / 3) : 7.787 * z + 16 / 116;
-
-    const lightness = 116 * y - 16;
-    const aAxis = 500 * (x - y);
-    const bAxis = 200 * (y - z);
+    const [lightness, aAxis, bAxis, alpha] = getLab(rgba);
 
     this[0] = lightness;
     this[1] = aAxis;
     this[2] = bAxis;
-    this[3] = rgba[3];
+    this[3] = alpha;
   }
 
   override toString(): string {
@@ -431,6 +433,42 @@ export class Lab<const Options extends ColoratiOptions> extends BaseArrayColor<L
   }
 }
 
+export class Lch<const Options extends ColoratiOptions> extends BaseArrayColor<LchArray, Options> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
+
+  constructor(rgba: RgbArray, options: Options) {
+    super(rgba, options);
+
+    const laba = getLab(rgba);
+    const [lightness, chroma, hue, alpha] = getLch(laba);
+
+    this[0] = lightness;
+    this[1] = chroma;
+    this[2] = hue;
+    this[3] = alpha;
+  }
+
+  override toString(): string {
+    if (!this._string) {
+      const { alphaPrecision, labPrecision } = this._options;
+
+      const values = [
+        `${this[0].toFixed(labPrecision)}%`,
+        this[1].toFixed(labPrecision),
+        this[2].toFixed(labPrecision),
+        this[3].toFixed(alphaPrecision),
+      ];
+
+      this._string = `lch(${values.join(',')})`;
+    }
+
+    return this._string;
+  }
+}
+
 export class OkLab<const Options extends ColoratiOptions> extends BaseArrayColor<OkLabArray, Options> {
   [0]: number;
   [1]: number;
@@ -440,24 +478,12 @@ export class OkLab<const Options extends ColoratiOptions> extends BaseArrayColor
   constructor(rgba: RgbArray, options: Options) {
     super(rgba, options);
 
-    const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(this._raw);
-
-    const red = getNonLinearValue(fractionalRed);
-    const green = getNonLinearValue(fractionalGreen);
-    const blue = getNonLinearValue(fractionalBlue);
-
-    const lp = Math.cbrt(0.412_221_470_8 * red + 0.536_332_536_3 * green + 0.051_445_992_9 * blue);
-    const mp = Math.cbrt(0.211_903_498_2 * red + 0.680_699_545_1 * green + 0.107_396_956_6 * blue);
-    const sp = Math.cbrt(0.088_302_461_9 * red + 0.281_718_837_6 * green + 0.629_978_700_5 * blue);
-
-    const lightness = (0.210_454_255_3 * lp + 0.793_617_785 * mp - 0.004_072_046_8 * sp) * 100;
-    const aAxis = (1.977_998_495_1 * lp - 2.428_592_205 * mp + 0.450_593_709_9 * sp) * 100;
-    const bAxis = (0.025_904_037_1 * lp + 0.782_771_766_2 * mp - 0.808_675_766 * sp) * 100;
+    const [lightness, aAxis, bAxis, alpha] = getOkLab(rgba);
 
     this[0] = lightness;
     this[1] = aAxis;
     this[2] = bAxis;
-    this[3] = rgba[3];
+    this[3] = alpha;
   }
 
   override toString(): string {
@@ -472,6 +498,42 @@ export class OkLab<const Options extends ColoratiOptions> extends BaseArrayColor
       ];
 
       this._string = `oklab(${values.join(',')})`;
+    }
+
+    return this._string;
+  }
+}
+
+export class OkLch<const Options extends ColoratiOptions> extends BaseArrayColor<OkLchArray, Options> {
+  [0]: number;
+  [1]: number;
+  [2]: number;
+  [3]: number;
+
+  constructor(rgba: RgbArray, options: Options) {
+    super(rgba, options);
+
+    const oklaba = getOkLab(rgba);
+    const [lightness, chroma, hue, alpha] = getLch(oklaba);
+
+    this[0] = lightness;
+    this[1] = chroma;
+    this[2] = hue;
+    this[3] = alpha;
+  }
+
+  override toString(): string {
+    if (!this._string) {
+      const { alphaPrecision, labPrecision } = this._options;
+
+      const values = [
+        `${this[0].toFixed(labPrecision)}%`,
+        this[1].toFixed(labPrecision),
+        this[2].toFixed(labPrecision),
+        this[3].toFixed(alphaPrecision),
+      ];
+
+      this._string = `oklch(${values.join(',')})`;
     }
 
     return this._string;

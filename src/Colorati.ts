@@ -1,4 +1,4 @@
-import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Lab, OkLab, Rgb } from './colors.js';
+import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
 import type {
   AnalogousColors,
   ClashColors,
@@ -30,7 +30,9 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
   private _hsl: Hsl<Options> | undefined;
   private _hwb: Hwb<Options> | undefined;
   private _lab: Lab<Options> | undefined;
+  private _lch: Lch<Options> | undefined;
   private _oklab: OkLab<Options> | undefined;
+  private _oklch: OkLch<Options> | undefined;
   private _rgb: Rgb<Options> | undefined;
 
   constructor(raw: RgbArray, options: Options) {
@@ -87,19 +89,20 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
     return (this._lab ??= new Lab(this._raw, this.options));
   }
 
+  get lch(): Lch<Options> {
+    return (this._lch ??= new Lch(this._raw, this.options));
+  }
+
   get oklab(): OkLab<Options> {
     return (this._oklab ??= new OkLab(this._raw, this.options));
   }
 
-  get rgb(): Rgb<Options> {
-    return (this._rgb ??= new Rgb(this._raw, this.options));
+  get oklch(): OkLch<Options> {
+    return (this._oklch ??= new OkLch(this._raw, this.options));
   }
 
-  clone<OverrideOptions extends ColoratiOptions>(
-    overrideOptions?: OverrideOptions,
-  ): Colorati<Omit<Options, keyof OverrideOptions> & OverrideOptions> {
-    // @ts-expect-error - Allow manual `options` override.
-    return new Colorati(this._raw, { ...this.options, ...overrideOptions });
+  get rgb(): Rgb<Options> {
+    return (this._rgb ??= new Rgb(this._raw, this.options));
   }
 }
 

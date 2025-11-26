@@ -1,9 +1,9 @@
 import type { ColoratiOptions } from 'types.js';
 import { describe, expect, test } from 'vitest';
-import { Ansi16, Ansi256, Hsl } from '../src/colors.js';
+import { Ansi16, Ansi256, Hsl, Lab } from '../src/colors.js';
+import { getLch } from '../src/utils.js';
 
 const DEFAULT_OPTIONS: ColoratiOptions = {
-  alpha: 1,
   cmykPrecision: 1,
   hslPrecision: 2,
   hwbPrecision: 2,
@@ -39,6 +39,14 @@ describe('_getHslHue', () => {
 
     expect([...color.hsl]).toEqual([300, 100, 50, 1]);
   });
+});
+
+test('getLch handles negative radius', () => {
+  const color = new Lab([50, -10, 40, 1], DEFAULT_OPTIONS);
+
+  const [, , hue] = getLch(color.value);
+
+  expect(hue).toBeGreaterThan(0);
 });
 
 test('ansi16 max vale is 0', () => {

@@ -4,7 +4,9 @@ export type CmykArray = [cyan: number, magenta: number, yellow: number, key: num
 export type HslArray = [hue: number, saturation: number, lightness: number, alpha: number];
 export type HwbArray = [hue: number, whiteness: number, blackness: number, alpha: number];
 export type LabArray = [lightness: number, aAxis: number, bAxis: number, alpha: number];
+export type LchArray = [lightness: number, chroma: number, hue: number, alpha: number];
 export type OkLabArray = [lightness: number, aAxis: number, bAxis: number, alpha: number];
+export type OkLchArray = [lightness: number, chroma: number, hue: number, alpha: number];
 export type RgbArray = [red: number, green: number, blue: number, alpha: number];
 
 export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 'hwb' | 'hwba' | 'rgb' | 'rgba';
