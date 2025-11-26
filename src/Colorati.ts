@@ -1,4 +1,3 @@
-import { hash } from 'hash-it';
 import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hwb, Hwba, Rgb, Rgba } from './colors.js';
 import type {
   AnalogousColors,
@@ -38,18 +37,11 @@ export class Colorati {
   private _rgba: Rgba | undefined;
 
   constructor(
-    value: any,
+    raw: RgbaArray,
     { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hwbPrecision = 2 }: ColoratiOptions,
   ) {
     this.options = { alphaPrecision, cmykPrecision, hslPrecision, hwbPrecision };
-
-    const hashed = hash(value);
-    const red = (hashed & 0xff0000) >>> 16;
-    const green = (hashed & 0xff00) >>> 8;
-    const blue = hashed & 0xff;
-    const alpha = ((hashed & 0xff000000) >>> 24) / 255;
-
-    this._raw = [red, green, blue, alpha];
+    this._raw = raw;
   }
 
   get ansi16(): Ansi16 {
@@ -183,14 +175,12 @@ export class ColorHarmonies {
     const fractionalLight = light / 100;
 
     const colors: Colorati[] = [];
+    const { options } = this._base;
 
     for (let index = start; index <= end; index += interval) {
-      const color = new Colorati('', this._base.options);
-
       const newHue = (hue + index) % 360;
-      // @ts-expect-error - Private property is not surfaced, but need to override for
-      // correct management.
-      color._raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLight, alpha);
+      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLight, alpha);
+      const color = new Colorati(raw, options);
 
       colors.push(color);
     }

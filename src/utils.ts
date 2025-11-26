@@ -1,3 +1,4 @@
+import { hash } from 'hash-it';
 import type { Rgba } from './colors.js';
 import type { RgbaArray } from './types.js';
 
@@ -22,4 +23,15 @@ export function getHex([red, green, blue]: RgbaArray): string {
   const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
 
   return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
+}
+
+export function getRaw(value: any): RgbaArray {
+  const hashed = hash(value);
+
+  const red = (hashed & 0xff0000) >>> 16;
+  const green = (hashed & 0xff00) >>> 8;
+  const blue = hashed & 0xff;
+  const alpha = ((hashed & 0xff000000) >>> 24) / 255;
+
+  return [red, green, blue, alpha];
 }
