@@ -1,12 +1,12 @@
 import type { Colorati } from './Colorati.js';
 
-export type HslArray = [hue: number, saturation: number, lightness: number, alpha: number];
-export type HwbArray = [hue: number, whiteness: number, blackness: number, alpha: number];
-export type LabArray = [lightness: number, aAxis: number, bAxis: number, alpha: number];
-export type LchArray = [lightness: number, chroma: number, hue: number, alpha: number];
-export type OkLabArray = [lightness: number, aAxis: number, bAxis: number, alpha: number];
-export type OkLchArray = [lightness: number, chroma: number, hue: number, alpha: number];
-export type RgbArray = [red: number, green: number, blue: number, alpha: number];
+export type HslArray = [hue: number, saturation: number, lightness: number];
+export type HwbArray = [hue: number, whiteness: number, blackness: number];
+export type LabArray = [lightness: number, aAxis: number, bAxis: number];
+export type LchArray = [lightness: number, chroma: number, hue: number];
+export type OkLabArray = [lightness: number, aAxis: number, bAxis: number];
+export type OkLchArray = [lightness: number, chroma: number, hue: number];
+export type RgbArray = [red: number, green: number, blue: number];
 
 export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 'hwb' | 'hwba' | 'rgb' | 'rgba';
 
@@ -84,3 +84,5 @@ export type Tuple<Type, Length extends number> = Length extends Length
 type TupleOf<Type, Length extends number, Rest extends unknown[]> = Rest['length'] extends Length
   ? Rest
   : TupleOf<Type, Length, [Type, ...Rest]>;
+
+export type Color<Tuple extends any[]> = [...Tuple, alpha: number];

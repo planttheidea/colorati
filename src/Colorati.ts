@@ -48,30 +48,35 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
   private _oklch: OkLch<NormalizedConfig<Options>> | undefined;
   private _rgb: Rgb<NormalizedConfig<Options>> | undefined;
 
-  constructor(raw: RgbArray, options: Options) {
-    const { alpha = false, alphaPrecision = 2, colorPrecision = 2 } = options;
+  constructor(raw: RgbArray, rawAlpha: number, options: Options) {
+    const { alphaPrecision = 2, colorPrecision = 2 } = options;
 
     let alphaType: AlphaType;
 
-    if (typeof alpha === 'number') {
+    if (typeof options.alpha === 'number') {
       alphaType = 'manual';
-    } else if (alpha) {
+    } else if (options.alpha) {
       alphaType = 'computed';
     } else {
       alphaType = 'ignored';
     }
 
-    const config = { alpha, alphaPrecision, alphaType, colorPrecision } as NormalizedConfig<Options>;
+    const config = {
+      alpha: options.alpha ?? false,
+      alphaPrecision,
+      alphaType,
+      colorPrecision,
+    } as NormalizedConfig<Options>;
 
-    super(raw, config);
+    super(raw, rawAlpha, config);
   }
 
   get ansi16(): Ansi16<NormalizedConfig<Options>> {
-    return (this._ansi16 ??= new Ansi16(this._raw, this.config));
+    return (this._ansi16 ??= new Ansi16(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get ansi256(): Ansi256<NormalizedConfig<Options>> {
-    return (this._ansi256 ??= new Ansi256(this._raw, this.config));
+    return (this._ansi256 ??= new Ansi256(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get harmonies(): ColorHarmonies<typeof this> {
@@ -80,7 +85,7 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
 
   get hasDarkContrast(): boolean {
     if (this._darkContrast == null) {
-      const luminance = getFractionalRgba(this._raw)
+      const luminance = getFractionalRgba(this._baseChannels)
         .slice(0, 3)
         .reduce<number>((currentLuminance, color, index) => {
           const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
@@ -96,35 +101,35 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
   }
 
   get hex(): Hex<NormalizedConfig<Options>> {
-    return (this._hex ??= new Hex(this._raw, this.config));
+    return (this._hex ??= new Hex(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get hsl(): Hsl<NormalizedConfig<Options>> {
-    return (this._hsl ??= new Hsl(this._raw, this.config));
+    return (this._hsl ??= new Hsl(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get hwb(): Hwb<NormalizedConfig<Options>> {
-    return (this._hwb ??= new Hwb(this._raw, this.config));
+    return (this._hwb ??= new Hwb(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get lab(): Lab<NormalizedConfig<Options>> {
-    return (this._lab ??= new Lab(this._raw, this.config));
+    return (this._lab ??= new Lab(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get lch(): Lch<NormalizedConfig<Options>> {
-    return (this._lch ??= new Lch(this._raw, this.config));
+    return (this._lch ??= new Lch(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get oklab(): OkLab<NormalizedConfig<Options>> {
-    return (this._oklab ??= new OkLab(this._raw, this.config));
+    return (this._oklab ??= new OkLab(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get oklch(): OkLch<NormalizedConfig<Options>> {
-    return (this._oklch ??= new OkLch(this._raw, this.config));
+    return (this._oklch ??= new OkLch(this._baseChannels, this._computedAlpha, this.config));
   }
 
   get rgb(): Rgb<NormalizedConfig<Options>> {
-    return (this._rgb ??= new Rgb(this._raw, this.config));
+    return (this._rgb ??= new Rgb(this._baseChannels, this._computedAlpha, this.config));
   }
 
   clone<OverrideOptions extends ColoratiOptions>(
@@ -137,7 +142,7 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
     >
       & OverrideOptions;
 
-    return new Colorati(this._raw, options);
+    return new Colorati(this._baseChannels, this._computedAlpha, options);
   }
 }
 
@@ -150,7 +155,7 @@ type NormalizedOptions<Config extends ColorConfig> = Config extends SemiOpaqueCo
       : ImplicitOpaqueColoratiOptions;
 
 export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
-  private _base: Instance;
+  private _colorati: Instance;
 
   private _analogous: AnalogousColors<Instance['config']> | undefined;
   private _clash: ClashColors<Instance['config']> | undefined;
@@ -161,15 +166,15 @@ export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
   private _triad: TriadColors<Instance['config']> | undefined;
 
   constructor(base: Instance) {
-    this._base = base;
+    this._colorati = base;
   }
 
-  private _getRgbaFromHsla(hue: number, saturation: number, lightness: number, alpha: number): RgbArray {
+  private _getBaseChannelsFromHsl(hue: number, saturation: number, lightness: number): RgbArray {
     if (saturation === 0) {
-      return [0, 0, 0, alpha];
+      return [0, 0, 0];
     }
 
-    const rgba: RgbArray = [0, 0, 0, alpha];
+    const rgb: RgbArray = [0, 0, 0];
     const temp2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
     const temp1 = 2 * lightness - temp2;
 
@@ -197,10 +202,10 @@ export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
         value = temp1;
       }
 
-      rgba[index] = Math.round(value * 255);
+      rgb[index] = Math.round(value * 255);
     }
 
-    return rgba;
+    return rgb;
   }
 
   private _harmonize<Length extends number>(
@@ -208,19 +213,24 @@ export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
     end: number,
     interval: number,
   ): Tuple<Colorati<Instance['config']>, Length> {
-    const [hue, saturation, lightness, rawAlpha] = this._base.hsl;
+    const [hue, saturation, lightness] = this._colorati.hsl;
 
     const fractionalSaturation = saturation / 100;
     const fractionalLightness = lightness / 100;
 
     const colors: Array<Colorati<Instance['config']>> = [];
-    const { alpha, alphaPrecision, colorPrecision } = this._base.config;
+    const { alpha, alphaPrecision, colorPrecision } = this._colorati.config;
     const options = { alpha, alphaPrecision, colorPrecision } as NormalizedOptions<Instance['config']>;
 
     for (let index = start; index <= end; index += interval) {
       const newHue = (hue + index) % 360;
-      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLightness, rawAlpha);
-      const color = new Colorati<NormalizedOptions<Instance['config']>>(raw, options);
+      const baseChannels = this._getBaseChannelsFromHsl(newHue / 360, fractionalSaturation, fractionalLightness);
+      const color = new Colorati<NormalizedOptions<Instance['config']>>(
+        baseChannels,
+        // @ts-expect-error - Introspection of protected property.
+        this._colorati._computedAlpha,
+        options,
+      );
 
       colors.push(color);
     }

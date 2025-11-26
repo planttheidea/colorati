@@ -1,44 +1,32 @@
-import { hash } from 'hash-it';
-import type { Rgb } from './colors.js';
+import type { BaseArrayColor, Rgb } from './colors.js';
 import type { ColorConfig, LabArray, LchArray, OkLabArray, RgbArray } from './types.js';
 
-export function getAlpha(rgba: RgbArray, { alpha, alphaType }: ColorConfig): number {
+export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): number {
   if (alphaType === 'manual') {
     return alpha;
   }
 
   if (alphaType === 'computed') {
-    return rgba[3];
+    return rawAlpha;
   }
 
   return 1;
 }
 
 export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbArray): RgbArray {
-  const [red, green, blue, alpha] = rgb;
+  const [red, green, blue] = rgb;
 
   const fractionalRed = red / 255;
   const fractionalGreen = green / 255;
   const fractionalBlue = blue / 255;
 
-  return [fractionalRed, fractionalGreen, fractionalBlue, alpha];
+  return [fractionalRed, fractionalGreen, fractionalBlue];
 }
 
 export function getHex([red, green, blue]: RgbArray): string {
   const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
 
   return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
-}
-
-export function getRaw(value: any): RgbArray {
-  const hashed = hash(value);
-
-  const red = (hashed & 0xff0000) >>> 16;
-  const green = (hashed & 0xff00) >>> 8;
-  const blue = hashed & 0xff;
-  const alpha = ((hashed & 0xff000000) >>> 24) / 255;
-
-  return [red, green, blue, alpha];
 }
 
 export function getLab(rgba: RgbArray): LabArray {
@@ -56,10 +44,10 @@ export function getLab(rgba: RgbArray): LabArray {
   const aAxis = 500 * (x - y);
   const bAxis = 200 * (y - z);
 
-  return [lightness, aAxis, bAxis, rgba[3]];
+  return [lightness, aAxis, bAxis];
 }
 
-export function getLch([lightness, aAxis, bAxis, alpha]: LabArray): LchArray {
+export function getLch([lightness, aAxis, bAxis]: LabArray): LchArray {
   const hueRadius = Math.atan2(bAxis, aAxis);
 
   let hue = (hueRadius * 360) / 2 / Math.PI;
@@ -70,7 +58,7 @@ export function getLch([lightness, aAxis, bAxis, alpha]: LabArray): LchArray {
 
   const chroma = Math.sqrt(aAxis ** 2 + bAxis ** 2);
 
-  return [lightness, chroma, hue, alpha];
+  return [lightness, chroma, hue];
 }
 
 export function getOkLab(rgba: RgbArray): OkLabArray {
@@ -88,7 +76,7 @@ export function getOkLab(rgba: RgbArray): OkLabArray {
   const aAxis = (1.9779984951 * lp - 2.428592205 * mp + 0.4505937099 * sp) * 100;
   const bAxis = (0.0259040371 * lp + 0.7827717662 * mp - 0.808675766 * sp) * 100;
 
-  return [lightness, aAxis, bAxis, rgba[3]];
+  return [lightness, aAxis, bAxis];
 }
 
 function getNonLinearValue(value: number): number {
@@ -101,8 +89,8 @@ function getNormalizedXyzValue(value: number): number {
   return value > threshold ? value ** (1 / 3) : 7.787 * value + 16 / 116;
 }
 
-export function getCssValueString(values: string[], alpha: number, config: ColorConfig): string {
-  return `${values.join(' ')} / ${roundTo(alpha, config.alphaPrecision)}`;
+export function getCssValueString(instance: BaseArrayColor<any[], ColorConfig>, values: string[]): string {
+  return `${values.join(' ')} / ${roundTo(instance.alpha, instance.config.alphaPrecision)}`;
 }
 
 export function roundTo(value: number, digits: number): string {
