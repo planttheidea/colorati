@@ -1,11 +1,11 @@
-import { Ansi16, Ansi256, Cmyk, Cmyka, Hex, Hexa, Hsl, Hsla, Hwb, Hwba, Rgb, Rgba } from './colors.js';
+import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Rgb } from './colors.js';
 import type {
   AnalogousColors,
   ClashColors,
   ColoratiOptions,
   ComplementColors,
   NeutralColors,
-  RgbaArray,
+  RgbArray,
   SplitColors,
   TetradColors,
   TriadColors,
@@ -19,24 +19,19 @@ const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
   options: Options;
 
-  private _raw: RgbaArray;
+  private _raw: RgbArray;
 
   private _ansi16: Ansi16<Options> | undefined;
   private _ansi256: Ansi256<Options> | undefined;
   private _cmyk: Cmyk<Options> | undefined;
-  private _cmyka: Cmyka<Options> | undefined;
   private _darkContrast: boolean | undefined;
   private _harmonies: ColorHarmonies<typeof this> | undefined;
   private _hex: Hex<Options> | undefined;
-  private _hexa: Hexa<Options> | undefined;
   private _hsl: Hsl<Options> | undefined;
-  private _hsla: Hsla<Options> | undefined;
   private _hwb: Hwb<Options> | undefined;
-  private _hwba: Hwba<Options> | undefined;
   private _rgb: Rgb<Options> | undefined;
-  private _rgba: Rgba<Options> | undefined;
 
-  constructor(raw: RgbaArray, options: Options) {
+  constructor(raw: RgbArray, options: Options) {
     this._raw = raw;
     this.options = options;
   }
@@ -53,17 +48,13 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
     return (this._cmyk ??= new Cmyk(this._raw, this.options));
   }
 
-  get cmyka(): Cmyka<Options> {
-    return (this._cmyka ??= new Cmyka(this._raw, this.options));
-  }
-
   get harmonies(): ColorHarmonies<typeof this> {
     return (this._harmonies ??= new ColorHarmonies(this));
   }
 
   get hasDarkContrast(): boolean {
     if (this._darkContrast == null) {
-      const luminance = getFractionalRgba(this.rgba)
+      const luminance = getFractionalRgba(this._raw)
         .slice(0, 3)
         .reduce<number>((currentLuminance, color, index) => {
           const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
@@ -82,32 +73,23 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
     return (this._hex ??= new Hex(this._raw, this.options));
   }
 
-  get hexa(): Hexa<Options> {
-    return (this._hexa ??= new Hexa(this._raw, this.options));
-  }
-
   get hsl(): Hsl<Options> {
     return (this._hsl ??= new Hsl(this._raw, this.options));
-  }
-
-  get hsla(): Hsla<Options> {
-    return (this._hsla ??= new Hsla(this._raw, this.options));
   }
 
   get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this.options));
   }
 
-  get hwba(): Hwba<Options> {
-    return (this._hwba ??= new Hwba(this._raw, this.options));
-  }
-
   get rgb(): Rgb<Options> {
     return (this._rgb ??= new Rgb(this._raw, this.options));
   }
 
-  get rgba(): Rgba<Options> {
-    return (this._rgba ??= new Rgba(this._raw, this.options));
+  clone<OverrideOptions extends ColoratiOptions>(
+    overrideOptions?: OverrideOptions,
+  ): Colorati<Omit<Options, keyof OverrideOptions> & OverrideOptions> {
+    // @ts-expect-error - Allow manual `options` override.
+    return new Colorati(this._raw, { ...this.options, ...overrideOptions });
   }
 }
 
@@ -126,12 +108,12 @@ export class ColorHarmonies<const Instance extends Colorati> {
     this._base = base;
   }
 
-  private _getRgbaFromHsla(hue: number, saturation: number, lightness: number, alpha: number): RgbaArray {
+  private _getRgbaFromHsla(hue: number, saturation: number, lightness: number, alpha: number): RgbArray {
     if (saturation === 0) {
       return [0, 0, 0, alpha];
     }
 
-    const rgba: RgbaArray = [0, 0, 0, alpha];
+    const rgba: RgbArray = [0, 0, 0, alpha];
     const temp2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
     const temp1 = 2 * lightness - temp2;
 
@@ -170,7 +152,7 @@ export class ColorHarmonies<const Instance extends Colorati> {
     end: number,
     interval: number,
   ): Tuple<Colorati<Instance['options']>, Length> {
-    const [hue, saturation, lightness, alpha] = this._base.hsla;
+    const [hue, saturation, lightness, alpha] = this._base.hsl;
 
     const fractionalSaturation = saturation / 100;
     const fractionalLightness = lightness / 100;

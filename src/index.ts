@@ -16,13 +16,13 @@ export function colorati<Options extends ColoratiOptions>(
   const options =
     typeof alpha === 'number' || alpha === true
       ? {
-          alpha,
+          alpha: true,
           alphaPrecision,
           cmykPrecision,
           hslPrecision,
           hwbPrecision,
         }
-      : { cmykPrecision, hslPrecision, hwbPrecision };
+      : { alphaPrecision: 0, cmykPrecision, hslPrecision, hwbPrecision };
   const raw = getRaw(value, alpha);
 
   return new Colorati<Options>(raw, options as Options);

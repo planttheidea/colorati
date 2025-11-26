@@ -5,6 +5,7 @@ export default createEslintConfig({
   configs: [
     {
       rules: {
+        '@typescript-eslint/prefer-for-of': 'off',
         '@typescript-eslint/restrict-template-expressions': 'off',
         'no-loss-of-precision': 'off',
       },

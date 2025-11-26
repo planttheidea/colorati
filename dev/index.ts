@@ -45,10 +45,10 @@ opacityToggle.addEventListener('change', (event) => {
     return;
   }
 
-  const color = colorati(value);
   const target = event.currentTarget as HTMLInputElement;
-  const backgroundColor = target.checked ? color.rgba : color.rgb;
-  const boxShadowColor = opacityToggle.checked ? color.harmonies.complement.rgba : color.harmonies.complement.rgb;
+  const color = colorati(value, { alpha: target.checked });
+  const backgroundColor = color.rgb;
+  const boxShadowColor = color.harmonies.complement.rgb;
 
   label.style.backgroundColor = `${backgroundColor}`;
   label.style.boxShadow = `0 0 20px ${boxShadowColor}`;
@@ -80,10 +80,18 @@ input.addEventListener('keyup', (event) => {
   prevValue = value;
 
   if (value) {
-    const color = colorati(value);
-    const backgroundColor = opacityToggle.checked ? color.hexa : color.hex;
-    const boxShadowColor = opacityToggle.checked ? color.harmonies.complement.rgba : color.harmonies.complement.rgb;
+    const color = colorati(value, { alpha: opacityToggle.checked });
+    const backgroundColor = color.hex;
+    const boxShadowColor = color.harmonies.complement.rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
+
+    const [c, m, y, k, a] = color.cmyk;
+
+    console.log([c, m, y, k, a]);
+
+    for (const value of color.cmyk) {
+      console.log({ value });
+    }
 
     console.log(JSON.stringify({ backgroundColor, boxShadowColor }, null, 2));
 
@@ -143,36 +151,26 @@ document.body.appendChild(resultContainer);
   ],
   1234567890,
 ].forEach((value) => {
-  const color = colorati(value);
+  const color = colorati(value, { alpha: false });
 
   console.log({
     raw: {
       ansi16: color.ansi16,
       ansi256: color.ansi256,
       cmyk: color.cmyk,
-      cmyka: color.cmyka,
       hex: color.hex,
-      hexa: color.hexa,
       hsl: color.hsl,
-      hsla: color.hsla,
       hwb: color.hwb,
-      hwba: color.hwba,
       rgb: color.rgb,
-      rgba: color.rgba,
     },
     values: {
       ansi16: color.ansi16.value,
       ansi256: color.ansi256.value,
       cmyk: color.cmyk.value,
-      cmyka: color.cmyka.value,
       hex: color.hex.value,
-      hexa: color.hexa.value,
       hsl: color.hsl.value,
-      hsla: color.hsla.value,
       hwb: color.hwb.value,
-      hwba: color.hwba.value,
       rgb: color.rgb.value,
-      rgba: color.rgba.value,
     },
   });
 
@@ -182,15 +180,10 @@ document.body.appendChild(resultContainer);
         ansi16: color.ansi16,
         ansi256: color.ansi256,
         cmyk: color.cmyk,
-        cmyka: color.cmyka,
         hex: color.hex,
-        hexa: color.hexa,
         hsl: color.hsl,
-        hsla: color.hsla,
         hwb: color.hwb,
-        hwba: color.hwba,
         rgb: color.rgb,
-        rgba: color.rgba,
       },
       null,
       2,

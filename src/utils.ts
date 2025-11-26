@@ -1,6 +1,6 @@
 import { hash } from 'hash-it';
-import type { Rgba } from './colors.js';
-import type { ColoratiOptions, RgbaArray } from './types.js';
+import type { Rgb } from './colors.js';
+import type { ColoratiOptions, RgbArray } from './types.js';
 
 export function getAlphaHex(alpha: number): string {
   return Math.round(alpha * 255)
@@ -9,8 +9,8 @@ export function getAlphaHex(alpha: number): string {
     .toUpperCase();
 }
 
-export function getFractionalRgba(rgba: Rgba<ColoratiOptions> | RgbaArray): RgbaArray {
-  const [red, green, blue, alpha] = rgba;
+export function getFractionalRgba(rgb: Rgb<ColoratiOptions> | RgbArray): RgbArray {
+  const [red, green, blue, alpha] = rgb;
 
   const fractionalRed = red / 255;
   const fractionalGreen = green / 255;
@@ -19,13 +19,13 @@ export function getFractionalRgba(rgba: Rgba<ColoratiOptions> | RgbaArray): Rgba
   return [fractionalRed, fractionalGreen, fractionalBlue, alpha];
 }
 
-export function getHex([red, green, blue]: RgbaArray): string {
+export function getHex([red, green, blue]: RgbArray): string {
   const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
 
   return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
 }
 
-export function getRaw(value: any, passedAlpha: number | true | undefined): RgbaArray {
+export function getRaw(value: any, passedAlpha: number | true | undefined): RgbArray {
   const hashed = hash(value);
 
   const red = (hashed & 0xff0000) >>> 16;

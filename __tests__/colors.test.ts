@@ -1,10 +1,9 @@
 import type { ColoratiOptions } from 'types.js';
 import { describe, expect, test } from 'vitest';
-import { Ansi16, Ansi256, Hsla } from '../src/colors.js';
+import { Ansi16, Ansi256, Hsl } from '../src/colors.js';
 
 const DEFAULT_OPTIONS: ColoratiOptions = {
-  alpha: true,
-  alphaPrecision: 2,
+  alpha: 1,
   cmykPrecision: 1,
   hslPrecision: 2,
   hwbPrecision: 2,
@@ -12,33 +11,33 @@ const DEFAULT_OPTIONS: ColoratiOptions = {
 
 describe('_getHslHue', () => {
   test('when max is red', () => {
-    const color = new Hsla([255, 0, 0, 1], DEFAULT_OPTIONS);
+    const color = new Hsl([255, 0, 0, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsla]).toEqual([0, 100, 50, 1]);
+    expect([...color.hsl]).toEqual([0, 100, 50, 1]);
   });
 
   test('when max is green', () => {
-    const color = new Hsla([0, 255, 0, 1], DEFAULT_OPTIONS);
+    const color = new Hsl([0, 255, 0, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsla]).toEqual([120, 100, 50, 1]);
+    expect([...color.hsl]).toEqual([120, 100, 50, 1]);
   });
 
   test('when max is blue', () => {
-    const color = new Hsla([0, 0, 255, 1], DEFAULT_OPTIONS);
+    const color = new Hsl([0, 0, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsla]).toEqual([240, 100, 50, 1]);
+    expect([...color.hsl]).toEqual([240, 100, 50, 1]);
   });
 
   test('when there is no delta', () => {
-    const color = new Hsla([255, 255, 255, 1], DEFAULT_OPTIONS);
+    const color = new Hsl([255, 255, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsla]).toEqual([0, 0, 1, 1]);
+    expect([...color.hsl]).toEqual([0, 0, 1, 1]);
   });
 
   test('when hue computes to be less than 0', () => {
-    const color = new Hsla([255, 0, 255, 1], DEFAULT_OPTIONS);
+    const color = new Hsl([255, 0, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsla]).toEqual([300, 100, 50, 1]);
+    expect([...color.hsl]).toEqual([300, 100, 50, 1]);
   });
 });
 
