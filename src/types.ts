@@ -8,37 +8,31 @@ export type OkLabArray = [lightness: number, aAxis: number, bAxis: number];
 export type OkLchArray = [lightness: number, chroma: number, hue: number];
 export type RgbArray = [red: number, green: number, blue: number];
 
-export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 'hwb' | 'hwba' | 'rgb' | 'rgba';
-
-export interface AnyColoratiOptions {
-  alpha?: number | boolean | null;
+interface BaseColoratiOptions {
+  alpha?: number | boolean;
   alphaPrecision?: number;
   colorPrecision?: number;
 }
 
-export interface ExplicitOpaqueColoratiOptions extends AnyColoratiOptions {
-  alpha: false | null;
+export interface ExplicitOpaqueColoratiOptions extends BaseColoratiOptions {
+  alpha: false;
   alphaPrecision?: undefined;
 }
 
-export interface ImplicitOpaqueColoratiOptions extends AnyColoratiOptions {
+export interface ImplicitOpaqueColoratiOptions extends BaseColoratiOptions {
   alpha?: undefined;
   alphaPrecision?: undefined;
 }
 
-export interface SemiOpaqueComputedColoratiOptions extends AnyColoratiOptions {
+export interface SemiOpaqueComputedColoratiOptions extends BaseColoratiOptions {
   alpha: true;
 }
 
-export interface SemiOpaqueManualColoratiOptions extends AnyColoratiOptions {
+export interface SemiOpaqueManualColoratiOptions extends BaseColoratiOptions {
   alpha: number;
 }
 
 export type AlphaType = 'computed' | 'ignored' | 'manual';
-
-export interface AnyColorConfig extends Required<AnyColoratiOptions> {
-  alphaType: AlphaType;
-}
 
 export type ColoratiOptions =
   | ExplicitOpaqueColoratiOptions
@@ -85,4 +79,4 @@ type TupleOf<Type, Length extends number, Rest extends unknown[]> = Rest['length
   ? Rest
   : TupleOf<Type, Length, [Type, ...Rest]>;
 
-export type Color<Tuple extends any[]> = [...Tuple, alpha: number];
+export type Value<Tuple extends any[]> = [...Tuple, alpha: number];

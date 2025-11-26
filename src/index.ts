@@ -2,6 +2,9 @@ import { hash } from 'hash-it';
 import { Colorati } from './Colorati.js';
 import type { ColoratiOptions } from './types.js';
 
+export type * from './types.js';
+export { Colorati } from './Colorati.js';
+
 export function colorati<Options extends ColoratiOptions>(value: any, options: Options = {} as Options) {
   const hashed = hash(value);
 

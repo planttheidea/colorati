@@ -6,9 +6,9 @@ test('ansi16', () => {
   const color = colorati({ foo: 'bar' });
 
   expect(+color.ansi16).toBe(97);
-  expect(color.ansi16.alpha).toBe(undefined);
-  expect(color.ansi16.channels).toBe(undefined);
-  expect(color.ansi16.css).toBe(undefined);
+  expect(color.ansi16.alpha).toBe(null);
+  expect(color.ansi16.channels).toBe(null);
+  expect(color.ansi16.css).toBe(null);
   expect(color.ansi16.value).toBe(97);
   expect(color.ansi16.toString()).toBe('97');
 
@@ -23,9 +23,9 @@ test('ansi256', () => {
   const color = colorati({ foo: 'bar' });
 
   expect(+color.ansi256).toBe(229);
-  expect(color.ansi256.alpha).toBe(undefined);
-  expect(color.ansi256.channels).toBe(undefined);
-  expect(color.ansi256.css).toBe(undefined);
+  expect(color.ansi256.alpha).toBe(null);
+  expect(color.ansi256.channels).toBe(null);
+  expect(color.ansi256.css).toBe(null);
   expect(color.ansi256.value).toBe(229);
   expect(color.ansi256.toString()).toBe('229');
 
@@ -40,7 +40,7 @@ describe('hex', () => {
   test('opaque', () => {
     const color = colorati({ foo: 'bar' });
 
-    expect(color.hex.alpha).toBe('');
+    expect(color.hex.alpha).toBe(null);
     expect(color.hex.channels).toBe('F1F091');
     expect(color.hex.css).toBe('#F1F091');
     expect(color.hex.value).toBe('F1F091');

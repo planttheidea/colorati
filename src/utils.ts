@@ -1,5 +1,17 @@
 import type { BaseArrayColor, Rgb } from './colors.js';
-import type { ColorConfig, LabArray, LchArray, OkLabArray, RgbArray } from './types.js';
+import type {
+  AlphaType,
+  ColoratiOptions,
+  ColorConfig,
+  ExplicitOpaqueColorConfig,
+  ImplicitOpaqueColorConfig,
+  LabArray,
+  LchArray,
+  OkLabArray,
+  RgbArray,
+  SemiOpaqueComputedColorConfig,
+  SemiOpaqueManualColorConfig,
+} from './types.js';
 
 export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): number {
   if (alphaType === 'manual') {
@@ -21,12 +33,6 @@ export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbArray): RgbArray {
   const fractionalBlue = blue / 255;
 
   return [fractionalRed, fractionalGreen, fractionalBlue];
-}
-
-export function getHex([red, green, blue]: RgbArray): string {
-  const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
-
-  return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
 }
 
 export function getLab(rgba: RgbArray): LabArray {
@@ -59,6 +65,31 @@ export function getLch([lightness, aAxis, bAxis]: LabArray): LchArray {
   const chroma = Math.sqrt(aAxis ** 2 + bAxis ** 2);
 
   return [lightness, chroma, hue];
+}
+
+export function getNormalizedConfig<const Options extends ColoratiOptions>(
+  options: Options,
+): Options['alpha'] extends number
+  ? SemiOpaqueManualColorConfig
+  : true extends Options['alpha']
+    ? SemiOpaqueComputedColorConfig
+    : false extends Options['alpha']
+      ? ExplicitOpaqueColorConfig
+      : ImplicitOpaqueColorConfig {
+  const { alpha = false, alphaPrecision = 2, colorPrecision = 2 } = options;
+
+  let alphaType: AlphaType;
+
+  if (typeof alpha === 'number') {
+    alphaType = 'manual';
+  } else if (alpha) {
+    alphaType = 'computed';
+  } else {
+    alphaType = 'ignored';
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+  return { alpha, alphaPrecision, alphaType, colorPrecision } as any;
 }
 
 export function getOkLab(rgba: RgbArray): OkLabArray {

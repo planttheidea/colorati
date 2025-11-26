@@ -1,6 +1,5 @@
 import { Ansi16, Ansi256, BaseColor, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
 import type {
-  AlphaType,
   AnalogousColors,
   ClashColors,
   ColoratiOptions,
@@ -21,7 +20,7 @@ import type {
   TriadColors,
   Tuple,
 } from './types.js';
-import { getFractionalRgba } from './utils.js';
+import { getFractionalRgba, getNormalizedConfig } from './utils.js';
 
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
@@ -48,27 +47,8 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
   private _oklch: OkLch<NormalizedConfig<Options>> | undefined;
   private _rgb: Rgb<NormalizedConfig<Options>> | undefined;
 
-  constructor(raw: RgbArray, rawAlpha: number, options: Options) {
-    const { alphaPrecision = 2, colorPrecision = 2 } = options;
-
-    let alphaType: AlphaType;
-
-    if (typeof options.alpha === 'number') {
-      alphaType = 'manual';
-    } else if (options.alpha) {
-      alphaType = 'computed';
-    } else {
-      alphaType = 'ignored';
-    }
-
-    const config = {
-      alpha: options.alpha ?? false,
-      alphaPrecision,
-      alphaType,
-      colorPrecision,
-    } as NormalizedConfig<Options>;
-
-    super(raw, rawAlpha, config);
+  constructor(baseChannels: RgbArray, rawAlpha: number, options: Options) {
+    super(baseChannels, rawAlpha, getNormalizedConfig(options));
   }
 
   get ansi16(): Ansi16<NormalizedConfig<Options>> {

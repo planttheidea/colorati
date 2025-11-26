@@ -1,5 +1,4 @@
 import type {
-  Color,
   ColorConfig,
   HslArray,
   HwbArray,
@@ -8,17 +7,18 @@ import type {
   OkLabArray,
   OkLchArray,
   RgbArray,
+  Value,
 } from './types.js';
-import { getAlpha, getCssValueString, getFractionalRgba, getHex, getLab, getLch, getOkLab, roundTo } from './utils.js';
+import { getAlpha, getCssValueString, getFractionalRgba, getLab, getLch, getOkLab, roundTo } from './utils.js';
 
 export class BaseColor<const Config extends ColorConfig> {
   config: ColorConfig;
 
-  protected _alpha: number | string | undefined;
+  protected _alpha: null | number | string | undefined;
   protected _baseChannels: RgbArray;
   protected _computedAlpha: number;
-  protected _css: number | string | undefined;
-  protected _channels: any[] | number | string | undefined;
+  protected _css: null | number | string | undefined;
+  protected _channels: any[] | null | number | string | undefined;
   protected _value: any[] | number | string | undefined;
 
   constructor(baseChannels: RgbArray, computedAlpha: number, config: Config) {
@@ -59,7 +59,7 @@ export class BaseArrayColor<const Channels extends any[], const Config extends C
   protected override _alpha: number | undefined;
   protected override _css: string | undefined;
   protected override _channels: Channels | undefined;
-  protected override _value: Color<Channels> | undefined;
+  protected override _value: Value<Channels> | undefined;
 
   [index: number]: number;
 
@@ -82,7 +82,7 @@ export class BaseArrayColor<const Channels extends any[], const Config extends C
     return this._css ?? '';
   }
 
-  override get value(): Color<Channels> {
+  override get value(): Value<Channels> {
     return (this._value ??= Array.from(this) as [...Channels, number]);
   }
 
@@ -108,16 +108,16 @@ class BaseAnsiColor<const Config extends ColorConfig> extends BaseColor<Config> 
     this._value = value;
   }
 
-  override get alpha(): undefined {
-    return undefined;
+  override get alpha(): null {
+    return null;
   }
 
-  override get channels(): undefined {
-    return undefined;
+  override get channels(): null {
+    return null;
   }
 
-  override get css(): undefined {
-    return undefined;
+  override get css(): null {
+    return null;
   }
 
   override get value(): number {
@@ -138,19 +138,19 @@ class BaseAnsiColor<const Config extends ColorConfig> extends BaseColor<Config> 
 }
 
 class BaseStringColor<const Config extends ColorConfig> extends BaseColor<Config> {
-  protected override _alpha: string;
+  protected override _alpha: string | null;
   protected override _css: string | undefined;
   protected override _channels: string;
   protected override _value: string | undefined;
 
-  constructor(baseChannels: RgbArray, computedAlpha: number, config: Config, value: string, alpha: string) {
+  constructor(baseChannels: RgbArray, computedAlpha: number, config: Config, value: string, alpha: null | string) {
     super(baseChannels, computedAlpha, config);
 
     this._alpha = alpha;
     this._channels = value;
   }
 
-  override get alpha() {
+  override get alpha(): null | string {
     return this._alpha;
   }
 
@@ -163,7 +163,7 @@ class BaseStringColor<const Config extends ColorConfig> extends BaseColor<Config
   }
 
   override get value(): string {
-    return (this._value ??= `${this._channels}${this._alpha}`);
+    return (this._value ??= this._alpha != null ? `${this._channels}${this._alpha}` : this._channels);
   }
 
   *[Symbol.iterator]() {
@@ -239,14 +239,18 @@ export class Ansi256<const Config extends ColorConfig> extends BaseAnsiColor<Con
 
 export class Hex<const Config extends ColorConfig> extends BaseStringColor<Config> {
   constructor(baseChannels: RgbArray, computedAlpha: number, config: Config) {
+    const [red, green, blue] = baseChannels;
+
+    const integer = ((Math.round(red) & 0xff) << 16) + ((Math.round(green) & 0xff) << 8) + (Math.round(blue) & 0xff);
+    const value = integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
+
     const alpha =
       config.alphaType === 'ignored'
-        ? ''
+        ? null
         : Math.round(getAlpha(computedAlpha, config) * 255)
             .toString(16)
             .padStart(2, '0')
             .toUpperCase();
-    const value = getHex(baseChannels);
 
     super(baseChannels, computedAlpha, config, value, alpha);
   }
