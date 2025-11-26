@@ -50,7 +50,7 @@ opacityToggle.addEventListener('change', (event) => {
   const color = colorati(value, { alpha: target.checked ? 0.2 : false });
   // const color = colorati(value, { alpha: target.checked });
   const backgroundColor = color.rgb;
-  const boxShadowColor = color.harmonies.complement.rgb;
+  const boxShadowColor = color.harmonies.complement[1].rgb;
 
   label.style.backgroundColor = `${backgroundColor}`;
   label.style.boxShadow = `0 0 20px ${boxShadowColor}`;
@@ -84,8 +84,8 @@ input.addEventListener('keyup', (event) => {
   if (value) {
     const color = colorati(value, { alpha: opacityToggle.checked ? 0.2 : 1 });
     // const color = colorati(value, { alpha: opacityToggle.checked });
-    const backgroundColor = color.hsl;
-    const boxShadowColor = color.harmonies.complement.rgb;
+    const backgroundColor = color.oklch;
+    const boxShadowColor = color.harmonies.complement[1].rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
 
     console.log(JSON.stringify({ backgroundColor, boxShadowColor }, null, 2));

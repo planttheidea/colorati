@@ -542,74 +542,83 @@ describe('harmonies', () => {
     const color = colorati({ foo: 'bar' });
     const { analogous } = color.harmonies;
 
-    expect(analogous.length).toBe(5);
+    expect(analogous.length).toBe(6);
 
-    expect([...analogous[0].rgb]).toEqual([194, 241, 145, color.rgb[3]]);
-    expect([...analogous[1].rgb]).toEqual([146, 241, 145, color.rgb[3]]);
-    expect([...analogous[2].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
-    expect([...analogous[3].rgb]).toEqual([145, 241, 240, color.rgb[3]]);
-    expect([...analogous[4].rgb]).toEqual([145, 194, 241, color.rgb[3]]);
+    expect([...analogous[0].rgb]).toEqual([...color.rgb]);
+    expect([...analogous[1].rgb]).toEqual([194, 241, 145, color.rgb[3]]);
+    expect([...analogous[2].rgb]).toEqual([146, 241, 145, color.rgb[3]]);
+    expect([...analogous[3].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
+    expect([...analogous[4].rgb]).toEqual([145, 241, 240, color.rgb[3]]);
+    expect([...analogous[5].rgb]).toEqual([145, 194, 241, color.rgb[3]]);
   });
 
   test('clash', () => {
     const color = colorati({ foo: 'bar' });
     const { clash } = color.harmonies;
 
-    expect(clash.length).toBe(2);
+    expect(clash.length).toBe(3);
 
-    expect([...clash[0].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
-    expect([...clash[1].rgb]).toEqual([241, 145, 194, color.rgb[3]]);
+    expect([...clash[0].rgb]).toEqual([...color.rgb]);
+    expect([...clash[1].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
+    expect([...clash[2].rgb]).toEqual([241, 145, 194, color.rgb[3]]);
   });
 
   test('complement', () => {
     const color = colorati({ foo: 'bar' });
     const { complement } = color.harmonies;
 
-    expect([...complement.rgb]).toEqual([145, 146, 241, color.rgb[3]]);
+    expect(complement.length).toBe(2);
+
+    expect([...complement[0].rgb]).toEqual([...color.rgb]);
+    expect([...complement[1].rgb]).toEqual([145, 146, 241, color.rgb[3]]);
   });
 
   test('neutral', () => {
     const color = colorati({ foo: 'bar' });
     const { neutral } = color.harmonies;
 
-    expect(neutral.length).toBe(5);
+    expect(neutral.length).toBe(6);
 
-    expect([...neutral[0].rgb]).toEqual([218, 241, 145, color.rgb[3]]);
-    expect([...neutral[1].rgb]).toEqual([194, 241, 145, color.rgb[3]]);
-    expect([...neutral[2].rgb]).toEqual([170, 241, 145, color.rgb[3]]);
-    expect([...neutral[3].rgb]).toEqual([146, 241, 145, color.rgb[3]]);
-    expect([...neutral[4].rgb]).toEqual([145, 241, 168, color.rgb[3]]);
+    expect([...neutral[0].rgb]).toEqual([...color.rgb]);
+    expect([...neutral[1].rgb]).toEqual([218, 241, 145, color.rgb[3]]);
+    expect([...neutral[2].rgb]).toEqual([194, 241, 145, color.rgb[3]]);
+    expect([...neutral[3].rgb]).toEqual([170, 241, 145, color.rgb[3]]);
+    expect([...neutral[4].rgb]).toEqual([146, 241, 145, color.rgb[3]]);
+    expect([...neutral[5].rgb]).toEqual([145, 241, 168, color.rgb[3]]);
   });
 
   test('split', () => {
     const color = colorati({ foo: 'bar' });
     const { split } = color.harmonies;
 
-    expect(split.length).toBe(2);
+    expect(split.length).toBe(3);
 
-    expect([...split[0].rgb]).toEqual([145, 194, 241, color.rgb[3]]);
-    expect([...split[1].rgb]).toEqual([192, 145, 241, color.rgb[3]]);
+    expect([...split[0].rgb]).toEqual([...color.rgb]);
+    expect([...split[1].rgb]).toEqual([145, 194, 241, color.rgb[3]]);
+    expect([...split[2].rgb]).toEqual([192, 145, 241, color.rgb[3]]);
   });
 
   test('tetrad', () => {
     const color = colorati({ foo: 'bar' });
     const { tetrad } = color.harmonies;
 
-    expect(tetrad.length).toBe(3);
+    expect(tetrad.length).toBe(4);
 
-    expect([...tetrad[0].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
-    expect([...tetrad[1].rgb]).toEqual([145, 146, 241, color.rgb[3]]);
-    expect([...tetrad[2].rgb]).toEqual([241, 145, 194, color.rgb[3]]);
+    expect([...tetrad[0].rgb]).toEqual([...color.rgb]);
+    expect([...tetrad[1].rgb]).toEqual([145, 241, 192, color.rgb[3]]);
+    expect([...tetrad[2].rgb]).toEqual([145, 146, 241, color.rgb[3]]);
+    expect([...tetrad[3].rgb]).toEqual([241, 145, 194, color.rgb[3]]);
   });
 
   test('triad', () => {
     const color = colorati({ foo: 'bar' });
     const { triad } = color.harmonies;
 
-    expect(triad.length).toBe(2);
+    expect(triad.length).toBe(3);
 
-    expect([...triad[0].rgb]).toEqual([145, 241, 240, color.rgb[3]]);
-    expect([...triad[1].rgb]).toEqual([240, 145, 241, color.rgb[3]]);
+    expect([...triad[0].rgb]).toEqual([...color.rgb]);
+    expect([...triad[1].rgb]).toEqual([145, 241, 240, color.rgb[3]]);
+    expect([...triad[2].rgb]).toEqual([240, 145, 241, color.rgb[3]]);
   });
 });
 

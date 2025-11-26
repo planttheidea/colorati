@@ -5,11 +5,11 @@ import type { ColorConfig } from '../src/types.js';
 const DEFAULT_OPTIONS = {
   alpha: false,
   alphaType: 'ignored',
-  colorPrecision: 2,
+  channelPrecision: 2,
 } as ColorConfig;
 
 test.only('_getBaseChannelsFromHsl', () => {
   const color = new Colorati([0, 0, 0], 1, DEFAULT_OPTIONS);
 
-  expect([...color.harmonies.complement.rgb]).toEqual([0, 0, 0, 1]);
+  expect([...color.harmonies.complement[1].rgb]).toEqual([0, 0, 0, 1]);
 });

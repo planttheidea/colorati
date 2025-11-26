@@ -5,10 +5,10 @@ import type {
   ColorConfig,
   ExplicitOpaqueColorConfig,
   ImplicitOpaqueColorConfig,
-  LabArray,
-  LchArray,
-  OkLabArray,
-  RgbArray,
+  LabChannels,
+  LchChannels,
+  OkLabChannels,
+  RgbChannels,
   SemiOpaqueComputedColorConfig,
   SemiOpaqueManualColorConfig,
 } from './types.js';
@@ -25,7 +25,7 @@ export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): n
   return 1;
 }
 
-export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbArray): RgbArray {
+export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbChannels): RgbChannels {
   const [red, green, blue] = rgb;
 
   const fractionalRed = red / 255;
@@ -35,7 +35,7 @@ export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbArray): RgbArray {
   return [fractionalRed, fractionalGreen, fractionalBlue];
 }
 
-export function getLab(rgba: RgbArray): LabArray {
+export function getLab(rgba: RgbChannels): LabChannels {
   const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
   const red = getNonLinearValue(fractionalRed);
@@ -53,7 +53,7 @@ export function getLab(rgba: RgbArray): LabArray {
   return [lightness, aAxis, bAxis];
 }
 
-export function getLch([lightness, aAxis, bAxis]: LabArray): LchArray {
+export function getLch([lightness, aAxis, bAxis]: LabChannels): LchChannels {
   const hueRadius = Math.atan2(bAxis, aAxis);
 
   let hue = (hueRadius * 360) / 2 / Math.PI;
@@ -76,7 +76,7 @@ export function getNormalizedConfig<const Options extends ColoratiOptions>(
     : false extends Options['alpha']
       ? ExplicitOpaqueColorConfig
       : ImplicitOpaqueColorConfig {
-  const { alpha = false, alphaPrecision = 2, colorPrecision = 2 } = options;
+  const { alpha = false, alphaPrecision = 2, channelPrecision = 2 } = options;
 
   let alphaType: AlphaType;
 
@@ -89,10 +89,10 @@ export function getNormalizedConfig<const Options extends ColoratiOptions>(
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return { alpha, alphaPrecision, alphaType, colorPrecision } as any;
+  return { alpha, alphaPrecision, alphaType, channelPrecision } as any;
 }
 
-export function getOkLab(rgba: RgbArray): OkLabArray {
+export function getOkLab(rgba: RgbChannels): OkLabChannels {
   const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
   const red = getNonLinearValue(fractionalRed);

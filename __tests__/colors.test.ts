@@ -6,7 +6,7 @@ import { getLch } from '../src/utils.js';
 const DEFAULT_OPTIONS = {
   alpha: false,
   alphaType: 'ignored',
-  colorPrecision: 2,
+  channelPrecision: 2,
 } as ColorConfig;
 
 describe('_getHslHue', () => {

@@ -1,17 +1,50 @@
 import type { Colorati } from './Colorati.js';
 
-export type HslArray = [hue: number, saturation: number, lightness: number];
-export type HwbArray = [hue: number, whiteness: number, blackness: number];
-export type LabArray = [lightness: number, aAxis: number, bAxis: number];
-export type LchArray = [lightness: number, chroma: number, hue: number];
-export type OkLabArray = [lightness: number, aAxis: number, bAxis: number];
-export type OkLchArray = [lightness: number, chroma: number, hue: number];
-export type RgbArray = [red: number, green: number, blue: number];
+/**
+ * Channels for the hue, saturation, lightness color model.
+ */
+export type HslChannels = [hue: number, saturation: number, lightness: number];
+/**
+ * Channels for the hue, whiteness, blackness color model.
+ */
+export type HwbChannels = [hue: number, whiteness: number, blackness: number];
+/**
+ * Channels for the lightness, a-axis, b-axis model in the CIELAB color space.
+ */
+export type LabChannels = [lightness: number, aAxis: number, bAxis: number];
+/**
+ * Channels for the lightness, chroma, hue model in the CIELAB color space.
+ */
+export type LchChannels = [lightness: number, chroma: number, hue: number];
+/**
+ * Channels for the lightness, a-axis, b-axis model in the CIELAB color space with a focus on
+ * greater uniformity.
+ */
+export type OkLabChannels = [lightness: number, aAxis: number, bAxis: number];
+/**
+ * Channels for the lightness, chroma, hue model in the CIELAB color space with a focus on
+ * greater uniformity.
+ */
+export type OkLchChannels = [lightness: number, chroma: number, hue: number];
+/**
+ * Channels for the red, green, blue model.
+ */
+export type RgbChannels = [red: number, green: number, blue: number];
 
 interface BaseColoratiOptions {
+  /**
+   * Whether to use an alpha channel on the resulting color value. If a number is passed, it is used directly; if
+   * `true` is passed, then it is computed based on the value in the same way the color channels are.
+   */
   alpha?: number | boolean;
+  /**
+   * How many decimals to round the alpha to. Only applies to array color schemes.
+   */
   alphaPrecision?: number;
-  colorPrecision?: number;
+  /**
+   * How many decimals to round the color channels to. Only applied to array color schemes.
+   */
+  channelPrecision?: number;
 }
 
 export interface ExplicitOpaqueColoratiOptions extends BaseColoratiOptions {
@@ -62,13 +95,29 @@ export type ColorConfig =
   | SemiOpaqueComputedColorConfig
   | SemiOpaqueManualColorConfig;
 
-export type AnalogousColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 5>;
-export type ComplementColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 1>;
-export type ClashColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
-export type NeutralColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 5>;
-export type SplitColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
-export type TetradColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 3>;
-export type TriadColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
+export type NormalizedConfig<Options extends ColoratiOptions> = Options['alpha'] extends number
+  ? SemiOpaqueManualColorConfig
+  : true extends Options['alpha']
+    ? SemiOpaqueComputedColorConfig
+    : false extends Options['alpha']
+      ? ExplicitOpaqueColorConfig
+      : ImplicitOpaqueColorConfig;
+
+export type NormalizedOptions<Config extends ColorConfig> = Config extends SemiOpaqueComputedColorConfig
+  ? SemiOpaqueComputedColoratiOptions
+  : Config extends SemiOpaqueManualColorConfig
+    ? SemiOpaqueManualColoratiOptions
+    : Config extends ExplicitOpaqueColorConfig
+      ? ExplicitOpaqueColoratiOptions
+      : ImplicitOpaqueColoratiOptions;
+
+export type AnalogousColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 6>;
+export type ComplementColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
+export type ClashColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 3>;
+export type NeutralColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 6>;
+export type SplitColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 3>;
+export type TetradColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 4>;
+export type TriadColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 3>;
 
 export type Tuple<Type, Length extends number> = Length extends Length
   ? number extends Length
