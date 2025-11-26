@@ -40,3 +40,7 @@ export function getRaw(value: any, passedAlpha: number | true | undefined): RgbA
 
   return [red, green, blue, alpha];
 }
+
+export function getNonLinearValue(value: number): number {
+  return value > 0.040_45 ? ((value + 0.055) / 1.055) ** 2.4 : value / 12.92;
+}

@@ -10,6 +10,7 @@ export function colorati<Options extends ColoratiOptions>(
     cmykPrecision = 1,
     hslPrecision = 2,
     hwbPrecision = 2,
+    labPrecision = 2,
   }: Options = {} as Options,
 ) {
   const alpha = typeof passedAlpha === 'number' || passedAlpha === true ? passedAlpha : undefined;
@@ -21,8 +22,9 @@ export function colorati<Options extends ColoratiOptions>(
           cmykPrecision,
           hslPrecision,
           hwbPrecision,
+          labPrecision,
         }
-      : { alphaPrecision: 0, cmykPrecision, hslPrecision, hwbPrecision };
+      : { alphaPrecision: 0, cmykPrecision, hslPrecision, hwbPrecision, labPrecision };
   const raw = getRaw(value, alpha);
 
   return new Colorati<Options>(raw, options as Options);

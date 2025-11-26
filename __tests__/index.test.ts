@@ -198,6 +198,100 @@ describe('hwb', () => {
   });
 });
 
+describe('lab', () => {
+  test('opaque', () => {
+    const color = colorati({ foo: 'bar' });
+
+    expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 1]);
+    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98,1)`);
+
+    const [lightness, aAxis, bAxis] = color.lab;
+
+    const rgb = convert.lab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('computed alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: true });
+
+    expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 0.25098039215686274]);
+    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98,0.25)`);
+
+    const [lightness, aAxis, bAxis] = color.lab;
+
+    const rgb = convert.lab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('manual alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
+
+    expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 0.65]);
+    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98,0.65)`);
+
+    const [lightness, aAxis, bAxis] = color.lab;
+
+    const rgb = convert.lab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+});
+
+describe('oklab', () => {
+  test('opaque', () => {
+    const color = colorati({ foo: 'bar' });
+
+    expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 1]);
+    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16,1)`);
+
+    const [lightness, aAxis, bAxis] = color.oklab;
+
+    // @ts-expect-error - `oklab` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('computed alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: true });
+
+    expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.25098039215686274]);
+    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16,0.25)`);
+
+    const [lightness, aAxis, bAxis] = color.oklab;
+
+    // @ts-expect-error - `oklab` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+
+  test('manual alpha', () => {
+    const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
+
+    expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.65]);
+    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16,0.65)`);
+
+    const [lightness, aAxis, bAxis] = color.oklab;
+
+    // @ts-expect-error - `oklab` does not exist as a namespace on `convert`
+    // eslint-disable-next-line
+    const rgb = convert.oklab.rgb(lightness, aAxis, bAxis);
+    const [r, g, b] = color.rgb;
+
+    expect(rgb).toEqual([r, g, b]);
+  });
+});
+
 describe('rgb', () => {
   test('opaque', () => {
     const color = colorati({ foo: 'bar' });

@@ -1,4 +1,4 @@
-import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Rgb } from './colors.js';
+import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Lab, OkLab, Rgb } from './colors.js';
 import type {
   AnalogousColors,
   ClashColors,
@@ -29,6 +29,8 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
   private _hex: Hex<Options> | undefined;
   private _hsl: Hsl<Options> | undefined;
   private _hwb: Hwb<Options> | undefined;
+  private _lab: Lab<Options> | undefined;
+  private _oklab: OkLab<Options> | undefined;
   private _rgb: Rgb<Options> | undefined;
 
   constructor(raw: RgbArray, options: Options) {
@@ -79,6 +81,14 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
 
   get hwb(): Hwb<Options> {
     return (this._hwb ??= new Hwb(this._raw, this.options));
+  }
+
+  get lab(): Lab<Options> {
+    return (this._lab ??= new Lab(this._raw, this.options));
+  }
+
+  get oklab(): OkLab<Options> {
+    return (this._oklab ??= new OkLab(this._raw, this.options));
   }
 
   get rgb(): Rgb<Options> {

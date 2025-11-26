@@ -161,6 +161,8 @@ document.body.appendChild(resultContainer);
       hex: color.hex,
       hsl: color.hsl,
       hwb: color.hwb,
+      lab: color.lab,
+      oklab: color.oklab,
       rgb: color.rgb,
     },
     values: {
@@ -170,6 +172,8 @@ document.body.appendChild(resultContainer);
       hex: color.hex.value,
       hsl: color.hsl.value,
       hwb: color.hwb.value,
+      lab: color.lab.value,
+      oklab: color.oklab.value,
       rgb: color.rgb.value,
     },
   });
@@ -183,6 +187,8 @@ document.body.appendChild(resultContainer);
         hex: color.hex,
         hsl: color.hsl,
         hwb: color.hwb,
+        lab: color.lab,
+        oklab: color.oklab,
         rgb: color.rgb,
       },
       null,
