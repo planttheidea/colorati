@@ -26,7 +26,7 @@ test('ansi256', () => {
 });
 
 test('cmyka', () => {
-  const color = colorati({ foo: 'bar' });
+  const color = colorati({ foo: 'bar' }, { alpha: true });
 
   expect([...color.cmyka]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
   expect(color.cmyka.toString()).toBe('cmyka(0.0%,0.4%,39.8%,5.5%,0.25)');
@@ -52,7 +52,7 @@ test('cmyk', () => {
 });
 
 test('hexa', () => {
-  const color = colorati({ foo: 'bar' });
+  const color = colorati({ foo: 'bar' }, { alpha: true });
 
   expect(color.hexa.valueOf()).toBe('F1F09140');
   expect(color.hexa.toString()).toBe('#F1F09140');
@@ -76,7 +76,7 @@ test('hex', () => {
 });
 
 test('hsla', () => {
-  const color = colorati({ foo: 'bar' });
+  const color = colorati({ foo: 'bar' }, { alpha: true });
 
   expect([...color.hsla]).toEqual([59.375, 77.41935483870967, 75.68627450980392, 0.25098039215686274]);
   expect(color.hsla.toString()).toBe(`hsla(59,77.42%,75.69%,0.25)`);
@@ -100,7 +100,7 @@ test('hsl', () => {
 });
 
 test('hwba', () => {
-  const color = colorati({ foo: 'bar' });
+  const color = colorati({ foo: 'bar' }, { alpha: true });
 
   expect([...color.hwba]).toEqual([59.375, 56.86274509803921, 5.490196078431375, 0.25098039215686274]);
   expect(color.hwba.toString()).toBe(`hwba(59,56.86%,5.49%,0.25)`);
@@ -124,7 +124,7 @@ test('hwb', () => {
 });
 
 test('rgba', () => {
-  const color = colorati({ foo: 'bar' });
+  const color = colorati({ foo: 'bar' }, { alpha: true });
 
   expect([...color.rgba]).toEqual([241, 240, 145, 0.25098039215686274]);
   expect(color.rgba.toString()).toBe('rgba(241,240,145,0.25)');
@@ -166,7 +166,7 @@ test('toJSON', () => {
 
 describe('conversions to other colors', () => {
   test('array color', () => {
-    const color = colorati({ foo: 'bar' }).rgb;
+    const color = colorati({ foo: 'bar' }, { alpha: true }).rgb;
 
     expect(color.ansi16.toString()).toBe('97');
     expect(color.ansi256.toString()).toBe('229');
@@ -183,7 +183,7 @@ describe('conversions to other colors', () => {
   });
 
   test('number color', () => {
-    const color = colorati({ foo: 'bar' }).ansi16;
+    const color = colorati({ foo: 'bar' }, { alpha: true }).ansi16;
 
     expect(color.ansi16.toString()).toBe('97');
     expect(color.ansi256.toString()).toBe('229');
@@ -200,7 +200,7 @@ describe('conversions to other colors', () => {
   });
 
   test('string color', () => {
-    const color = colorati({ foo: 'bar' }).hex;
+    const color = colorati({ foo: 'bar' }, { alpha: true }).hex;
 
     expect(color.ansi16.toString()).toBe('97');
     expect(color.ansi256.toString()).toBe('229');

@@ -36,15 +36,9 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
   private _rgb: Rgb<Options> | undefined;
   private _rgba: Rgba<Options> | undefined;
 
-  constructor(
-    raw: RgbaArray,
-    { alphaPrecision = 2, cmykPrecision = 1, hslPrecision = 2, hwbPrecision = 2, includeAlpha }: Options,
-  ) {
-    // @ts-expect-error - Allow setting colorati options locally
-    this.options = includeAlpha
-      ? { alphaPrecision, cmykPrecision, hslPrecision, hwbPrecision, includeAlpha }
-      : { cmykPrecision, hslPrecision, hwbPrecision, includeAlpha: false };
+  constructor(raw: RgbaArray, options: Options) {
     this._raw = raw;
+    this.options = options;
   }
 
   get ansi16(): Ansi16<Options> {

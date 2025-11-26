@@ -12,6 +12,7 @@ export type RgbaArray = [red: number, green: number, blue: number, alpha: number
 export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 'hwb' | 'hwba' | 'rgb' | 'rgba';
 
 export interface AnyColoratiOptions {
+  alpha?: number | boolean | null;
   alphaPrecision?: number;
   cmykPrecision?: number;
   hslPrecision?: number;
@@ -20,17 +21,17 @@ export interface AnyColoratiOptions {
 }
 
 export interface ExplicitOpaqueColoratiOptions extends AnyColoratiOptions {
+  alpha: false | null;
   alphaPrecision?: undefined;
-  includeAlpha: false;
 }
 
 export interface ImplicitOpaqueColoratiOptions extends AnyColoratiOptions {
+  alpha?: undefined;
   alphaPrecision?: undefined;
-  includeAlpha?: undefined;
 }
 
 export interface SemiOpaqueColoratiOptions extends AnyColoratiOptions {
-  includeAlpha: true;
+  alpha: number | true;
 }
 
 export type ColoratiOptions = ExplicitOpaqueColoratiOptions | ImplicitOpaqueColoratiOptions | SemiOpaqueColoratiOptions;

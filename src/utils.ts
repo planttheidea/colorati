@@ -25,13 +25,18 @@ export function getHex([red, green, blue]: RgbaArray): string {
   return integer.toString(16).toUpperCase().padStart(6, '0').toUpperCase();
 }
 
-export function getRaw(value: any): RgbaArray {
+export function getRaw(value: any, passedAlpha: number | true | undefined): RgbaArray {
   const hashed = hash(value);
 
   const red = (hashed & 0xff0000) >>> 16;
   const green = (hashed & 0xff00) >>> 8;
   const blue = hashed & 0xff;
-  const alpha = ((hashed & 0xff000000) >>> 24) / 255;
+
+  if (passedAlpha == null) {
+    return [red, green, blue, 1];
+  }
+
+  const alpha = typeof passedAlpha === 'number' ? passedAlpha : ((hashed & 0xff000000) >>> 24) / 255;
 
   return [red, green, blue, alpha];
 }

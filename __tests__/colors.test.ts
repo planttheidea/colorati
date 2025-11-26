@@ -3,11 +3,11 @@ import { describe, expect, test } from 'vitest';
 import { Ansi16, Ansi256, Hsla } from '../src/colors.js';
 
 const DEFAULT_OPTIONS: ColoratiOptions = {
+  alpha: true,
   alphaPrecision: 2,
   cmykPrecision: 1,
   hslPrecision: 2,
   hwbPrecision: 2,
-  includeAlpha: true,
 };
 
 describe('_getHslHue', () => {
