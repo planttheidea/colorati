@@ -13,31 +13,31 @@ describe('_getHslHue', () => {
   test('when max is red', () => {
     const color = new Hsl([255, 0, 0, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsl]).toEqual([0, 100, 50, 1]);
+    expect([...color.value]).toEqual([0, 100, 50, 1]);
   });
 
   test('when max is green', () => {
     const color = new Hsl([0, 255, 0, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsl]).toEqual([120, 100, 50, 1]);
+    expect([...color.value]).toEqual([120, 100, 50, 1]);
   });
 
   test('when max is blue', () => {
     const color = new Hsl([0, 0, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsl]).toEqual([240, 100, 50, 1]);
+    expect([...color.value]).toEqual([240, 100, 50, 1]);
   });
 
   test('when there is no delta', () => {
     const color = new Hsl([255, 255, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsl]).toEqual([0, 0, 1, 1]);
+    expect([...color.value]).toEqual([0, 0, 1, 1]);
   });
 
   test('when hue computes to be less than 0', () => {
     const color = new Hsl([255, 0, 255, 1], DEFAULT_OPTIONS);
 
-    expect([...color.hsl]).toEqual([300, 100, 50, 1]);
+    expect([...color.value]).toEqual([300, 100, 50, 1]);
   });
 });
 

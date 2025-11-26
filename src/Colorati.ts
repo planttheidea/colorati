@@ -1,4 +1,4 @@
-import { Ansi16, Ansi256, Cmyk, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
+import { Ansi16, Ansi256, BaseColor, Cmyk, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
 import type {
   AnalogousColors,
   ClashColors,
@@ -16,11 +16,7 @@ import { getFractionalRgba } from './utils.js';
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
-export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
-  options: Options;
-
-  private _raw: RgbArray;
-
+export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> extends BaseColor<Options> {
   private _ansi16: Ansi16<Options> | undefined;
   private _ansi256: Ansi256<Options> | undefined;
   private _cmyk: Cmyk<Options> | undefined;
@@ -34,11 +30,6 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> {
   private _oklab: OkLab<Options> | undefined;
   private _oklch: OkLch<Options> | undefined;
   private _rgb: Rgb<Options> | undefined;
-
-  constructor(raw: RgbArray, options: Options) {
-    this._raw = raw;
-    this.options = options;
-  }
 
   get ansi16(): Ansi16<Options> {
     return (this._ansi16 ??= new Ansi16(this._raw, this.options));

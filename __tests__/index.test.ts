@@ -481,55 +481,6 @@ describe('iteration', () => {
   });
 });
 
-describe('conversions to other colors', () => {
-  test('array color', () => {
-    const color = colorati({ foo: 'bar' }, { alpha: true }).rgb;
-
-    expect(color.ansi16.toString()).toBe('97');
-    expect(color.ansi256.toString()).toBe('229');
-    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%,0.25)');
-    expect(color.hex.toString()).toBe('#F1F09140');
-    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
-    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
-    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
-    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
-    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
-  });
-
-  test('number color', () => {
-    const color = colorati({ foo: 'bar' }, { alpha: true }).ansi16;
-
-    expect(color.ansi16.toString()).toBe('97');
-    expect(color.ansi256.toString()).toBe('229');
-    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%,0.25)');
-    expect(color.hex.toString()).toBe('#F1F09140');
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
-    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
-    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
-    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
-    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
-  });
-
-  test('string color', () => {
-    const color = colorati({ foo: 'bar' }, { alpha: true }).hex;
-
-    expect(color.ansi16.toString()).toBe('97');
-    expect(color.ansi256.toString()).toBe('229');
-    expect(color.cmyk.toString()).toBe('cmyk(0.0%,0.4%,39.8%,5.5%,0.25)');
-    expect(color.hex.toString()).toBe('#F1F09140');
-    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
-    expect(color.lab.toString()).toBe('lab(93.04%,-13.07,45.98,0.25)');
-    expect(color.lch.toString()).toBe('lch(93.04%,47.80,105.87,0.25)');
-    expect(color.oklab.toString()).toBe('oklab(93.55%,-3.62,11.16,0.25)');
-    expect(color.oklch.toString()).toBe('oklch(93.55%,11.74,107.94,0.25)');
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
-  });
-});
-
 describe('harmonies', () => {
   test('analogous', () => {
     const color = colorati({ foo: 'bar' });
