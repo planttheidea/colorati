@@ -312,11 +312,11 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' });
 
     expect(color.oklab.alpha).toBe(1);
-    expect(color.oklab.css).toBe(`oklab(93.55% -3.62 11.16 / 1)`);
+    expect(color.oklab.css).toBe(`oklab(93.55% -0.04 0.11 / 1)`);
     expect(color.oklab.channels).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306]);
     expect(color.oklab.value).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 1]);
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 1]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 1)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -0.04 0.11 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -332,11 +332,11 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect(color.oklab.alpha).toBe(0.25098039215686274);
-    expect(color.oklab.css).toBe(`oklab(93.55% -3.62 11.16 / 0.25)`);
+    expect(color.oklab.css).toBe(`oklab(93.55% -0.04 0.11 / 0.25)`);
     expect(color.oklab.channels).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306]);
     expect(color.oklab.value).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.25098039215686274]);
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.25098039215686274]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 0.25)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -0.04 0.11 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -352,11 +352,11 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect(color.oklab.alpha).toBe(0.65);
-    expect(color.oklab.css).toBe(`oklab(93.55% -3.62 11.16 / 0.65)`);
+    expect(color.oklab.css).toBe(`oklab(93.55% -0.04 0.11 / 0.65)`);
     expect(color.oklab.channels).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306]);
     expect(color.oklab.value).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.65]);
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.65]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 0.65)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -0.04 0.11 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -374,11 +374,11 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' });
 
     expect(color.oklch.alpha).toBe(1);
-    expect(color.oklch.css).toBe(`oklch(93.55% 11.74 107.94 / 1)`);
+    expect(color.oklch.css).toBe(`oklch(93.55% 0.12 107.94 / 1)`);
     expect(color.oklch.channels).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885]);
     expect(color.oklch.value).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 1]);
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 1]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 1)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 0.12 107.94 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 
@@ -394,11 +394,11 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect(color.oklch.alpha).toBe(0.25098039215686274);
-    expect(color.oklch.css).toBe(`oklch(93.55% 11.74 107.94 / 0.25)`);
+    expect(color.oklch.css).toBe(`oklch(93.55% 0.12 107.94 / 0.25)`);
     expect(color.oklch.channels).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885]);
     expect(color.oklch.value).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.25098039215686274]);
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.25098039215686274]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 0.25)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 0.12 107.94 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 
@@ -414,11 +414,11 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect(color.oklch.alpha).toBe(0.65);
-    expect(color.oklch.css).toBe(`oklch(93.55% 11.74 107.94 / 0.65)`);
+    expect(color.oklch.css).toBe(`oklch(93.55% 0.12 107.94 / 0.65)`);
     expect(color.oklch.channels).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885]);
     expect(color.oklch.value).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.65]);
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.65]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 0.65)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 0.12 107.94 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 

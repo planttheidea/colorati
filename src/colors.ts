@@ -471,8 +471,8 @@ export class OkLab<const Config extends ColorConfig> extends BaseArrayColor<OkLa
 
       const values = [
         `${roundTo(lightness, channelPrecision)}%`,
-        roundTo(aAxis, channelPrecision),
-        roundTo(bAxis, channelPrecision),
+        roundTo(aAxis / 100, channelPrecision),
+        roundTo(bAxis / 100, channelPrecision),
       ];
 
       this._css = `oklab(${getCssValueString(this, values)})`;
@@ -507,7 +507,7 @@ export class OkLch<const Config extends ColorConfig> extends BaseArrayColor<OkLc
 
       const values = [
         `${roundTo(lightness, channelPrecision)}%`,
-        roundTo(chroma, channelPrecision),
+        roundTo(chroma / 100, channelPrecision),
         roundTo(hue, channelPrecision),
       ];
 
