@@ -206,10 +206,9 @@ export class Cmyk<const Options extends ColoratiOptions> extends BaseArrayColor<
         `${magenta.toFixed(cmykPrecision)}%`,
         `${yellow.toFixed(cmykPrecision)}%`,
         `${key.toFixed(cmykPrecision)}%`,
-        alpha.toFixed(alphaPrecision),
       ];
 
-      this._string = `cmyk(${values.join(',')})`;
+      this._string = `device-cmyk(${values.join(',')} / ${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -368,10 +367,9 @@ export class Lab<const Options extends ColoratiOptions> extends BaseArrayColor<L
         `${this[0].toFixed(labPrecision)}%`,
         this[1].toFixed(labPrecision),
         this[2].toFixed(labPrecision),
-        this[3].toFixed(alphaPrecision),
       ];
 
-      this._string = `lab(${values.join(',')})`;
+      this._string = `lab(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -404,10 +402,9 @@ export class Lch<const Options extends ColoratiOptions> extends BaseArrayColor<L
         `${this[0].toFixed(labPrecision)}%`,
         this[1].toFixed(labPrecision),
         this[2].toFixed(labPrecision),
-        this[3].toFixed(alphaPrecision),
       ];
 
-      this._string = `lch(${values.join(',')})`;
+      this._string = `lch(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -439,10 +436,9 @@ export class OkLab<const Options extends ColoratiOptions> extends BaseArrayColor
         `${this[0].toFixed(labPrecision)}%`,
         this[1].toFixed(labPrecision),
         this[2].toFixed(labPrecision),
-        this[3].toFixed(alphaPrecision),
       ];
 
-      this._string = `oklab(${values.join(',')})`;
+      this._string = `oklab(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
     }
 
     return this._string;
@@ -475,10 +471,9 @@ export class OkLch<const Options extends ColoratiOptions> extends BaseArrayColor
         `${this[0].toFixed(labPrecision)}%`,
         this[1].toFixed(labPrecision),
         this[2].toFixed(labPrecision),
-        this[3].toFixed(alphaPrecision),
       ];
 
-      this._string = `oklch(${values.join(',')})`;
+      this._string = `oklch(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
     }
 
     return this._string;
