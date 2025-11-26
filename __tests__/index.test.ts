@@ -28,50 +28,6 @@ test('ansi256', () => {
   expect(ansi).toBe(color.ansi256.value);
 });
 
-describe('cmyk', () => {
-  test('opaque', () => {
-    const color = colorati({ foo: 'bar' });
-
-    expect([...color.cmyk]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 1]);
-    expect(color.cmyk.toString()).toBe('device-cmyk(0.0%,0.4%,39.8%,5.5% / 1)');
-
-    const [cyan, magenta, yellow, key] = color.cmyk;
-
-    const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
-    const [r, g, b] = color.rgb;
-
-    expect(rgb).toEqual([r, g, b]);
-  });
-
-  test('computed alpha', () => {
-    const color = colorati({ foo: 'bar' }, { alpha: true });
-
-    expect([...color.cmyk]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274]);
-    expect(color.cmyk.toString()).toBe('device-cmyk(0.0%,0.4%,39.8%,5.5% / 0.25)');
-
-    const [cyan, magenta, yellow, key] = color.cmyk;
-
-    const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
-    const [r, g, b] = color.rgb;
-
-    expect(rgb).toEqual([r, g, b]);
-  });
-
-  test('manual alpha', () => {
-    const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
-
-    expect([...color.cmyk]).toEqual([0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.65]);
-    expect(color.cmyk.toString()).toBe('device-cmyk(0.0%,0.4%,39.8%,5.5% / 0.65)');
-
-    const [cyan, magenta, yellow, key] = color.cmyk;
-
-    const rgb = convert.cmyk.rgb(cyan, magenta, yellow, key);
-    const [r, g, b] = color.rgb;
-
-    expect(rgb).toEqual([r, g, b]);
-  });
-});
-
 describe('hex', () => {
   test('opaque', () => {
     const color = colorati({ foo: 'bar' });
@@ -115,7 +71,7 @@ describe('hsl', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.hsl]).toEqual([59.375, 77.41935483870967, 75.68627450980392, 1]);
-    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,1)`);
+    expect(color.hsl.toString()).toBe(`hsl(59 77.42% 75.69% / 1)`);
 
     const [hue, saturation, light] = color.hsl;
 
@@ -129,7 +85,7 @@ describe('hsl', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.hsl]).toEqual([59.375, 77.41935483870967, 75.68627450980392, 0.25098039215686274]);
-    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
+    expect(color.hsl.toString()).toBe(`hsl(59 77.42% 75.69% / 0.25)`);
 
     const [hue, saturation, light] = color.hsl;
 
@@ -143,7 +99,7 @@ describe('hsl', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.hsl]).toEqual([59.375, 77.41935483870967, 75.68627450980392, 0.25098039215686274]);
-    expect(color.hsl.toString()).toBe(`hsl(59,77.42%,75.69%,0.25)`);
+    expect(color.hsl.toString()).toBe(`hsl(59 77.42% 75.69% / 0.25)`);
 
     const [hue, saturation, light] = color.hsl;
 
@@ -159,7 +115,7 @@ describe('hwb', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.hwb]).toEqual([59.375, 56.86274509803921, 5.490196078431375, 1]);
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,1)`);
+    expect(color.hwb.toString()).toBe(`hwb(59 56.86% 5.49% / 1)`);
 
     const [hue, whiteness, blackness] = color.hwb;
 
@@ -173,7 +129,7 @@ describe('hwb', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.hwb]).toEqual([59.375, 56.86274509803921, 5.490196078431375, 0.25098039215686274]);
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.25)`);
+    expect(color.hwb.toString()).toBe(`hwb(59 56.86% 5.49% / 0.25)`);
 
     const [hue, whiteness, blackness] = color.hwb;
 
@@ -187,7 +143,7 @@ describe('hwb', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.hwb]).toEqual([59.375, 56.86274509803921, 5.490196078431375, 0.65]);
-    expect(color.hwb.toString()).toBe(`hwb(59,56.86%,5.49%,0.65)`);
+    expect(color.hwb.toString()).toBe(`hwb(59 56.86% 5.49% / 0.65)`);
 
     const [hue, whiteness, blackness] = color.hwb;
 
@@ -203,7 +159,7 @@ describe('lab', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 1]);
-    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98 / 1)`);
+    expect(color.lab.toString()).toBe(`lab(93.04% -13.07 45.98 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.lab;
 
@@ -217,7 +173,7 @@ describe('lab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 0.25098039215686274]);
-    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98 / 0.25)`);
+    expect(color.lab.toString()).toBe(`lab(93.04% -13.07 45.98 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.lab;
 
@@ -231,7 +187,7 @@ describe('lab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.lab]).toEqual([93.0436853170224, -13.069756984708025, 45.97724658066764, 0.65]);
-    expect(color.lab.toString()).toBe(`lab(93.04%,-13.07,45.98 / 0.65)`);
+    expect(color.lab.toString()).toBe(`lab(93.04% -13.07 45.98 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.lab;
 
@@ -247,7 +203,7 @@ describe('lch', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 1]);
-    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87 / 1)`);
+    expect(color.lch.toString()).toBe(`lch(93.04% 47.80 105.87 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.lch;
 
@@ -261,7 +217,7 @@ describe('lch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 0.25098039215686274]);
-    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87 / 0.25)`);
+    expect(color.lch.toString()).toBe(`lch(93.04% 47.80 105.87 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.lch;
 
@@ -275,7 +231,7 @@ describe('lch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.lch]).toEqual([93.0436853170224, 47.798804909525074, 105.8686359445871, 0.65]);
-    expect(color.lch.toString()).toBe(`lch(93.04%,47.80,105.87 / 0.65)`);
+    expect(color.lch.toString()).toBe(`lch(93.04% 47.80 105.87 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.lch;
 
@@ -291,7 +247,7 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 1]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16 / 1)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -307,7 +263,7 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.25098039215686274]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16 / 0.25)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -323,7 +279,7 @@ describe('oklab', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.oklab]).toEqual([93.54604293519239, -3.615502455848202, 11.164349786292306, 0.65]);
-    expect(color.oklab.toString()).toBe(`oklab(93.55%,-3.62,11.16 / 0.65)`);
+    expect(color.oklab.toString()).toBe(`oklab(93.55% -3.62 11.16 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.oklab;
 
@@ -341,7 +297,7 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' });
 
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 1]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94 / 1)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 1)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 
@@ -357,7 +313,7 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.25098039215686274]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94 / 0.25)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 0.25)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 
@@ -373,7 +329,7 @@ describe('oklch', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.oklch]).toEqual([93.54604293519239, 11.735184879622878, 107.94421062548885, 0.65]);
-    expect(color.oklch.toString()).toBe(`oklch(93.55%,11.74,107.94 / 0.65)`);
+    expect(color.oklch.toString()).toBe(`oklch(93.55% 11.74 107.94 / 0.65)`);
 
     const [lightness, aAxis, bAxis] = color.oklch;
 
@@ -391,21 +347,21 @@ describe('rgb', () => {
     const color = colorati({ foo: 'bar' });
 
     expect(color.rgb.value).toEqual([241, 240, 145, 1]);
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,1)');
+    expect(color.rgb.toString()).toBe('rgb(241 240 145 / 1)');
   });
 
   test('computed alpha', () => {
     const color = colorati({ foo: 'bar' }, { alpha: true });
 
     expect([...color.rgb]).toEqual([241, 240, 145, 0.25098039215686274]);
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,0.25)');
+    expect(color.rgb.toString()).toBe('rgb(241 240 145 / 0.25)');
   });
 
   test('manual alpha', () => {
     const color = colorati({ foo: 'bar' }, { alpha: 0.65 });
 
     expect([...color.rgb]).toEqual([241, 240, 145, 0.65]);
-    expect(color.rgb.toString()).toBe('rgb(241,240,145,0.65)');
+    expect(color.rgb.toString()).toBe('rgb(241 240 145 / 0.65)');
   });
 });
 
@@ -424,7 +380,6 @@ test('toJSON', () => {
 
   expect(JSON.stringify(color.ansi16)).toBe(color.ansi16.toString());
   expect(JSON.stringify(color.ansi256)).toBe(color.ansi256.toString());
-  expect(JSON.stringify(color.cmyk)).toBe(`"${color.cmyk.toString()}"`);
   expect(JSON.stringify(color.hex)).toBe(`"${color.hex.toString()}"`);
   expect(JSON.stringify(color.hsl)).toBe(`"${color.hsl.toString()}"`);
   expect(JSON.stringify(color.hwb)).toBe(`"${color.hwb.toString()}"`);
@@ -434,26 +389,26 @@ test('toJSON', () => {
 describe('iteration', () => {
   test('array color', () => {
     const color = colorati({ foo: 'bar' });
-    const expectedOpaque = [0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 1];
+    const expectedOpaque = [241, 240, 145, 1];
 
     let index = 0;
 
-    for (const value of color.cmyk) {
+    for (const value of color.rgb) {
       expect(value).toBe(expectedOpaque[index++]);
     }
 
-    expect(index).toBe(5);
+    expect(index).toBe(4);
 
     const colorAlpha = colorati({ foo: 'bar' }, { alpha: true });
-    const expectedAlpha = [0, 0.4149377593360981, 39.83402489626556, 5.490196078431375, 0.25098039215686274];
+    const expectedAlpha = [241, 240, 145, 0.25098039215686274];
 
     index = 0;
 
-    for (const value of colorAlpha.cmyk) {
+    for (const value of colorAlpha.rgb) {
       expect(value).toBe(expectedAlpha[index++]);
     }
 
-    expect(index).toBe(5);
+    expect(index).toBe(4);
   });
 
   test('string color', () => {
@@ -565,4 +520,18 @@ describe('harmonies', () => {
 
     expect([...complement.rgb]).toEqual([0, 0, 0, 1]);
   });
+});
+
+test('clone', () => {
+  const original = colorati({ foo: 'bar' });
+
+  expect(original.rgb.value).toEqual([241, 240, 145, 1]);
+
+  const computedClone = original.clone({ alpha: true });
+
+  expect(computedClone.rgb.value).toEqual([241, 240, 145, 0.25098039215686274]);
+
+  const manualClone = computedClone.clone({ alpha: 0.65 });
+
+  expect(manualClone.rgb.value).toEqual([241, 240, 145, 0.65]);
 });

@@ -1,38 +1,26 @@
-import type {
-  CmykArray,
-  ColoratiOptions,
-  HslArray,
-  HwbArray,
-  LabArray,
-  LchArray,
-  OkLabArray,
-  OkLchArray,
-  RgbArray,
-} from './types.js';
-import { getAlphaHex, getFractionalRgba, getHex, getLab, getLch, getOkLab } from './utils.js';
+import type { ColorConfig, HslArray, HwbArray, LabArray, LchArray, OkLabArray, OkLchArray, RgbArray } from './types.js';
+import { getAlpha, getCssValueString, getFractionalRgba, getHex, getLab, getLch, getOkLab, roundTo } from './utils.js';
 
-export class BaseColor<const Options extends ColoratiOptions> {
-  options: Options;
+export class BaseColor<const Config extends ColorConfig> {
+  config: ColorConfig;
 
   protected _raw: RgbArray;
   protected _string: string | undefined;
 
-  constructor(rgba: RgbArray, options: Options) {
-    this.options = options;
+  constructor(rgba: RgbArray, config: Config) {
+    this.config = config;
     this._raw = rgba;
   }
 }
 
-class BaseArrayColor<const Type extends any[], const Options extends ColoratiOptions> extends BaseColor<Options> {
+class BaseArrayColor<const Type extends any[], const Config extends ColorConfig> extends BaseColor<Config> {
   private _size: number;
 
   [index: number]: number;
 
-  constructor(rgba: RgbArray, options: Options, size: number = rgba.length) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config, size: number = rgba.length) {
+    super(rgba, config);
 
-    this.options = options;
-    this._raw = rgba;
     this._size = size;
   }
 
@@ -52,13 +40,13 @@ class BaseArrayColor<const Type extends any[], const Options extends ColoratiOpt
   }
 }
 
-class BaseNumberColor<const Options extends ColoratiOptions> extends BaseColor<Options> {
+class BaseNumberColor<const Config extends ColorConfig> extends BaseColor<Config> {
   private _value: number;
 
-  constructor(value: number, rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(value: number, rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    this.options = options;
+    this.config = config;
     this._raw = rgba;
     this._value = value;
   }
@@ -80,13 +68,13 @@ class BaseNumberColor<const Options extends ColoratiOptions> extends BaseColor<O
   }
 }
 
-class BaseStringColor<const Options extends ColoratiOptions> extends BaseColor<Options> {
+class BaseStringColor<const Config extends ColorConfig> extends BaseColor<Config> {
   protected override _string: string;
 
-  constructor(value: string, rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(value: string, rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    this.options = options;
+    this.config = config;
     this._raw = rgba;
     this._string = value;
   }
@@ -110,8 +98,8 @@ class BaseStringColor<const Options extends ColoratiOptions> extends BaseColor<O
   }
 }
 
-export class Ansi16<const Options extends ColoratiOptions> extends BaseNumberColor<Options> {
-  constructor(rgba: RgbArray, options: Options) {
+export class Ansi16<const Config extends ColorConfig> extends BaseNumberColor<Config> {
+  constructor(rgba: RgbArray, config: Config) {
     const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
 
     const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
@@ -129,12 +117,12 @@ export class Ansi16<const Options extends ColoratiOptions> extends BaseNumberCol
 
     ansi = value === 2 ? ansi + 60 : ansi;
 
-    super(ansi, rgba, options);
+    super(ansi, rgba, config);
   }
 }
 
-export class Ansi256<const Options extends ColoratiOptions> extends BaseNumberColor<Options> {
-  constructor(rgba: RgbArray, options: Options) {
+export class Ansi256<const Config extends ColorConfig> extends BaseNumberColor<Config> {
+  constructor(rgba: RgbArray, config: Config) {
     const [red, green, blue] = rgba;
 
     let ansi: number;
@@ -160,348 +148,302 @@ export class Ansi256<const Options extends ColoratiOptions> extends BaseNumberCo
         + Math.round(fractionalBlue * 5);
     }
 
-    super(ansi, rgba, options);
+    super(ansi, rgba, config);
   }
 }
 
-export class Cmyk<const Options extends ColoratiOptions> extends BaseArrayColor<CmykArray, Options> {
-  [0]: number;
-  [1]: number;
-  [2]: number;
-  [3]: number;
-  [4]: number;
+export class Hex<const Config extends ColorConfig> extends BaseStringColor<Config> {
+  constructor(rgba: RgbArray, config: Config) {
+    const hex = getHex(rgba);
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options, 5);
+    let value: string;
 
-    const [cyan, magenta, yellow, key, alpha] = this._getCmykaArray();
+    if (config.alphaType === 'ignored') {
+      value = hex;
+    } else {
+      const alphaHex = Math.round(getAlpha(rgba, config) * 255)
+        .toString(16)
+        .padStart(2, '0')
+        .toUpperCase();
 
-    this[0] = cyan;
-    this[1] = magenta;
-    this[2] = yellow;
-    this[3] = key;
-    this[4] = alpha;
-  }
-
-  private _getCmykaArray(): CmykArray {
-    const [red, green, blue, alpha] = getFractionalRgba(this._raw);
-
-    const referenceKey = Math.min(1 - red, 1 - green, 1 - blue);
-
-    const cyan = ((1 - red - referenceKey) / (1 - referenceKey) || 0) * 100;
-    const magenta = ((1 - green - referenceKey) / (1 - referenceKey) || 0) * 100;
-    const yellow = ((1 - blue - referenceKey) / (1 - referenceKey) || 0) * 100;
-    const key = referenceKey * 100;
-
-    return [cyan, magenta, yellow, key, alpha];
-  }
-
-  override toString(): string {
-    if (!this._string) {
-      const [cyan, magenta, yellow, key, alpha] = this;
-      const { alphaPrecision, cmykPrecision } = this.options;
-
-      const values = [
-        `${cyan.toFixed(cmykPrecision)}%`,
-        `${magenta.toFixed(cmykPrecision)}%`,
-        `${yellow.toFixed(cmykPrecision)}%`,
-        `${key.toFixed(cmykPrecision)}%`,
-      ];
-
-      this._string = `device-cmyk(${values.join(',')} / ${alpha.toFixed(alphaPrecision)})`;
+      value = `${hex}${alphaHex}`;
     }
 
-    return this._string;
+    super(`#${value}`, rgba, config);
   }
 }
 
-export class Hex<const Options extends ColoratiOptions> extends BaseStringColor<Options> {
-  constructor(rgba: RgbArray, options: Options) {
-    const hex = getHex(rgba);
-    const value = options.alpha ? `${hex}${getAlphaHex(rgba[3])}` : hex;
-
-    super(`#${value}`, rgba, options);
-  }
-}
-
-export class Hsl<const Options extends ColoratiOptions> extends BaseArrayColor<HslArray, Options> {
+export class Hsl<const Config extends ColorConfig> extends BaseArrayColor<HslArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    const [hue, saturation, lightness, alpha] = this._getHslsArray();
+    const [red, green, blue] = getFractionalRgba(this._raw);
+
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+
+    let hue: number;
+    let saturation: number;
+    let lightness = ((max + min) / 2) * 100;
+
+    if (max === min) {
+      hue = 0;
+      saturation = 0;
+      lightness = 1;
+    } else {
+      const delta = max - min;
+
+      if (max === red) {
+        hue = (green - blue) / delta;
+      } else if (max === green) {
+        hue = (blue - red) / delta + 2;
+      } else {
+        hue = (red - green) / delta + 4;
+      }
+
+      hue = Math.min(hue * 60, 360);
+
+      if (hue < 0) {
+        hue += 360;
+      }
+
+      saturation = (lightness > 50 ? delta / (2 - max - min) : delta / (max + min)) * 100;
+    }
 
     this[0] = hue;
     this[1] = saturation;
     this[2] = lightness;
-    this[3] = alpha;
-  }
-
-  private _getHslsArray(): HslArray {
-    const [red, green, blue, alpha] = getFractionalRgba(this._raw);
-
-    const max = Math.max(red, green, blue);
-    const min = Math.min(red, green, blue);
-    const lightness = (max + min) / 2;
-
-    if (max === min) {
-      return [0, 0, lightness, alpha];
-    }
-
-    const delta = max - min;
-
-    let hue: number;
-
-    if (max === red) {
-      hue = (green - blue) / delta;
-    } else if (max === green) {
-      hue = (blue - red) / delta + 2;
-    } else {
-      hue = (red - green) / delta + 4;
-    }
-
-    hue = Math.min(hue * 60, 360);
-
-    if (hue < 0) {
-      hue += 360;
-    }
-
-    const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
-
-    return [hue, saturation * 100, lightness * 100, alpha];
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
       const [hue, saturation, lightness, alpha] = this;
-      const { alphaPrecision, hslPrecision } = this.options;
+      const { colorPrecision } = this.config;
       const values = [
-        hue.toFixed(0),
-        `${saturation.toFixed(hslPrecision)}%`,
-        `${lightness.toFixed(hslPrecision)}%`,
-        alpha.toFixed(alphaPrecision),
+        roundTo(hue, 0),
+        `${roundTo(saturation, colorPrecision)}%`,
+        `${roundTo(lightness, colorPrecision)}%`,
       ];
 
-      this._string = `hsl(${values.join(',')})`;
+      this._string = `hsl(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class Hwb<const Options extends ColoratiOptions> extends BaseArrayColor<HwbArray, Options> {
+export class Hwb<const Config extends ColorConfig> extends BaseArrayColor<HwbArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
-
-    const [hue, whiteness, blackness, alpha] = this._getHwbaArray();
-
-    this[0] = hue;
-    this[1] = whiteness;
-    this[2] = blackness;
-    this[3] = alpha;
-  }
-
-  private _getHwbaArray(): HwbArray {
-    const [red, green, blue, alpha] = this._raw;
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
+    const [red, green, blue] = this._raw;
 
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
 
-    const hue = new Hsl(this._raw, this.options)[0];
+    const hue = new Hsl(this._raw, this.config)[0];
     const whiteness = (1 / 255) * min * 100;
     const blackness = (1 - (1 / 255) * max) * 100;
 
-    return [hue, whiteness, blackness, alpha];
+    this[0] = hue;
+    this[1] = whiteness;
+    this[2] = blackness;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
       const [hue, whiteness, blackness, alpha] = this;
-      const { alphaPrecision, hwbPrecision } = this.options;
+      const { colorPrecision } = this.config;
 
       const values = [
-        hue.toFixed(0),
-        `${whiteness.toFixed(hwbPrecision)}%`,
-        `${blackness.toFixed(hwbPrecision)}%`,
-        alpha.toFixed(alphaPrecision),
+        roundTo(hue, 0),
+        `${roundTo(whiteness, colorPrecision)}%`,
+        `${roundTo(blackness, colorPrecision)}%`,
       ];
 
-      this._string = `hwb(${values.join(',')})`;
+      this._string = `hwb(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class Lab<const Options extends ColoratiOptions> extends BaseArrayColor<LabArray, Options> {
+export class Lab<const Config extends ColorConfig> extends BaseArrayColor<LabArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    const [lightness, aAxis, bAxis, alpha] = getLab(rgba);
+    const [lightness, aAxis, bAxis] = getLab(rgba);
 
     this[0] = lightness;
     this[1] = aAxis;
     this[2] = bAxis;
-    this[3] = alpha;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
-      const { alphaPrecision, labPrecision } = this.options;
+      const [lightness, aAxis, bAxis, alpha] = this;
+      const { colorPrecision } = this.config;
 
       const values = [
-        `${this[0].toFixed(labPrecision)}%`,
-        this[1].toFixed(labPrecision),
-        this[2].toFixed(labPrecision),
+        `${roundTo(lightness, colorPrecision)}%`,
+        roundTo(aAxis, colorPrecision),
+        roundTo(bAxis, colorPrecision),
       ];
 
-      this._string = `lab(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
+      this._string = `lab(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class Lch<const Options extends ColoratiOptions> extends BaseArrayColor<LchArray, Options> {
+export class Lch<const Config extends ColorConfig> extends BaseArrayColor<LchArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
     const laba = getLab(rgba);
-    const [lightness, chroma, hue, alpha] = getLch(laba);
+    const [lightness, chroma, hue] = getLch(laba);
 
     this[0] = lightness;
     this[1] = chroma;
     this[2] = hue;
-    this[3] = alpha;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
-      const { alphaPrecision, labPrecision } = this.options;
+      const [lightness, chroma, hue, alpha] = this;
+      const { colorPrecision } = this.config;
 
       const values = [
-        `${this[0].toFixed(labPrecision)}%`,
-        this[1].toFixed(labPrecision),
-        this[2].toFixed(labPrecision),
+        `${roundTo(lightness, colorPrecision)}%`,
+        roundTo(chroma, colorPrecision),
+        roundTo(hue, colorPrecision),
       ];
 
-      this._string = `lch(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
+      this._string = `lch(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class OkLab<const Options extends ColoratiOptions> extends BaseArrayColor<OkLabArray, Options> {
+export class OkLab<const Config extends ColorConfig> extends BaseArrayColor<OkLabArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    const [lightness, aAxis, bAxis, alpha] = getOkLab(rgba);
+    const [lightness, aAxis, bAxis] = getOkLab(rgba);
 
     this[0] = lightness;
     this[1] = aAxis;
     this[2] = bAxis;
-    this[3] = alpha;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
-      const { alphaPrecision, labPrecision } = this.options;
+      const [lightness, aAxis, bAxis, alpha] = this;
+      const { colorPrecision } = this.config;
 
       const values = [
-        `${this[0].toFixed(labPrecision)}%`,
-        this[1].toFixed(labPrecision),
-        this[2].toFixed(labPrecision),
+        `${roundTo(lightness, colorPrecision)}%`,
+        roundTo(aAxis, colorPrecision),
+        roundTo(bAxis, colorPrecision),
       ];
 
-      this._string = `oklab(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
+      this._string = `oklab(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class OkLch<const Options extends ColoratiOptions> extends BaseArrayColor<OkLchArray, Options> {
+export class OkLch<const Config extends ColorConfig> extends BaseArrayColor<OkLchArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
     const oklaba = getOkLab(rgba);
-    const [lightness, chroma, hue, alpha] = getLch(oklaba);
+    const [lightness, chroma, hue] = getLch(oklaba);
 
     this[0] = lightness;
     this[1] = chroma;
     this[2] = hue;
-    this[3] = alpha;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
-      const { alphaPrecision, labPrecision } = this.options;
+      const [lightness, chroma, hue, alpha] = this;
+      const { colorPrecision } = this.config;
 
       const values = [
-        `${this[0].toFixed(labPrecision)}%`,
-        this[1].toFixed(labPrecision),
-        this[2].toFixed(labPrecision),
+        `${roundTo(lightness, colorPrecision)}%`,
+        roundTo(chroma, colorPrecision),
+        roundTo(hue, colorPrecision),
       ];
 
-      this._string = `oklch(${values.join(',')} / ${this[3].toFixed(alphaPrecision)})`;
+      this._string = `oklch(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;
   }
 }
 
-export class Rgb<const Options extends ColoratiOptions> extends BaseArrayColor<RgbArray, Options> {
+export class Rgb<const Config extends ColorConfig> extends BaseArrayColor<RgbArray, Config> {
   [0]: number;
   [1]: number;
   [2]: number;
   [3]: number;
 
-  constructor(rgba: RgbArray, options: Options) {
-    super(rgba, options);
+  constructor(rgba: RgbArray, config: Config) {
+    super(rgba, config);
 
-    const [red, green, blue, alpha] = rgba;
+    const [red, green, blue] = rgba;
 
     this[0] = red;
     this[1] = green;
     this[2] = blue;
-    this[3] = alpha;
+    this[3] = getAlpha(rgba, config);
   }
 
   override toString(): string {
     if (!this._string) {
-      const values = [this[0], this[1], this[2], this[3].toFixed(this.options.alphaPrecision)];
+      const [red, green, blue, alpha] = this;
+      const values = [roundTo(red, 0), roundTo(green, 0), roundTo(blue, 0)];
 
-      this._string = `rgb(${values.join(',')})`;
+      this._string = `rgb(${getCssValueString(values, alpha, this.config)})`;
     }
 
     return this._string;

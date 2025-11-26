@@ -1,13 +1,13 @@
-import type { ColoratiOptions } from 'types.js';
+import type { ColorConfig } from 'types.js';
 import { describe, expect, test } from 'vitest';
 import { Ansi16, Ansi256, Hsl, Lab } from '../src/colors.js';
 import { getLch } from '../src/utils.js';
 
-const DEFAULT_OPTIONS: ColoratiOptions = {
-  cmykPrecision: 1,
-  hslPrecision: 2,
-  hwbPrecision: 2,
-};
+const DEFAULT_OPTIONS = {
+  alpha: false,
+  alphaType: 'ignored',
+  colorPrecision: 2,
+} as ColorConfig;
 
 describe('_getHslHue', () => {
   test('when max is red', () => {

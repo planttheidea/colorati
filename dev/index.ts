@@ -26,6 +26,7 @@ div.style = style({ padding: 20 });
 div.textContent = 'Start typing to see the output colors change!';
 
 const input = document.createElement('textarea');
+input.id = 'text';
 input.style = style({
   backgroundColor: '#1d1d1d',
   color: '#d5d5d5',
@@ -46,7 +47,8 @@ opacityToggle.addEventListener('change', (event) => {
   }
 
   const target = event.currentTarget as HTMLInputElement;
-  const color = colorati(value, { alpha: target.checked });
+  const color = colorati(value, { alpha: target.checked ? 0.2 : false });
+  // const color = colorati(value, { alpha: target.checked });
   const backgroundColor = color.rgb;
   const boxShadowColor = color.harmonies.complement.rgb;
 
@@ -80,18 +82,11 @@ input.addEventListener('keyup', (event) => {
   prevValue = value;
 
   if (value) {
-    const color = colorati(value, { alpha: opacityToggle.checked });
-    const backgroundColor = color.hex;
+    const color = colorati(value, { alpha: opacityToggle.checked ? 0.2 : 1 });
+    // const color = colorati(value, { alpha: opacityToggle.checked });
+    const backgroundColor = color.hsl;
     const boxShadowColor = color.harmonies.complement.rgb;
     const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
-
-    const [c, m, y, k, a] = color.cmyk;
-
-    console.log([c, m, y, k, a]);
-
-    for (const value of color.cmyk) {
-      console.log({ value });
-    }
 
     console.log(JSON.stringify({ backgroundColor, boxShadowColor }, null, 2));
 
@@ -151,13 +146,12 @@ document.body.appendChild(resultContainer);
   ],
   1234567890,
 ].forEach((value) => {
-  const color = colorati(value, { alpha: false });
+  const color = colorati(value, { alpha: true });
 
   console.log({
     raw: {
       ansi16: color.ansi16,
       ansi256: color.ansi256,
-      cmyk: color.cmyk,
       hex: color.hex,
       hsl: color.hsl,
       hwb: color.hwb,
@@ -170,7 +164,6 @@ document.body.appendChild(resultContainer);
     values: {
       ansi16: color.ansi16.value,
       ansi256: color.ansi256.value,
-      cmyk: color.cmyk.value,
       hex: color.hex.value,
       hsl: color.hsl.value,
       hwb: color.hwb.value,
@@ -187,7 +180,6 @@ document.body.appendChild(resultContainer);
       {
         ansi16: color.ansi16,
         ansi256: color.ansi256,
-        cmyk: color.cmyk,
         hex: color.hex,
         hsl: color.hsl,
         hwb: color.hwb,

@@ -1,11 +1,21 @@
-import { Ansi16, Ansi256, BaseColor, Cmyk, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
+import { Ansi16, Ansi256, BaseColor, Hex, Hsl, Hwb, Lab, Lch, OkLab, OkLch, Rgb } from './colors.js';
 import type {
+  AlphaType,
   AnalogousColors,
   ClashColors,
   ColoratiOptions,
+  ColorConfig,
   ComplementColors,
+  ExplicitOpaqueColoratiOptions,
+  ExplicitOpaqueColorConfig,
+  ImplicitOpaqueColoratiOptions,
+  ImplicitOpaqueColorConfig,
   NeutralColors,
   RgbArray,
+  SemiOpaqueComputedColoratiOptions,
+  SemiOpaqueComputedColorConfig,
+  SemiOpaqueManualColoratiOptions,
+  SemiOpaqueManualColorConfig,
   SplitColors,
   TetradColors,
   TriadColors,
@@ -16,31 +26,52 @@ import { getFractionalRgba } from './utils.js';
 const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
-export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> extends BaseColor<Options> {
-  private _ansi16: Ansi16<Options> | undefined;
-  private _ansi256: Ansi256<Options> | undefined;
-  private _cmyk: Cmyk<Options> | undefined;
+type NormalizedConfig<Options extends ColoratiOptions> = Options['alpha'] extends number
+  ? SemiOpaqueManualColorConfig
+  : true extends Options['alpha']
+    ? SemiOpaqueComputedColorConfig
+    : false extends Options['alpha']
+      ? ExplicitOpaqueColorConfig
+      : ImplicitOpaqueColorConfig;
+
+export class Colorati<const Options extends ColoratiOptions> extends BaseColor<NormalizedConfig<Options>> {
+  private _ansi16: Ansi16<NormalizedConfig<Options>> | undefined;
+  private _ansi256: Ansi256<NormalizedConfig<Options>> | undefined;
   private _darkContrast: boolean | undefined;
   private _harmonies: ColorHarmonies<typeof this> | undefined;
-  private _hex: Hex<Options> | undefined;
-  private _hsl: Hsl<Options> | undefined;
-  private _hwb: Hwb<Options> | undefined;
-  private _lab: Lab<Options> | undefined;
-  private _lch: Lch<Options> | undefined;
-  private _oklab: OkLab<Options> | undefined;
-  private _oklch: OkLch<Options> | undefined;
-  private _rgb: Rgb<Options> | undefined;
+  private _hex: Hex<NormalizedConfig<Options>> | undefined;
+  private _hsl: Hsl<NormalizedConfig<Options>> | undefined;
+  private _hwb: Hwb<NormalizedConfig<Options>> | undefined;
+  private _lab: Lab<NormalizedConfig<Options>> | undefined;
+  private _lch: Lch<NormalizedConfig<Options>> | undefined;
+  private _oklab: OkLab<NormalizedConfig<Options>> | undefined;
+  private _oklch: OkLch<NormalizedConfig<Options>> | undefined;
+  private _rgb: Rgb<NormalizedConfig<Options>> | undefined;
 
-  get ansi16(): Ansi16<Options> {
-    return (this._ansi16 ??= new Ansi16(this._raw, this.options));
+  constructor(raw: RgbArray, options: Options) {
+    const { alpha = false, alphaPrecision = 2, colorPrecision = 2 } = options;
+
+    let alphaType: AlphaType;
+
+    if (typeof alpha === 'number') {
+      alphaType = 'manual';
+    } else if (alpha) {
+      alphaType = 'computed';
+    } else {
+      alphaType = 'ignored';
+    }
+
+    const config = { alpha, alphaPrecision, alphaType, colorPrecision } as NormalizedConfig<Options>;
+
+    super(raw, config);
   }
 
-  get ansi256(): Ansi256<Options> {
-    return (this._ansi256 ??= new Ansi256(this._raw, this.options));
+  get ansi16(): Ansi16<NormalizedConfig<Options>> {
+    return (this._ansi16 ??= new Ansi16(this._raw, this.config));
   }
 
-  get cmyk(): Cmyk<Options> {
-    return (this._cmyk ??= new Cmyk(this._raw, this.options));
+  get ansi256(): Ansi256<NormalizedConfig<Options>> {
+    return (this._ansi256 ??= new Ansi256(this._raw, this.config));
   }
 
   get harmonies(): ColorHarmonies<typeof this> {
@@ -64,49 +95,70 @@ export class Colorati<const Options extends ColoratiOptions = ColoratiOptions> e
     return this._darkContrast;
   }
 
-  get hex(): Hex<Options> {
-    return (this._hex ??= new Hex(this._raw, this.options));
+  get hex(): Hex<NormalizedConfig<Options>> {
+    return (this._hex ??= new Hex(this._raw, this.config));
   }
 
-  get hsl(): Hsl<Options> {
-    return (this._hsl ??= new Hsl(this._raw, this.options));
+  get hsl(): Hsl<NormalizedConfig<Options>> {
+    return (this._hsl ??= new Hsl(this._raw, this.config));
   }
 
-  get hwb(): Hwb<Options> {
-    return (this._hwb ??= new Hwb(this._raw, this.options));
+  get hwb(): Hwb<NormalizedConfig<Options>> {
+    return (this._hwb ??= new Hwb(this._raw, this.config));
   }
 
-  get lab(): Lab<Options> {
-    return (this._lab ??= new Lab(this._raw, this.options));
+  get lab(): Lab<NormalizedConfig<Options>> {
+    return (this._lab ??= new Lab(this._raw, this.config));
   }
 
-  get lch(): Lch<Options> {
-    return (this._lch ??= new Lch(this._raw, this.options));
+  get lch(): Lch<NormalizedConfig<Options>> {
+    return (this._lch ??= new Lch(this._raw, this.config));
   }
 
-  get oklab(): OkLab<Options> {
-    return (this._oklab ??= new OkLab(this._raw, this.options));
+  get oklab(): OkLab<NormalizedConfig<Options>> {
+    return (this._oklab ??= new OkLab(this._raw, this.config));
   }
 
-  get oklch(): OkLch<Options> {
-    return (this._oklch ??= new OkLch(this._raw, this.options));
+  get oklch(): OkLch<NormalizedConfig<Options>> {
+    return (this._oklch ??= new OkLch(this._raw, this.config));
   }
 
-  get rgb(): Rgb<Options> {
-    return (this._rgb ??= new Rgb(this._raw, this.options));
+  get rgb(): Rgb<NormalizedConfig<Options>> {
+    return (this._rgb ??= new Rgb(this._raw, this.config));
+  }
+
+  clone<OverrideOptions extends ColoratiOptions>(
+    overrideOptions?: OverrideOptions,
+  ): Colorati<Omit<Options, keyof OverrideOptions> & OverrideOptions> {
+    const { alpha, alphaPrecision, colorPrecision } = this.config;
+    const options = { alpha, alphaPrecision, colorPrecision, ...overrideOptions } as Omit<
+      Options,
+      keyof OverrideOptions
+    >
+      & OverrideOptions;
+
+    return new Colorati(this._raw, options);
   }
 }
 
-export class ColorHarmonies<const Instance extends Colorati> {
+type NormalizedOptions<Config extends ColorConfig> = Config extends SemiOpaqueComputedColorConfig
+  ? SemiOpaqueComputedColoratiOptions
+  : Config extends SemiOpaqueManualColorConfig
+    ? SemiOpaqueManualColoratiOptions
+    : Config extends ExplicitOpaqueColorConfig
+      ? ExplicitOpaqueColoratiOptions
+      : ImplicitOpaqueColoratiOptions;
+
+export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
   private _base: Instance;
 
-  private _analogous: AnalogousColors | undefined;
-  private _clash: ClashColors | undefined;
-  private _complement: ComplementColors | undefined;
-  private _neutral: NeutralColors | undefined;
-  private _split: SplitColors | undefined;
-  private _tetrad: TetradColors | undefined;
-  private _triad: TriadColors | undefined;
+  private _analogous: AnalogousColors<Instance['config']> | undefined;
+  private _clash: ClashColors<Instance['config']> | undefined;
+  private _complement: ComplementColors<Instance['config']> | undefined;
+  private _neutral: NeutralColors<Instance['config']> | undefined;
+  private _split: SplitColors<Instance['config']> | undefined;
+  private _tetrad: TetradColors<Instance['config']> | undefined;
+  private _triad: TriadColors<Instance['config']> | undefined;
 
   constructor(base: Instance) {
     this._base = base;
@@ -155,51 +207,52 @@ export class ColorHarmonies<const Instance extends Colorati> {
     start: number,
     end: number,
     interval: number,
-  ): Tuple<Colorati<Instance['options']>, Length> {
-    const [hue, saturation, lightness, alpha] = this._base.hsl;
+  ): Tuple<Colorati<Instance['config']>, Length> {
+    const [hue, saturation, lightness, rawAlpha] = this._base.hsl;
 
     const fractionalSaturation = saturation / 100;
     const fractionalLightness = lightness / 100;
 
-    const colors: Array<Colorati<Instance['options']>> = [];
-    const { options } = this._base;
+    const colors: Array<Colorati<Instance['config']>> = [];
+    const { alpha, alphaPrecision, colorPrecision } = this._base.config;
+    const options = { alpha, alphaPrecision, colorPrecision } as NormalizedOptions<Instance['config']>;
 
     for (let index = start; index <= end; index += interval) {
       const newHue = (hue + index) % 360;
-      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLightness, alpha);
-      const color = new Colorati<Instance['options']>(raw, options);
+      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLightness, rawAlpha);
+      const color = new Colorati<NormalizedOptions<Instance['config']>>(raw, options);
 
       colors.push(color);
     }
 
-    return colors as Tuple<Colorati<Instance['options']>, Length>;
+    return colors as Tuple<Colorati<Instance['config']>, Length>;
   }
 
-  get analogous(): AnalogousColors {
+  get analogous(): AnalogousColors<Instance['config']> {
     return (this._analogous ??= this._harmonize<5>(30, 150, 30));
   }
 
-  get clash(): ClashColors {
+  get clash(): ClashColors<Instance['config']> {
     return (this._clash ??= this._harmonize<2>(90, 270, 180));
   }
 
-  get complement(): Colorati<Instance['options']> {
+  get complement(): Colorati<Instance['config']> {
     return (this._complement ??= this._harmonize<1>(180, 180, 1))[0];
   }
 
-  get neutral(): NeutralColors {
+  get neutral(): NeutralColors<Instance['config']> {
     return (this._neutral ??= this._harmonize<5>(15, 75, 15));
   }
 
-  get split(): SplitColors {
+  get split(): SplitColors<Instance['config']> {
     return (this._split ??= this._harmonize<2>(150, 210, 60));
   }
 
-  get tetrad(): TetradColors {
+  get tetrad(): TetradColors<Instance['config']> {
     return (this._tetrad ??= this._harmonize<3>(90, 270, 90));
   }
 
-  get triad(): TriadColors {
+  get triad(): TriadColors<Instance['config']> {
     return (this._triad ??= this._harmonize<2>(120, 240, 120));
   }
 }

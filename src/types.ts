@@ -1,6 +1,5 @@
 import type { Colorati } from './Colorati.js';
 
-export type CmykArray = [cyan: number, magenta: number, yellow: number, key: number, alpha: number];
 export type HslArray = [hue: number, saturation: number, lightness: number, alpha: number];
 export type HwbArray = [hue: number, whiteness: number, blackness: number, alpha: number];
 export type LabArray = [lightness: number, aAxis: number, bAxis: number, alpha: number];
@@ -14,11 +13,7 @@ export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 
 export interface AnyColoratiOptions {
   alpha?: number | boolean | null;
   alphaPrecision?: number;
-  cmykPrecision?: number;
-  hslPrecision?: number;
-  hwbPrecision?: number;
-  labPrecision?: number;
-  includeAlpha?: boolean;
+  colorPrecision?: number;
 }
 
 export interface ExplicitOpaqueColoratiOptions extends AnyColoratiOptions {
@@ -31,19 +26,55 @@ export interface ImplicitOpaqueColoratiOptions extends AnyColoratiOptions {
   alphaPrecision?: undefined;
 }
 
-export interface SemiOpaqueColoratiOptions extends AnyColoratiOptions {
-  alpha: number | true;
+export interface SemiOpaqueComputedColoratiOptions extends AnyColoratiOptions {
+  alpha: true;
 }
 
-export type ColoratiOptions = ExplicitOpaqueColoratiOptions | ImplicitOpaqueColoratiOptions | SemiOpaqueColoratiOptions;
+export interface SemiOpaqueManualColoratiOptions extends AnyColoratiOptions {
+  alpha: number;
+}
 
-export type AnalogousColors = Tuple<Colorati, 5>;
-export type ComplementColors = Tuple<Colorati, 1>;
-export type ClashColors = Tuple<Colorati, 2>;
-export type NeutralColors = Tuple<Colorati, 5>;
-export type SplitColors = Tuple<Colorati, 2>;
-export type TetradColors = Tuple<Colorati, 3>;
-export type TriadColors = Tuple<Colorati, 2>;
+export type AlphaType = 'computed' | 'ignored' | 'manual';
+
+export interface AnyColorConfig extends Required<AnyColoratiOptions> {
+  alphaType: AlphaType;
+}
+
+export type ColoratiOptions =
+  | ExplicitOpaqueColoratiOptions
+  | ImplicitOpaqueColoratiOptions
+  | SemiOpaqueComputedColoratiOptions
+  | SemiOpaqueManualColoratiOptions;
+
+export interface ExplicitOpaqueColorConfig extends Required<ExplicitOpaqueColoratiOptions> {
+  alphaType: 'ignored';
+}
+
+export interface ImplicitOpaqueColorConfig extends Required<ImplicitOpaqueColoratiOptions> {
+  alphaType: 'ignored';
+}
+
+export interface SemiOpaqueComputedColorConfig extends Required<SemiOpaqueComputedColoratiOptions> {
+  alphaType: 'computed';
+}
+
+export interface SemiOpaqueManualColorConfig extends Required<SemiOpaqueManualColoratiOptions> {
+  alphaType: 'manual';
+}
+
+export type ColorConfig =
+  | ExplicitOpaqueColorConfig
+  | ImplicitOpaqueColorConfig
+  | SemiOpaqueComputedColorConfig
+  | SemiOpaqueManualColorConfig;
+
+export type AnalogousColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 5>;
+export type ComplementColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 1>;
+export type ClashColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
+export type NeutralColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 5>;
+export type SplitColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
+export type TetradColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 3>;
+export type TriadColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
 
 export type Tuple<Type, Length extends number> = Length extends Length
   ? number extends Length
