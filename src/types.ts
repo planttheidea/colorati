@@ -1,13 +1,13 @@
 import type { Colorati } from './Colorati.js';
 
-export type CmykArray = [number, number, number, number];
-export type CmykaArray = [number, number, number, number, number];
-export type HslArray = [number, number, number];
-export type HslaArray = [number, number, number, number];
-export type HwbArray = [number, number, number];
-export type HwbaArray = [number, number, number, number];
-export type RgbArray = [number, number, number];
-export type RgbaArray = [number, number, number, number];
+export type CmykArray = [cyan: number, magenta: number, yellow: number, key: number];
+export type CmykaArray = [cyan: number, magenta: number, yellow: number, key: number, alpha: number];
+export type HslArray = [hue: number, saturation: number, lightness: number];
+export type HslaArray = [hue: number, saturation: number, lightness: number, alpha: number];
+export type HwbArray = [hue: number, whiteness: number, blackness: number];
+export type HwbaArray = [hue: number, whiteness: number, blackness: number, alpha: number];
+export type RgbArray = [red: number, green: number, blue: number];
+export type RgbaArray = [red: number, green: number, blue: number, alpha: number];
 
 export type RawColorType = 'cmyk' | 'cmyka' | 'hsl' | 'hsla' | 'hsv' | 'hsva' | 'hwb' | 'hwba' | 'rgb' | 'rgba';
 

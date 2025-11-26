@@ -129,14 +129,14 @@ export class ColorHarmonies {
     this._base = base;
   }
 
-  private _getRgbaFromHsla(hue: number, saturation: number, light: number, alpha: number): RgbaArray {
+  private _getRgbaFromHsla(hue: number, saturation: number, lightness: number, alpha: number): RgbaArray {
     if (saturation === 0) {
       return [0, 0, 0, alpha];
     }
 
     const rgba: RgbaArray = [0, 0, 0, alpha];
-    const temp2 = light < 0.5 ? light * (1 + saturation) : light + saturation - light * saturation;
-    const temp1 = 2 * light - temp2;
+    const temp2 = lightness < 0.5 ? lightness * (1 + saturation) : lightness + saturation - lightness * saturation;
+    const temp1 = 2 * lightness - temp2;
 
     let temp3: number;
     let value: number;
@@ -169,17 +169,17 @@ export class ColorHarmonies {
   }
 
   private _harmonize<Length extends number>(start: number, end: number, interval: number): Tuple<Colorati, Length> {
-    const [hue, saturation, light, alpha] = this._base.hsla;
+    const [hue, saturation, lightness, alpha] = this._base.hsla;
 
     const fractionalSaturation = saturation / 100;
-    const fractionalLight = light / 100;
+    const fractionalLightness = lightness / 100;
 
     const colors: Colorati[] = [];
     const { options } = this._base;
 
     for (let index = start; index <= end; index += interval) {
       const newHue = (hue + index) % 360;
-      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLight, alpha);
+      const raw = this._getRgbaFromHsla(newHue / 360, fractionalSaturation, fractionalLightness, alpha);
       const color = new Colorati(raw, options);
 
       colors.push(color);

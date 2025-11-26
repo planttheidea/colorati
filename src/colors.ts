@@ -420,10 +420,10 @@ class BaseHsla<const Type extends HslArray | HslaArray> extends BaseArrayColor<T
 
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
-    const light = (max + min) / 2;
+    const lightness = (max + min) / 2;
 
     if (max === min) {
-      return [0, 0, light, alpha];
+      return [0, 0, lightness, alpha];
     }
 
     const delta = max - min;
@@ -444,9 +444,9 @@ class BaseHsla<const Type extends HslArray | HslaArray> extends BaseArrayColor<T
       hue += 360;
     }
 
-    const saturation = light > 0.5 ? delta / (2 - max - min) : delta / (max + min);
+    const saturation = lightness > 0.5 ? delta / (2 - max - min) : delta / (max + min);
 
-    return [hue, saturation * 100, light * 100, alpha];
+    return [hue, saturation * 100, lightness * 100, alpha];
   }
 }
 
@@ -458,19 +458,19 @@ export class Hsl extends BaseHsla<HslArray> {
   constructor(rgba: RgbaArray, options: ColorOptions) {
     super(rgba, options, false);
 
-    const [hue, saturation, light] = this._getHslsArray();
+    const [hue, saturation, lightness] = this._getHslsArray();
 
     this[0] = hue;
     this[1] = saturation;
-    this[2] = light;
+    this[2] = lightness;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [hue, saturation, light] = this;
+      const [hue, saturation, lightness] = this;
       const { hslPrecision } = this._options;
 
-      this._string = `hsl(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%)`;
+      this._string = `hsl(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${lightness.toFixed(hslPrecision)}%)`;
     }
 
     return this._string;
@@ -486,20 +486,20 @@ export class Hsla extends BaseHsla<HslaArray> {
   constructor(rgba: RgbaArray, options: ColorOptions) {
     super(rgba, options, true);
 
-    const [hue, saturation, light, alpha] = this._getHslsArray();
+    const [hue, saturation, lightness, alpha] = this._getHslsArray();
 
     this[0] = hue;
     this[1] = saturation;
-    this[2] = light;
+    this[2] = lightness;
     this[3] = alpha;
   }
 
   override toString(): string {
     if (!this._string) {
-      const [hue, saturation, light, alpha] = this;
+      const [hue, saturation, lightness, alpha] = this;
       const { alphaPrecision, hslPrecision } = this._options;
 
-      this._string = `hsla(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${light.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
+      this._string = `hsla(${hue.toFixed(0)},${saturation.toFixed(hslPrecision)}%,${lightness.toFixed(hslPrecision)}%,${alpha.toFixed(alphaPrecision)})`;
     }
 
     return this._string;
