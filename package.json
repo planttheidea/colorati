@@ -9,7 +9,7 @@
   },
   "description": "Transform values into consistent colors",
   "devDependencies": {
-    "@planttheidea/build-tools": "^1.1.0",
+    "@planttheidea/build-tools": "^1.1.1",
     "@types/color-name": "^2.0.0",
     "@vitest/coverage-v8": "^4.0.14",
     "color-convert": "^3.1.3",
@@ -48,7 +48,7 @@
   "scripts": {
     "build": "npm run clean && npm run build:dist && npm run build:types",
     "build:dist": "NODE_ENV=production rollup -c config/rollup.config.js",
-    "build:types": "pti fix-types -t cjs && pti fix-types -t es",
+    "build:types": "pti fix-types -l dist",
     "build:umd": "NODE_ENV=production rollup -c config/rollup/umd.config.js",
     "clean": "rm -rf dist",
     "clean:cjs": "rm -rf dist/cjs",
