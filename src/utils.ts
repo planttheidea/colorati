@@ -3,14 +3,11 @@ import type {
   AlphaType,
   ColoratiOptions,
   ColorConfig,
-  ExplicitOpaqueColorConfig,
-  ImplicitOpaqueColorConfig,
   LabChannels,
   LchChannels,
+  NormalizedConfig,
   OkLabChannels,
   RgbChannels,
-  SemiOpaqueComputedColorConfig,
-  SemiOpaqueManualColorConfig,
 } from './types.js';
 
 export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): number {
@@ -69,13 +66,7 @@ export function getLch([lightness, aAxis, bAxis]: LabChannels): LchChannels {
 
 export function getNormalizedConfig<const Options extends ColoratiOptions>(
   options: Options,
-): Options['alpha'] extends number
-  ? SemiOpaqueManualColorConfig
-  : true extends Options['alpha']
-    ? SemiOpaqueComputedColorConfig
-    : false extends Options['alpha']
-      ? ExplicitOpaqueColorConfig
-      : ImplicitOpaqueColorConfig {
+): NormalizedConfig<Options> {
   const { alpha = false, alphaPrecision = 2, channelPrecision = 2 } = options;
 
   let alphaType: AlphaType;
@@ -88,8 +79,7 @@ export function getNormalizedConfig<const Options extends ColoratiOptions>(
     alphaType = 'ignored';
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-  return { alpha, alphaPrecision, alphaType, channelPrecision } as any;
+  return { alpha, alphaPrecision, alphaType, channelPrecision } as NormalizedConfig<Options>;
 }
 
 export function getOkLab(rgba: RgbChannels): OkLabChannels {

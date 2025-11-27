@@ -47,13 +47,8 @@ interface BaseColoratiOptions {
   channelPrecision?: number;
 }
 
-export interface ExplicitOpaqueColoratiOptions extends BaseColoratiOptions {
-  alpha: false;
-  alphaPrecision?: undefined;
-}
-
-export interface ImplicitOpaqueColoratiOptions extends BaseColoratiOptions {
-  alpha?: undefined;
+export interface OpaqueColoratiOptions extends BaseColoratiOptions {
+  alpha?: false;
   alphaPrecision?: undefined;
 }
 
@@ -68,16 +63,11 @@ export interface SemiOpaqueManualColoratiOptions extends BaseColoratiOptions {
 export type AlphaType = 'computed' | 'ignored' | 'manual';
 
 export type ColoratiOptions =
-  | ExplicitOpaqueColoratiOptions
-  | ImplicitOpaqueColoratiOptions
+  | OpaqueColoratiOptions
   | SemiOpaqueComputedColoratiOptions
   | SemiOpaqueManualColoratiOptions;
 
-export interface ExplicitOpaqueColorConfig extends Required<ExplicitOpaqueColoratiOptions> {
-  alphaType: 'ignored';
-}
-
-export interface ImplicitOpaqueColorConfig extends Required<ImplicitOpaqueColoratiOptions> {
+export interface OpaqueColorConfig extends Required<OpaqueColoratiOptions> {
   alphaType: 'ignored';
 }
 
@@ -89,27 +79,19 @@ export interface SemiOpaqueManualColorConfig extends Required<SemiOpaqueManualCo
   alphaType: 'manual';
 }
 
-export type ColorConfig =
-  | ExplicitOpaqueColorConfig
-  | ImplicitOpaqueColorConfig
-  | SemiOpaqueComputedColorConfig
-  | SemiOpaqueManualColorConfig;
+export type ColorConfig = OpaqueColorConfig | SemiOpaqueComputedColorConfig | SemiOpaqueManualColorConfig;
 
 export type NormalizedConfig<Options extends ColoratiOptions> = Options['alpha'] extends number
   ? SemiOpaqueManualColorConfig
   : true extends Options['alpha']
     ? SemiOpaqueComputedColorConfig
-    : false extends Options['alpha']
-      ? ExplicitOpaqueColorConfig
-      : ImplicitOpaqueColorConfig;
+    : OpaqueColorConfig;
 
 export type NormalizedOptions<Config extends ColorConfig> = Config extends SemiOpaqueComputedColorConfig
   ? SemiOpaqueComputedColoratiOptions
   : Config extends SemiOpaqueManualColorConfig
     ? SemiOpaqueManualColoratiOptions
-    : Config extends ExplicitOpaqueColorConfig
-      ? ExplicitOpaqueColoratiOptions
-      : ImplicitOpaqueColoratiOptions;
+    : OpaqueColoratiOptions;
 
 export type AnalogousColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 6>;
 export type ComplementColors<Config extends ColorConfig> = Tuple<Colorati<Config>, 2>;
