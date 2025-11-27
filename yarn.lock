@@ -1019,9 +1019,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@planttheidea/build-tools@npm:^1.1.1":
-  version: 1.1.1
-  resolution: "@planttheidea/build-tools@npm:1.1.1"
+"@planttheidea/build-tools@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "@planttheidea/build-tools@npm:1.2.0"
   dependencies:
     "@rollup/plugin-terser": "npm:^0.4.4"
     "@rollup/plugin-typescript": "npm:^12.3.0"
@@ -1050,7 +1050,7 @@ __metadata:
     yargs: "npm:^18.0.0"
   bin:
     pti: bin/index.js
-  checksum: 10c0/96b1f089d5926ddff5e5f5a779ad9daaffa4d196a8622a7ccf6f43679e3013c6b33a29b0c8dbefba8fc9ff8dfe136080d64c5e46e27b5a15db98a3e86df6ef77
+  checksum: 10c0/74cf5363e55b2a7312673002794756479ce19979234d5b8fdedc10f5bd88ddef5d5b398d1eb53ae7589da88677b4a7f1120808d8f65bdfd0ed5c14045c20a3a6
   languageName: node
   linkType: hard
 
@@ -2180,7 +2180,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "colorati@workspace:."
   dependencies:
-    "@planttheidea/build-tools": "npm:^1.1.1"
+    "@planttheidea/build-tools": "npm:^1.2.0"
     "@types/color-name": "npm:^2.0.0"
     "@vitest/coverage-v8": "npm:^4.0.14"
     color-convert: "npm:^3.1.3"
