@@ -95,7 +95,7 @@ export class BaseArrayColor<const Channels extends any[], const Config extends C
   }
 
   override get value(): Value<Channels> {
-    return (this._value ??= Array.from(this) as [...Channels, number]);
+    return (this._value ??= Array.from(this) as Value<Channels>);
   }
 
   *[Symbol.iterator]() {
@@ -146,52 +146,6 @@ class BaseAnsiColor<const Config extends ColorConfig> extends BaseColor<Config> 
 
   override valueOf(): number {
     return this._value;
-  }
-}
-
-class BaseStringColor<const Config extends ColorConfig> extends BaseColor<Config> {
-  protected override _alpha: string | null;
-  protected override _css: string | undefined;
-  protected override _channels: string;
-  protected override _value: string | undefined;
-
-  constructor(baseChannels: RgbChannels, computedAlpha: number, config: Config, value: string, alpha: null | string) {
-    super(baseChannels, computedAlpha, config);
-
-    this._alpha = alpha;
-    this._channels = value;
-  }
-
-  override get alpha(): null | string {
-    return this._alpha;
-  }
-
-  override get channels(): string {
-    return this._channels;
-  }
-
-  override get css() {
-    return (this._css ??= `#${this.value}`);
-  }
-
-  override get value(): string {
-    return (this._value ??= this._alpha != null ? `${this._channels}${this._alpha}` : this._channels);
-  }
-
-  *[Symbol.iterator]() {
-    const css = this.css;
-
-    for (let index = 0; index < css.length; ++index) {
-      yield css[index];
-    }
-  }
-
-  override toJSON(): string {
-    return this.css;
-  }
-
-  override toString(): string {
-    return this.css;
   }
 }
 
@@ -249,7 +203,12 @@ export class Ansi256<const Config extends ColorConfig> extends BaseAnsiColor<Con
   }
 }
 
-export class Hex<const Config extends ColorConfig> extends BaseStringColor<Config> {
+export class Hex<const Config extends ColorConfig> extends BaseColor<Config> {
+  protected override _alpha: string | null;
+  protected override _css: string | undefined;
+  protected override _channels: string;
+  protected override _value: string | undefined;
+
   constructor(baseChannels: RgbChannels, computedAlpha: number, config: Config) {
     const [red, green, blue] = baseChannels;
 
@@ -264,7 +223,42 @@ export class Hex<const Config extends ColorConfig> extends BaseStringColor<Confi
             .padStart(2, '0')
             .toUpperCase();
 
-    super(baseChannels, computedAlpha, config, value, alpha);
+    super(baseChannels, computedAlpha, config);
+
+    this._alpha = alpha;
+    this._channels = value;
+  }
+
+  override get alpha(): null | string {
+    return this._alpha;
+  }
+
+  override get channels(): string {
+    return this._channels;
+  }
+
+  override get css() {
+    return (this._css ??= `#${this.value}`);
+  }
+
+  override get value(): string {
+    return (this._value ??= this._alpha != null ? `${this._channels}${this._alpha}` : this._channels);
+  }
+
+  *[Symbol.iterator]() {
+    const css = this.css;
+
+    for (let index = 0; index < css.length; ++index) {
+      yield css[index];
+    }
+  }
+
+  override toJSON(): string {
+    return this.css;
+  }
+
+  override toString(): string {
+    return this.css;
   }
 }
 
