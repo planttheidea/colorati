@@ -277,6 +277,8 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
      * Clone the `Colorati` instance, optionally providing override configuration options.
      */
     clone<OverrideOptions extends ColoratiOptions>(overrideOptions?: OverrideOptions): Colorati<Omit<Options, keyof OverrideOptions> & OverrideOptions>;
+    toJSON(): string;
+    toString(): string;
 }
 declare class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
     private _colorati;

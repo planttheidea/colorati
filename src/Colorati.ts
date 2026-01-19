@@ -149,6 +149,16 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
 
     return new Colorati(this._baseChannels, this._computedAlpha, options);
   }
+
+  override toJSON(): string {
+    return this.toString();
+  }
+
+  override toString(): string {
+    const [red, green, blue, alpha] = this.rgb;
+
+    return `Colorati ({ red: ${red}, green: ${green}, blue: ${blue}, alpha: ${alpha} })`;
+  }
 }
 
 export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {

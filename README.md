@@ -86,6 +86,15 @@ And when stringified, the output will produce the CSS value for easy composition
 boxShadow: `0 0 10px ${hsl}`,
 ```
 
+If you stringify the `colorati` instance itself, it will give a metadata representation of the color using the default
+RGB channels:
+
+```ts
+const color = colorati({ foo: bar });
+
+console.log(JSON.stringify(color)); // "Colorati ({ red: 72, green: 213, blue: 182, alpha: 1 })"
+```
+
 ### Color utilities
 
 In addition to providing various formats for the color, `colorati` will provide supporting utilities for the color.
@@ -102,6 +111,31 @@ useful to determine supporting colors (or even entire color schemes) based on th
 - `splitComplement`
 - `tetradic`
 - `triadic`
+
+Each harmony is represented as an array of colors (themselves `colorati` instances), where the first color is the
+computed color for the object value and the colors following are the harmonies.
+
+```ts
+const color = colorati({ foo: 'bar' });
+
+console.log(
+  JSON.stringify({
+    main: color.rgb,
+    complement: color.harmonies.analogous,
+  }),
+);
+// {
+//   "main": "rgb(72 213 182 / 1)",
+//   "complement": [
+//     "rgb(72 213 182 / 1)",
+//     "rgb(72 174 213 / 1)",
+//     "rgb(72 103 213 / 1)",
+//     "rgb(111 72 213 / 1)",
+//     "rgb(182 72 213 / 1)",
+//     "rgb(213 72 173 / 1)"
+//   ]
+// }
+```
 
 #### `hasDarkContrast`
 
