@@ -334,7 +334,9 @@ describe('oklab', () => {
     expect(color.oklab.alpha).toBe(0.29411764705882354);
     expect(color.oklab.css).toBe(`oklab(78.98% -0.13 0.01 / 0.29)`);
     expect(color.oklab.channels).toEqual([78.97533446660873, -12.769970841847094, 1.0802995108564861]);
-    expect(color.oklab.value).toEqual([78.97533446660873, -12.769970841847094, 1.0802995108564861, 0.29411764705882354]);
+    expect(color.oklab.value).toEqual([
+      78.97533446660873, -12.769970841847094, 1.0802995108564861, 0.29411764705882354,
+    ]);
     expect([...color.oklab]).toEqual([78.97533446660873, -12.769970841847094, 1.0802995108564861, 0.29411764705882354]);
     expect(color.oklab.toString()).toBe(`oklab(78.98% -0.13 0.01 / 0.29)`);
 
