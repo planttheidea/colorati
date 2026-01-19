@@ -110,8 +110,8 @@ function getNormalizedXyzValue(value: number): number {
   return value > threshold ? value ** (1 / 3) : 7.787 * value + 16 / 116;
 }
 
-export function getCssValueString(instance: BaseArrayColor<any[], ColorConfig>, values: string[]): string {
-  return `${values.join(' ')} / ${roundTo(instance.alpha, instance.config.alphaPrecision)}`;
+export function getCssValueString(instance: BaseArrayColor<any[], ColorConfig>, channels: string[]): string {
+  return `${channels.join(' ')} / ${roundTo(instance.alpha, instance.config.alphaPrecision)}`;
 }
 
 export function roundTo(value: number, digits: number): string {

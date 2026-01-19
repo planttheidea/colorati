@@ -532,9 +532,9 @@ export class Rgb<const Config extends ColorConfig> extends BaseArrayColor<RgbCha
   override get css(): string {
     if (!this._css) {
       const [red, green, blue] = this;
-      const values = [roundTo(red, 0), roundTo(green, 0), roundTo(blue, 0)];
+      const channels = [roundTo(red, 0), roundTo(green, 0), roundTo(blue, 0)];
 
-      this._css = `rgb(${getCssValueString(this, values)})`;
+      this._css = `rgb(${getCssValueString(this, channels)})`;
     }
 
     return this._css;

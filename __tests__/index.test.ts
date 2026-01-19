@@ -589,38 +589,38 @@ describe('harmonies', () => {
     expect([...neutral[5].rgb]).toEqual([76, 72, 213, color.rgb[3]]);
   });
 
-  test('split', () => {
+  test('split complement', () => {
     const color = colorati({ foo: 'bar' });
-    const { split } = color.harmonies;
+    const { splitComplement } = color.harmonies;
 
-    expect(split.length).toBe(3);
+    expect(splitComplement.length).toBe(3);
 
-    expect([...split[0].rgb]).toEqual([...color.rgb]);
-    expect([...split[1].rgb]).toEqual([213, 72, 173, color.rgb[3]]);
-    expect([...split[2].rgb]).toEqual([213, 112, 72, color.rgb[3]]);
+    expect([...splitComplement[0].rgb]).toEqual([...color.rgb]);
+    expect([...splitComplement[1].rgb]).toEqual([213, 72, 173, color.rgb[3]]);
+    expect([...splitComplement[2].rgb]).toEqual([213, 112, 72, color.rgb[3]]);
   });
 
-  test('tetrad', () => {
+  test('tetriadic', () => {
     const color = colorati({ foo: 'bar' });
-    const { tetrad } = color.harmonies;
+    const { tetriadic } = color.harmonies;
 
-    expect(tetrad.length).toBe(4);
+    expect(tetriadic.length).toBe(4);
 
-    expect([...tetrad[0].rgb]).toEqual([...color.rgb]);
-    expect([...tetrad[1].rgb]).toEqual([111, 72, 213, color.rgb[3]]);
-    expect([...tetrad[2].rgb]).toEqual([213, 72, 103, color.rgb[3]]);
-    expect([...tetrad[3].rgb]).toEqual([173, 213, 72, color.rgb[3]]);
+    expect([...tetriadic[0].rgb]).toEqual([...color.rgb]);
+    expect([...tetriadic[1].rgb]).toEqual([111, 72, 213, color.rgb[3]]);
+    expect([...tetriadic[2].rgb]).toEqual([213, 72, 103, color.rgb[3]]);
+    expect([...tetriadic[3].rgb]).toEqual([173, 213, 72, color.rgb[3]]);
   });
 
-  test('triad', () => {
+  test('triadic', () => {
     const color = colorati({ foo: 'bar' });
-    const { triad } = color.harmonies;
+    const { triadic } = color.harmonies;
 
-    expect(triad.length).toBe(3);
+    expect(triadic.length).toBe(3);
 
-    expect([...triad[0].rgb]).toEqual([...color.rgb]);
-    expect([...triad[1].rgb]).toEqual([182, 72, 213, color.rgb[3]]);
-    expect([...triad[2].rgb]).toEqual([213, 182, 72, color.rgb[3]]);
+    expect([...triadic[0].rgb]).toEqual([...color.rgb]);
+    expect([...triadic[1].rgb]).toEqual([182, 72, 213, color.rgb[3]]);
+    expect([...triadic[2].rgb]).toEqual([213, 182, 72, color.rgb[3]]);
   });
 });
 

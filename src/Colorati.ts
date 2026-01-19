@@ -149,6 +149,16 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
 
     return new Colorati(this._baseChannels, this._computedAlpha, options);
   }
+
+  override toJSON(): string {
+    return this.toString();
+  }
+
+  override toString(): string {
+    const [red, green, blue, alpha] = this.rgb;
+
+    return `Colorati ({ red: ${red}, green: ${green}, blue: ${blue}, alpha: ${alpha} })`;
+  }
 }
 
 export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
@@ -266,21 +276,21 @@ export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
   /**
    * Split complement color harmonies for the given color.
    */
-  get split(): SplitColors<Instance['config']> {
+  get splitComplement(): SplitColors<Instance['config']> {
     return (this._split ??= this._harmonize<3>(150, 210, 60));
   }
 
   /**
    * Tetrad color harmonies for the given color.
    */
-  get tetrad(): TetradColors<Instance['config']> {
+  get tetriadic(): TetradColors<Instance['config']> {
     return (this._tetrad ??= this._harmonize<4>(90, 270, 90));
   }
 
   /**
    * Triad color harmonies for the given color.
    */
-  get triad(): TriadColors<Instance['config']> {
+  get triadic(): TriadColors<Instance['config']> {
     return (this._triad ??= this._harmonize<3>(120, 240, 120));
   }
 }
