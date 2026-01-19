@@ -309,15 +309,15 @@ declare class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
     /**
      * Split complement color harmonies for the given color.
      */
-    get split(): SplitColors<Instance['config']>;
+    get splitComplement(): SplitColors<Instance['config']>;
     /**
      * Tetrad color harmonies for the given color.
      */
-    get tetrad(): TetradColors<Instance['config']>;
+    get tetriadic(): TetradColors<Instance['config']>;
     /**
      * Triad color harmonies for the given color.
      */
-    get triad(): TriadColors<Instance['config']>;
+    get triadic(): TriadColors<Instance['config']>;
 }
 
 declare function colorati<Options extends ColoratiOptions>(value: any, options?: Options): Colorati<Options>;

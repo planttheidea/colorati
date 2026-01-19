@@ -266,21 +266,21 @@ export class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
   /**
    * Split complement color harmonies for the given color.
    */
-  get split(): SplitColors<Instance['config']> {
+  get splitComplement(): SplitColors<Instance['config']> {
     return (this._split ??= this._harmonize<3>(150, 210, 60));
   }
 
   /**
    * Tetrad color harmonies for the given color.
    */
-  get tetrad(): TetradColors<Instance['config']> {
+  get tetriadic(): TetradColors<Instance['config']> {
     return (this._tetrad ??= this._harmonize<4>(90, 270, 90));
   }
 
   /**
    * Triad color harmonies for the given color.
    */
-  get triad(): TriadColors<Instance['config']> {
+  get triadic(): TriadColors<Instance['config']> {
     return (this._triad ??= this._harmonize<3>(120, 240, 120));
   }
 }
