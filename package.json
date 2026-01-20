@@ -45,6 +45,23 @@
     "package.json"
   ],
   "homepage": "https://github.com/planttheidea/colorati#readme",
+  "keywords": [
+    "color",
+    "colour",
+    "rgb",
+    "hex",
+    "hsl",
+    "hwb",
+    "ansi",
+    "ansi16",
+    "ansi256",
+    "lab",
+    "lch",
+    "oklab",
+    "oklch",
+    "harmonies",
+    "contrast"
+  ],
   "license": "MIT",
   "main": "./dist/cjs/index.cjs",
   "module": "./dist/es/index.mjs",
