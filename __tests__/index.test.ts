@@ -471,10 +471,12 @@ describe('rgb', () => {
 test('hasDarkContrast', () => {
   const lightColor = colorati({ foo: 'bar' });
 
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   expect(lightColor.hasDarkContrast).toBe(true);
 
   const darkColor = colorati(['foo', 'bar', 'baz', 'quz']);
 
+  // eslint-disable-next-line @typescript-eslint/no-deprecated
   expect(darkColor.hasDarkContrast).toBe(false);
 });
 

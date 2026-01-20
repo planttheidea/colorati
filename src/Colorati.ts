@@ -14,9 +14,8 @@ import type {
   TriadColors,
   Tuple,
 } from './types.js';
-import { getFractionalRgba, getNormalizedConfig } from './utils.js';
+import { getLuminance, getNormalizedConfig } from './utils.js';
 
-const DARK_TEXT_W3C_ADDITIVE = [0.2126, 0.7152, 0.0722];
 const LUMINANCE_THRESHOLD = Math.sqrt(1.05 * 0.05) - 0.05;
 
 export class Colorati<const Options extends ColoratiOptions> extends BaseColor<NormalizedConfig<Options>> {
@@ -29,6 +28,7 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
   private _hwb: Hwb<NormalizedConfig<Options>> | undefined;
   private _lab: Lab<NormalizedConfig<Options>> | undefined;
   private _lch: Lch<NormalizedConfig<Options>> | undefined;
+  private _luminance: number | undefined;
   private _oklab: OkLab<NormalizedConfig<Options>> | undefined;
   private _oklch: OkLch<NormalizedConfig<Options>> | undefined;
   private _rgb: Rgb<NormalizedConfig<Options>> | undefined;
@@ -59,23 +59,15 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
   }
 
   /**
-   * Whether the contrasting color of the given color is considered dark by W3C standards.
+   * Whether the contrasting color of the given color is considered dark.
+   *
+   * @deprecated
+   * Use `getContrastRatio` with a specific color instead, as it provides more granular information
+   * and allows contextual contrast. For example, the definition changes depending on text size, as
+   * smaller text must have a higher ratio than larger text.
    */
   get hasDarkContrast(): boolean {
-    if (this._darkContrast == null) {
-      const luminance = getFractionalRgba(this._baseChannels)
-        .slice(0, 3)
-        .reduce<number>((currentLuminance, color, index) => {
-          const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
-          const additive = DARK_TEXT_W3C_ADDITIVE[index];
-
-          return additive != null ? currentLuminance + additive * colorThreshold : currentLuminance;
-        }, 0);
-
-      this._darkContrast = luminance >= LUMINANCE_THRESHOLD;
-    }
-
-    return this._darkContrast;
+    return (this._darkContrast ??= this.luminance >= LUMINANCE_THRESHOLD);
   }
 
   /**
@@ -104,6 +96,14 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
    */
   get lab(): Lab<NormalizedConfig<Options>> {
     return (this._lab ??= new Lab(this._baseChannels, this._computedAlpha, this.config));
+  }
+
+  /**
+   * Relative luminance value of the color, based on
+   * [W3C standards](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast).
+   */
+  get luminance(): number {
+    return (this._luminance ??= getLuminance(this._baseChannels));
   }
 
   /**
@@ -148,6 +148,17 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
       & OverrideOptions;
 
     return new Colorati(this._baseChannels, this._computedAlpha, options);
+  }
+
+  /**
+   * Get the contrast ratio of this color to the color provided, based on
+   * [W3C standards](https://www.w3.org/TR/WCAG/#contrast-minimum).
+   */
+  getContrastRatio(color: Colorati<ColoratiOptions>) {
+    const brightest = Math.max(this.luminance, color.luminance);
+    const darkest = Math.min(this.luminance, color.luminance);
+
+    return (brightest + 0.05) / (darkest + 0.05);
   }
 
   override toJSON(): string {

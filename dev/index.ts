@@ -86,7 +86,8 @@ input.addEventListener('keyup', (event) => {
     // const color = colorati(value, { alpha: opacityToggle.checked });
     const backgroundColor = color.rgb;
     const boxShadowColor = color.harmonies.complement[1].rgb;
-    const textColor = color.hasDarkContrast ? '#1d1d1d' : '#d5d5d5';
+    const textColor =
+      color.getContrastRatio(colorati.from([29, 29, 29, 1])) >= 4.5 ? 'rgba(29, 29, 29, 1)' : 'rgba(213, 213, 213, 1)';
 
     const foo = colorati({ foo: 'bar' });
 

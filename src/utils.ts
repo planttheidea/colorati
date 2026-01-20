@@ -10,6 +10,8 @@ import type {
   RgbChannels,
 } from './types.js';
 
+const RELATIVE_LUMINANCE_MULTIPLIERS = [0.2126, 0.7152, 0.0722];
+
 export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): number {
   if (alphaType === 'manual') {
     return alpha;
@@ -22,7 +24,7 @@ export function getAlpha(rawAlpha: number, { alpha, alphaType }: ColorConfig): n
   return 1;
 }
 
-export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbChannels): RgbChannels {
+export function getFractionalRgb(rgb: Rgb<ColorConfig> | RgbChannels): RgbChannels {
   const [red, green, blue] = rgb;
 
   const fractionalRed = red / 255;
@@ -33,7 +35,7 @@ export function getFractionalRgba(rgb: Rgb<ColorConfig> | RgbChannels): RgbChann
 }
 
 export function getLab(rgba: RgbChannels): LabChannels {
-  const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
+  const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgb(rgba);
 
   const red = getNonLinearValue(fractionalRed);
   const green = getNonLinearValue(fractionalGreen);
@@ -64,6 +66,15 @@ export function getLch([lightness, aAxis, bAxis]: LabChannels): LchChannels {
   return [lightness, chroma, hue];
 }
 
+export function getLuminance(rgb: RgbChannels) {
+  return getFractionalRgb(rgb).reduce<number>((currentLuminance, color, index) => {
+    const colorThreshold = color <= 0.03928 ? color / 12.92 : ((color + 0.055) / 1.055) ** 2.4;
+    const additive = RELATIVE_LUMINANCE_MULTIPLIERS[index];
+
+    return additive != null ? currentLuminance + additive * colorThreshold : currentLuminance;
+  }, 0);
+}
+
 export function getNormalizedConfig<const Options extends ColoratiOptions>(
   options: Options,
 ): NormalizedConfig<Options> {
@@ -83,7 +94,7 @@ export function getNormalizedConfig<const Options extends ColoratiOptions>(
 }
 
 export function getOkLab(rgba: RgbChannels): OkLabChannels {
-  const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(rgba);
+  const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgb(rgba);
 
   const red = getNonLinearValue(fractionalRed);
   const green = getNonLinearValue(fractionalGreen);

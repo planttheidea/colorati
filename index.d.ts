@@ -221,6 +221,7 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
     private _hwb;
     private _lab;
     private _lch;
+    private _luminance;
     private _oklab;
     private _oklch;
     private _rgb;
@@ -238,7 +239,12 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
      */
     get harmonies(): ColorHarmonies<typeof this>;
     /**
-     * Whether the contrasting color of the given color is considered dark by W3C standards.
+     * Whether the contrasting color of the given color is considered dark.
+     *
+     * @deprecated
+     * Use `getContrastRatio` with a specific color instead, as it provides more granular information
+     * and allows contextual contrast. For example, the definition changes depending on text size, as
+     * smaller text must have a higher ratio than larger text.
      */
     get hasDarkContrast(): boolean;
     /**
@@ -257,6 +263,11 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
      * Lab representation for the given color.
      */
     get lab(): Lab<NormalizedConfig<Options>>;
+    /**
+     * Relative luminance value of the color, based on
+     * [W3C standards](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast).
+     */
+    get luminance(): number;
     /**
      * Lch representation for the given color.
      */
@@ -277,6 +288,11 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
      * Clone the `Colorati` instance, optionally providing override configuration options.
      */
     clone<OverrideOptions extends ColoratiOptions>(overrideOptions?: OverrideOptions): Colorati<Omit<Options, keyof OverrideOptions> & OverrideOptions>;
+    /**
+     * Get the contrast ratio of this color to the color provided, based on
+     * [W3C standards](https://www.w3.org/TR/WCAG/#contrast-minimum).
+     */
+    getContrastRatio(color: Colorati<ColoratiOptions>): number;
     toJSON(): string;
     toString(): string;
 }
@@ -322,7 +338,13 @@ declare class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
     get triadic(): TriadColors<Instance['config']>;
 }
 
+/**
+ * Create a `colorati` instance based on the hashed `value` provided.
+ */
 declare function colorati<Options extends ColoratiOptions>(value: any, options?: Options): Colorati<Options>;
+declare namespace colorati {
+    var from: <Options extends ColoratiOptions>(rgba: [...RgbChannels, number], options?: Options) => Colorati<Options>;
+}
 
 export { Colorati, colorati };
 export type { AlphaType, AnalogousColors, ClashColors, ColorConfig, ColoratiOptions, ComplementColors, HslChannels, HwbChannels, LabChannels, LchChannels, NeutralColors, NormalizedConfig, NormalizedOptions, OkLabChannels, OkLchChannels, OpaqueColorConfig, OpaqueColoratiOptions, RgbChannels, SemiOpaqueComputedColorConfig, SemiOpaqueComputedColoratiOptions, SemiOpaqueManualColorConfig, SemiOpaqueManualColoratiOptions, SplitColors, TetradColors, TriadColors, Tuple, Value };
