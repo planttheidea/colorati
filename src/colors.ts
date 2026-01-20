@@ -9,7 +9,7 @@ import type {
   RgbChannels,
   Value,
 } from './types.js';
-import { getAlpha, getCssValueString, getFractionalRgba, getLab, getLch, getOkLab, roundTo } from './utils.js';
+import { getAlpha, getCssValueString, getFractionalRgb, getLab, getLch, getOkLab, roundTo } from './utils.js';
 
 export class BaseColor<const Config extends ColorConfig> {
   config: ColorConfig;
@@ -151,7 +151,7 @@ class BaseAnsiColor<const Config extends ColorConfig> extends BaseColor<Config> 
 
 export class Ansi16<const Config extends ColorConfig> extends BaseAnsiColor<Config> {
   constructor(baseChannels: RgbChannels, computedAlpha: number, config: Config) {
-    const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(baseChannels);
+    const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgb(baseChannels);
 
     const max = Math.max(fractionalRed, fractionalGreen, fractionalBlue) * 100;
     const value = Math.round(max / 50);
@@ -188,7 +188,7 @@ export class Ansi256<const Config extends ColorConfig> extends BaseAnsiColor<Con
         ansi = Math.round(((red - 8) / 247) * 24) + 232;
       }
     } else {
-      const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgba(baseChannels);
+      const [fractionalRed, fractionalGreen, fractionalBlue] = getFractionalRgb(baseChannels);
 
       const baseAnsi = 16;
 
@@ -271,7 +271,7 @@ export class Hsl<const Config extends ColorConfig> extends BaseArrayColor<HslCha
   constructor(baseChannels: RgbChannels, computedAlpha: number, config: Config) {
     super(baseChannels, computedAlpha, config);
 
-    const [red, green, blue] = getFractionalRgba(this._baseChannels);
+    const [red, green, blue] = getFractionalRgb(this._baseChannels);
 
     const max = Math.max(red, green, blue);
     const min = Math.min(red, green, blue);
