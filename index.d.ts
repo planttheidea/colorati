@@ -265,7 +265,7 @@ declare class Colorati<const Options extends ColoratiOptions> extends BaseColor<
     get lab(): Lab<NormalizedConfig<Options>>;
     /**
      * Relative luminance value of the color, based on
-     * [W3C standards](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast).
+     * [W3C standards](https://www.w3.org/TR/WCAG20/#relativeluminancedef).
      */
     get luminance(): number;
     /**
@@ -343,7 +343,7 @@ declare class ColorHarmonies<const Instance extends Colorati<ColorConfig>> {
  */
 declare function colorati<Options extends ColoratiOptions>(value: any, options?: Options): Colorati<Options>;
 declare namespace colorati {
-    var from: <Options extends ColoratiOptions>(rgba: [...RgbChannels, number], options?: Options) => Colorati<Options>;
+    var from: <Options extends ColoratiOptions>([baseRed, baseGreen, baseBlue, baseAlpha]: [...RgbChannels, alpha?: number], options?: Options) => Colorati<Options>;
 }
 
 export { Colorati, colorati };

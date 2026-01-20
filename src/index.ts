@@ -23,11 +23,9 @@ export function colorati<Options extends ColoratiOptions>(value: any, options: O
  * Create a `colorati` instance from the RGB channels + alpha provided.
  */
 colorati.from = function from<Options extends ColoratiOptions>(
-  rgba: [...RgbChannels, number],
+  [baseRed, baseGreen, baseBlue, baseAlpha = 1]: [...RgbChannels, alpha?: number],
   options: Options = {} as Options,
 ) {
-  const [baseRed, baseGreen, baseBlue, baseAlpha] = rgba;
-
   const red = Math.max(Math.min(baseRed, 255), 0);
   const green = Math.max(Math.min(baseGreen, 255), 0);
   const blue = Math.max(Math.min(baseBlue, 255), 0);

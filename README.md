@@ -26,11 +26,14 @@ function LabelComponent({ text }: { text: string }) {
     - [Output values](#output-values)
   - [Color utilities](#color-utilities)
     - [`harmonies`](#harmonies)
+    - [`getContrastRatio`](#getcontrastratio)
     - [`hasDarkContrast`](#hasdarkcontrast)
+    - [`luminance`](#luminance)
   - [Options](#options)
     - [`alpha`](#alpha)
     - [`alphaPrecision`](#alphaprecision)
     - [`channelPrecision`](#channelprecision)
+  - [Instance from RGBA](#instance-from-rgba)
 
 ## How it works
 
@@ -137,10 +140,30 @@ console.log(
 // }
 ```
 
+#### `getContrastRatio`
+
+Get the contrast ratio to the color provided.
+
+```ts
+const color = colorati({ foo: 'bar' });
+const black = colorati.from([0, 0, 0, 1]);
+
+console.log(color.getContrastRatio(black)); // 11.468723206193813
+```
+
+This is useful for determining contrast for accessibility purposes, such as if text foreground is readable against a
+colored background.
+
 #### `hasDarkContrast`
+
+_DEPRECATED: Use [`getContrastRatio`](#getcontrastratio) instead._
 
 Whether the contrasting color for the computed color is considered dark by W3C standards. This can be useful when
 pairing colored backgrounds with foreground text to ensure accessibility standards are met.
+
+#### `luminance`
+
+The relative luminance value of the color, based on [W3C standards](https://www.w3.org/TR/WCAG20/#relativeluminancedef).
 
 ### Options
 
@@ -168,3 +191,13 @@ How many decimal places the `alpha` value should be rounded to when represented 
 _defaults to 2_
 
 How many decimal places the channel values should be rounded to when represented in CSS.
+
+### Instance from RGBA
+
+You can create a `colorati` instance from existing RGB channels (and optional alpha value), which is useful for
+comparison purposes via [`getContrastRatio`](#getcontrastratio).
+
+```ts
+const black = colorati.from([0, 0, 0]);
+const semiOpaqueWhite = colorati.from([255, 255, 255, 0.5], { alpha: true });
+```

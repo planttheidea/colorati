@@ -100,7 +100,7 @@ export class Colorati<const Options extends ColoratiOptions> extends BaseColor<N
 
   /**
    * Relative luminance value of the color, based on
-   * [W3C standards](https://www.w3.org/TR/2008/REC-WCAG20-20081211/#visual-audio-contrast).
+   * [W3C standards](https://www.w3.org/TR/WCAG20/#relativeluminancedef).
    */
   get luminance(): number {
     return (this._luminance ??= getLuminance(this._baseChannels));
